@@ -1,4 +1,4 @@
-// AddIP.cpp : ʵ���ļ�
+// AddIP.cpp : 实现文件
 //
 
 #include "stdafx.h"
@@ -6,7 +6,7 @@
 #include "AddIP.h"
 
 
-// CAddIP �Ի���
+// CAddIP 对话框
 
 IMPLEMENT_DYNAMIC(CAddIP, CDialog)
 
@@ -31,10 +31,10 @@ BEGIN_MESSAGE_MAP(CAddIP, CDialog)
 END_MESSAGE_MAP()
 
 
-// CAddIP ��Ϣ��������
+// CAddIP 消息处理程序
 
 void CAddIP::OnBnClickedOk()
 {
-	// TODO: �ڴ����ӿؼ�֪ͨ�����������
+	// TODO: 在此添加控件通知处理程序代码
 	OnOK();
 }

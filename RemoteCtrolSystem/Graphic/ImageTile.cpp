@@ -1,117 +1,47 @@
 #include "ImageTile.h"
-#include <stdlib.h>
 #include <algorithm>
+#include <cstring>
+#include <new>
 
-ImageTile::ImageTile()
-{
-	m_pImageBits	= NULL;
-	m_Rect.bottom	= 0;
-	m_Rect.left		= 0;
-	m_Rect.right	= 0;
-	m_Rect.top		= 0;
-}
-ImageTile::~ImageTile()
-{
-	if (NULL != m_pImageBits)
-	{
-		delete []m_pImageBits;
-		m_pImageBits = NULL;
-	}
-};
-
-bool ImageTile::SetImageTile(char* pScreenImage,RECT screenRect,RECT tileRect)
-{
-	m_Rect = tileRect;
-	int tileWidth  = m_Rect.right - m_Rect.left;
-	int tileHeight = m_Rect.bottom - m_Rect.top;
-	int screenWidth = screenRect.right - screenRect.left;
-	int ScreenHeight = screenRect.bottom - screenRect.top;
-
-	
-	if (NULL != m_pImageBits)
-	{
-		delete []m_pImageBits;
-	}
-	m_pImageBits = new char[tileHeight*tileWidth*3];
-	char* pBitsBegin = pScreenImage +m_Rect.top*screenWidth*3+m_Rect.left*3;
-
-	//逐行拷贝需要传输的图像数据
-	
-	for (int yIdx = 0; yIdx<tileHeight;yIdx++)
-	{
-		memcpy(m_pImageBits + yIdx*tileWidth*3,pBitsBegin+yIdx*screenWidth*3,tileWidth*3);
-	}
-
-	return true;
-}
-bool ImageTile::ImageBits(char* dstBuff) const
-{
-	if (NULL == dstBuff)
-	{
-		return false;
-	}
-	int tileWidth  = m_Rect.right - m_Rect.left;
-	int tileHeight = m_Rect.bottom - m_Rect.top;
-	memcpy(dstBuff,m_pImageBits,tileWidth*tileHeight*3);
-
-	return true;
-}
-RECT    ImageTile::Rect()
-{
-	return m_Rect;
+bool ImageTile::Copy(const BYTE* pixels, int width, int height, std::size_t stride,
+                     RECT rect, bool topDown) {
+    if (!pixels || width <= 0 || height <= 0 || rect.left < 0 || rect.top < 0 ||
+        rect.right <= rect.left || rect.bottom <= rect.top ||
+        rect.right > width || rect.bottom > height ||
+        stride < static_cast<std::size_t>(width) * 3) return false;
+    const std::size_t rowSize = static_cast<std::size_t>(rect.right - rect.left) * 3;
+    const int tileHeight = rect.bottom - rect.top;
+    if (rowSize > 256u * 1024u * 1024u / static_cast<std::size_t>(tileHeight)) return false;
+    try {
+        std::vector<BYTE> result(rowSize * tileHeight);
+        for (int y = 0; y < tileHeight; ++y) {
+            const int sourceY = topDown ? rect.top + y : height - 1 - rect.top - y;
+            std::memcpy(result.data() + y * rowSize, pixels + sourceY * stride + rect.left * 3, rowSize);
+        }
+        pixels_.swap(result); rect_ = rect;
+        return true;
+    } catch (const std::bad_alloc&) { return false; }
 }
 
-bool ImageTile::SetImageTileReverse(char* pScreenImage,RECT screenRect,RECT tileRect )
-{
-	
-	RECT	realRect;
-	int tileWidth  = tileRect.right		- tileRect.left;
-	int tileHeight = tileRect.bottom	- tileRect.top;
-	int screenWidth = screenRect.right - screenRect.left;
-	int ScreenHeight = screenRect.bottom - screenRect.top;
-
-	if (memcmp(&m_Rect,&tileRect,sizeof(m_Rect)) != 0)
-	{	
-		m_Rect	= tileRect;
-		if (NULL != m_pImageBits)
-		{
-			delete []m_pImageBits;
-		}
-		m_pImageBits = new char[tileHeight*tileWidth*3];
-	}
-
-	//获取实际存储所需图像的矩形位置
-	realRect.top = ScreenHeight - m_Rect.top;
-	realRect.bottom = ScreenHeight - m_Rect.bottom;
-	realRect.right = m_Rect.right;
-	realRect.left = m_Rect.left;
-
-		char* pBitsBegin = pScreenImage +(realRect.top - 1)*screenWidth*3+realRect.left*3;
-		//逐行拷贝需要传输的图像数据
-
-		for (int yIdx = 0;yIdx <tileHeight;++yIdx)
-		{
-			if (pBitsBegin-yIdx*screenWidth*3 < 0 )
-			{
-				int test;
-				test = 0;
-			}
-			memcpy(m_pImageBits + yIdx*tileWidth*3,pBitsBegin-yIdx*screenWidth*3,tileWidth*3);
-		}
-
-		return true;
+bool ImageTile::CopyFrom(const GdiImage& image, RECT rect) {
+    return Copy(image.GetBits(), image.GetWidth(), image.GetHeight(), image.GetStride(), rect, true);
 }
-
-char* ImageTile::GetBitsPtr()
-{
-	return m_pImageBits;
+bool ImageTile::SetImageTile(char* pixels, RECT screen, RECT tile) {
+    return Copy(reinterpret_cast<const BYTE*>(pixels), screen.right - screen.left,
+                screen.bottom - screen.top, static_cast<std::size_t>(screen.right - screen.left) * 3, tile, true);
 }
-
-void SwapImageTile(ImageTile& tile1,ImageTile& tile2)
-{
-	ImageTile tempTile;
-	tempTile = tile1;
-	tile1 = tile2;
-	tile2 = tempTile;
-	tempTile.m_pImageBits = NULL;
+bool ImageTile::SetImageTileReverse(char* pixels, RECT screen, RECT tile) {
+    return Copy(reinterpret_cast<const BYTE*>(pixels), screen.right - screen.left,
+                screen.bottom - screen.top, static_cast<std::size_t>(screen.right - screen.left) * 3, tile, false);
+}
+bool ImageTile::ImageBits(char* destination) const {
+    if (!destination || pixels_.empty()) return false;
+    std::memcpy(destination, pixels_.data(), pixels_.size()); return true;
+}
+bool ImageTile::Matches(const ImageTile& other) const {
+    return rect_.left == other.rect_.left && rect_.top == other.rect_.top &&
+           rect_.right == other.rect_.right && rect_.bottom == other.rect_.bottom && pixels_ == other.pixels_;
+}
+void SwapImageTile(ImageTile& first, ImageTile& second) {
+    std::swap(first.rect_, second.rect_); first.pixels_.swap(second.pixels_);
 }

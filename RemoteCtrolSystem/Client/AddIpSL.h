@@ -1,21 +1,21 @@
 #pragma once
 
 
-// CAddIpSL ¶Ô»°¿ò
+// CAddIpSL å¯¹è¯æ¡†
 
 class CAddIpSL : public CDialog
 {
 	DECLARE_DYNAMIC(CAddIpSL)
 
 public:
-	CAddIpSL(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CAddIpSL(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CAddIpSL();
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_ADD_IP_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 };

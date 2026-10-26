@@ -2,19 +2,19 @@
 #include "afxwin.h"
 #include "..\Graphic\ScreenDisplay.h"
 
-// CDisplayDlg ¶Ô»°¿ò
+// CDisplayDlg å¯¹è¯æ¡†
 
 class CDisplayDlg : public CDialog
 {
 	DECLARE_DYNAMIC(CDisplayDlg)
 
 public:
-	CDisplayDlg(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CDisplayDlg(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CDisplayDlg();
 
 	HWND GetDisplayHwnd();
 	/**
-	   @brief:ÉèÖÃÏÔÊ¾´óĞ¡¼°×óÉÏ½ÇÎ»ÖÃ£¬Õâ¸öº¯Êı»á¸Ä±ä¹ö¶¯Ìõ·¶Î§
+	   @brief:è®¾ç½®æ˜¾ç¤ºå¤§å°åŠå·¦ä¸Šè§’ä½ç½®ï¼Œè¿™ä¸ªå‡½æ•°ä¼šæ”¹å˜æ»šåŠ¨æ¡èŒƒå›´
 	   @Parameter:int x
 	   @Parameter:int y
 	   @Parameter:int cx
@@ -23,7 +23,7 @@ public:
 	*/
 	bool SetSize(int x,int y,int cx,int cy);
 	/**
-	   @brief:ÉèÖÃÏÔÊ¾´°¿ÚÏÔÊ¾»­Ãæ´óĞ¡
+	   @brief:è®¾ç½®æ˜¾ç¤ºçª—å£æ˜¾ç¤ºç”»é¢å¤§å°
 	   @Parameter:int width
 	   @Parameter:int height
 	   @Return:bool
@@ -31,26 +31,26 @@ public:
 	bool SetScreenSize(int width,int height);
 	bool Init(int width,int height);
 	/**
-	   @brief:È«ÆÁÄ£Ê½
+	   @brief:å…¨å±æ¨¡å¼
 	   @Return:void
 	*/
 	void FullScreen();
 	/**
-	   @brief:½áÊøÈ«ÆÁ£¬²ÉÓÃ´°¿ÚÄ£Ê½
+	   @brief:ç»“æŸå…¨å±ï¼Œé‡‡ç”¨çª—å£æ¨¡å¼
 	   @Return:bool
 	*/
 	bool EndFullScreen();
 	/**
-	   @brief:·µ»Øµ±Ç°ÊÇ·ñÎªÈ«ÆÁÄ£Ê½£¬TRUEÎªÈ«ÆÁÄ£Ê½£¬falseÎª´°¿ÚÄ£Ê½
+	   @brief:è¿”å›å½“å‰æ˜¯å¦ä¸ºå…¨å±æ¨¡å¼ï¼ŒTRUEä¸ºå…¨å±æ¨¡å¼ï¼Œfalseä¸ºçª—å£æ¨¡å¼
 	   @Return:bool
 	*/
 	bool IsFullScreen();
 	void SetDisplayer(ScreenDisplay* ScreenDisplayer);
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_DIALOG_DISPLAY };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 	CStatic m_pctDisplay;
 	int		m_left;
 	int		m_top;
@@ -61,8 +61,9 @@ protected:
 	bool	m_IsFullScreen;
 	ScreenDisplay*	m_ScreenDisplayer;
 	DECLARE_MESSAGE_MAP()
+	void LayoutSurface(int cx, int cy);
 public:
-	
+
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnSize(UINT nType, int cx, int cy);

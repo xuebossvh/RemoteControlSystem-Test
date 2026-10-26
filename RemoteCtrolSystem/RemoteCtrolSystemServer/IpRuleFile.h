@@ -1,19 +1,19 @@
 /**************************************************************************
 **             Guangzhou ZHIYUAN electronics Co.,LTD
-**             
 **
-**                   http://www.embedtools.com  
+**
+**                   http://www.embedtools.com
 **-------------File Info---------------------------------------------------
 **File Name:   IpRuleFile.h
 **Latest modified Data:
 **Latest Version:
-**Description:  
+**Description:
 **
 **-------------------------------------------------------------------------
-**Create by:   
+**Create by:
 **Create date:  2013/05/03   9:20
 **Version:
-**Description: 
+**Description:
 **
 **
 **-------------------------------------------------------------------------
@@ -33,12 +33,12 @@
 
 #include <vector>
 
-//´æ´¢IP¹æÔòµÄ½á¹¹Ìå
-struct IpRule 
+//å­˜å‚¨IPè§„åˆ™çš„ç»“æ„ä½“
+struct IpRule
 {
 	TCHAR start[16];
 	TCHAR end[16];
-	int power; //-1±íÊ¾¸Ã¹æÔòÎŞĞ§£¬0±íÊ¾¾Ü¾ø£¬1±íÊ¾ÔÊĞí
+	int power; //-1è¡¨ç¤ºè¯¥è§„åˆ™æ— æ•ˆï¼Œ0è¡¨ç¤ºæ‹’ç»ï¼Œ1è¡¨ç¤ºå…è®¸
 };
 
 class CIpRuleFile
@@ -50,16 +50,16 @@ public:
 public:
 
 	//************************************
-	// Method:    Add  Ìí¼Ó¹æÔò
-	// Parameter: IpRule & rule  ¹æÔò±äÁ¿
+	// Method:    Add  æ·»åŠ è§„åˆ™
+	// Parameter: IpRule & rule  è§„åˆ™å˜é‡
 	// Returns:   BOOL
 	//************************************
 	BOOL Add(IpRule &rule);
 
 	//************************************
-	// Method:    Delete É¾³ı¹æÔò
-	// Parameter: IpRule & rule ÒªÉ¾³ıµÄ¹æÔò±äÁ¿
-	// Returns:   BOOL  É¾³ıÊÇ·ñ³É¹¦£¬true±íÊ¾³É¹¦
+	// Method:    Delete åˆ é™¤è§„åˆ™
+	// Parameter: IpRule & rule è¦åˆ é™¤çš„è§„åˆ™å˜é‡
+	// Returns:   BOOL  åˆ é™¤æ˜¯å¦æˆåŠŸï¼Œtrueè¡¨ç¤ºæˆåŠŸ
 	//************************************
 	BOOL Delete( IpRule &rule);
 
@@ -78,51 +78,51 @@ public:
 	BOOL IsRuleExsist(const IpRule &rule);
 
 	/**
-	 * @Brief GetAllRules »ñÈ¡ÎÄ¼şÖĞµÄËùÓĞ¹æÔò
+	 * @Brief GetAllRules è·å–æ–‡ä»¶ä¸­çš„æ‰€æœ‰è§„åˆ™
 	 * @Returns std::vector<IpRule>
-	 * @Remark  
+	 * @Remark
 	 **/
 	std::vector<IpRule> GetAllRules();
 
 	/**
-	 * @Brief MoveUp ÏòÉÏÒÆ¶¯Ö¸¶¨µÄ¹æÔò
-	 * @Parameter int index ¹æÔòËùÔÚÎ»ÖÃ£¬´Ó0¿ªÊ¼
+	 * @Brief MoveUp å‘ä¸Šç§»åŠ¨æŒ‡å®šçš„è§„åˆ™
+	 * @Parameter int index è§„åˆ™æ‰€åœ¨ä½ç½®ï¼Œä»0å¼€å§‹
 	 * @Returns BOOL
-	 * @Remark  
+	 * @Remark
 	 **/
 	BOOL MoveUp(int index);
 
 	/**
-	 * @Brief moveDown ÏòÏÂÒÆ¶¯Ö¸¶¨µÄ¹æÔò
-	 * @Parameter int index ¹æÔòËùÔÚµÄÎ»ÖÃ
+	 * @Brief moveDown å‘ä¸‹ç§»åŠ¨æŒ‡å®šçš„è§„åˆ™
+	 * @Parameter int index è§„åˆ™æ‰€åœ¨çš„ä½ç½®
 	 * @Returns BOOL
-	 * @Remark  
+	 * @Remark
 	 **/
 	BOOL moveDown(int index);
 
 	/**
-	 * @Brief CompareIpAddress  ±È½ÏÁ½¸öipµØÖ·µÄ´óĞ¡
-	 * @Parameter LPCTSTR address1 ´ı±È½ÏµÄµØÖ·1
-	 * @Parameter LPCTSTR address2 ´ı±È½ÏµÄµØÖ·2
-	 * @Returns int ·µ»Ø±È½Ï½á¹û£¬-1±íÊ¾Ğ¡ÓÚ¡¢0±íÊ¾µÈ¡¢1±íÊ¾´óÓÚ
-	 * @Remark  
+	 * @Brief CompareIpAddress  æ¯”è¾ƒä¸¤ä¸ªipåœ°å€çš„å¤§å°
+	 * @Parameter LPCTSTR address1 å¾…æ¯”è¾ƒçš„åœ°å€1
+	 * @Parameter LPCTSTR address2 å¾…æ¯”è¾ƒçš„åœ°å€2
+	 * @Returns int è¿”å›æ¯”è¾ƒç»“æœï¼Œ-1è¡¨ç¤ºå°äºã€0è¡¨ç¤ºç­‰ã€1è¡¨ç¤ºå¤§äº
+	 * @Remark
 	 **/
 	int CompareIpAddress(LPCTSTR address1,LPCTSTR address2);
 
 	/**
-	 * @Brief GetPowerByIp »ñÈ¡Ö¸¶¨ipµØÖ·µÄÈ¨ÏŞ
-	 * @Parameter LPCTSTR address ipµØÖ·
-	 * @Returns int ·µ»ØÈ¨ÏŞ
-	 * @Remark  
+	 * @Brief GetPowerByIp è·å–æŒ‡å®šipåœ°å€çš„æƒé™
+	 * @Parameter LPCTSTR address ipåœ°å€
+	 * @Returns int è¿”å›æƒé™
+	 * @Remark
 	 **/
 	int GetPowerByIp(LPCTSTR address);
 private:
 	TCHAR* m_pszFilePath;
 	CFile m_file;
-	std::vector<IpRule> m_DataInFile; //¶ÔÓ¦ÓÚÎÄ¼şÖĞµÄÄÚÈİÊı×é¡£
+	std::vector<IpRule> m_DataInFile; //å¯¹åº”äºæ–‡ä»¶ä¸­çš„å†…å®¹æ•°ç»„ã€‚
 
-	void GetDataFromFile(); //´ÓÎÄ¼şÄÇÀï¸üĞÂÊı¾İ
-	void SetDataToFile();  //¸üĞÂÎÄ¼ş
+	void GetDataFromFile(); //ä»æ–‡ä»¶é‚£é‡Œæ›´æ–°æ•°æ®
+	void SetDataToFile();  //æ›´æ–°æ–‡ä»¶
 	void InitFile();
 };
 #endif//__IPRULEFILE_H__

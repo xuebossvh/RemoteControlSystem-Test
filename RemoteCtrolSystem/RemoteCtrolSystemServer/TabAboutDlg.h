@@ -1,19 +1,19 @@
 /**************************************************************************
 **             Guangzhou ZHIYUAN electronics Co.,LTD
-**             
 **
-**                   http://www.embedtools.com  
+**
+**                   http://www.embedtools.com
 **-------------File Info---------------------------------------------------
 **File Name:   TabAboutDlg.h
 **Latest modified Data:
 **Latest Version:
-**Description:  
+**Description:
 **
 **-------------------------------------------------------------------------
-**Create by:   
+**Create by:
 **Create date:  2013/05/03   9:17
 **Version:
-**Description: 
+**Description:
 **
 **
 **-------------------------------------------------------------------------
@@ -31,21 +31,21 @@
 #ifndef __TABABOUTDLG_H__
 #define __TABABOUTDLG_H__
 
-// TabAboutDlg ¶Ô»°¿ò
+// TabAboutDlg å¯¹è¯æ¡†
 
 class TabAboutDlg : public CDialog
 {
 	DECLARE_DYNAMIC(TabAboutDlg)
 
 public:
-	TabAboutDlg(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	TabAboutDlg(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~TabAboutDlg();
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_TAB_ABOUT };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 };

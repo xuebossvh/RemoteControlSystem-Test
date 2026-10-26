@@ -1,26 +1,26 @@
 #pragma once
 
 #include "Resource.h"
-// CChangeAdminPwd ¶Ô»°¿ò
+// CChangeAdminPwd å¯¹è¯æ¡†
 
 class CChangeAdminPwd : public CDialog
 {
 	DECLARE_DYNAMIC(CChangeAdminPwd)
 
 public:
-	CChangeAdminPwd(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CChangeAdminPwd(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CChangeAdminPwd();
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_CHANGE_PWD };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedBtnNewpwdok();
-	CString m_strNewPwd;  //¾ÉµÄÃÜÂë
-	CString m_strSurePwd;  //ĞÂÃÜÂë
+	CString m_strNewPwd;  //æ—§çš„å¯†ç 
+	CString m_strSurePwd;  //æ–°å¯†ç 
 	afx_msg void OnBnClickedBtnNewpwdcancel();
 };

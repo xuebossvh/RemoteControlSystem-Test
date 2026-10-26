@@ -1,19 +1,19 @@
 /**************************************************************************
 **             Guangzhou ZHIYUAN electronics Co.,LTD
-**             
 **
-**                   http://www.embedtools.com  
+**
+**                   http://www.embedtools.com
 **-------------File Info---------------------------------------------------
 **File Name:   DealConnection.h
 **Latest modified Data:  2013/05/03   8:30
 **Latest Version:
-**Description:  
+**Description:
 **
 **-------------------------------------------------------------------------
-**Create by:   ÎºØ·
+**Create by:   é­èƒ¤
 **Create date:  2013/05/03   8:30
 **Version:
-**Description:  ´¦ÀíÓë¿Í»§¶ËµÄ½»»¥µÄÒ»¸öÁ¬½Ó¶ÔÏó
+**Description:  å¤„ç†ä¸å®¢æˆ·ç«¯çš„äº¤äº’çš„ä¸€ä¸ªè¿æ¥å¯¹è±¡
 **
 **
 **-------------------------------------------------------------------------
@@ -45,7 +45,7 @@ public:
 	~DealConnection(void);
 
 protected:
-	void Run(); //Ïß³ÌÔËĞĞº¯Êı
+	void Run(); //çº¿ç¨‹è¿è¡Œå‡½æ•°
 
 };
 #endif//__DEALCONNECTION_H__

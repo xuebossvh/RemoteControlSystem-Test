@@ -1,4 +1,4 @@
-// AddIpDlg.cpp :  µœ÷Œƒº˛
+// AddIpDlg.cpp : ÂÆûÁé∞Êñá‰ª∂
 //
 
 #include "stdafx.h"
@@ -7,7 +7,7 @@
 #include <atlconv.h>
 #include "LoginDialog.h"
 
-// CAddIpDlg ∂‘ª∞øÚ
+// CAddIpDlg ÂØπËØùÊ°Ü
 
 IMPLEMENT_DYNAMIC(CAddIpDlg, CDialog)
 
@@ -39,11 +39,11 @@ BEGIN_MESSAGE_MAP(CAddIpDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// CAddIpDlg œ˚œ¢¥¶¿Ì≥Ã–Ú
+// CAddIpDlg Ê∂àÊÅØÂ§ÑÁêÜÁ®ãÂ∫è
 
 void CAddIpDlg::OnBnClickedOk()
 {
-	Host tempHost;
+	Host tempHost = {};
 
 	DWORD dwAddress;
 	BYTE nField[4];
@@ -56,8 +56,8 @@ void CAddIpDlg::OnBnClickedOk()
 	CString csPort;
 	m_tbHostName.GetWindowText(csName);
 	m_tbPort.GetWindowText(csPort);
-	
-	if (!csName.IsEmpty()	&& 
+
+	if (!csName.IsEmpty()	&&
 		!csPort.IsEmpty()	&&
 		m_HostIP.GetAddress(nField[0],nField[1],nField[2],nField[3])
 		)
@@ -65,13 +65,13 @@ void CAddIpDlg::OnBnClickedOk()
 	{
 		WideCharToMultiByte(CP_ACP,0,csName.GetString(),-1,name,32,NULL,NULL);
 		strcpy(tempHost.name,name);
-		wcstombs(cPort,csPort.GetString(),csPort.GetLength());
-		tempHost.port = atoi(cPort);
+		tempHost.port = _wtoi(csPort);
+		if (tempHost.port < 1 || tempHost.port > 65535) { MessageBox(L"Invalid port."); return; }
 		int  count = 0;
 		sprintf_s(tempHost.ip,sizeof(tempHost.ip),"%d.%d.%d.%d",nField[0],nField[1],nField[2],nField[3]);
-		//strcpy(tempHost.ip,ip);	
+		//strcpy(tempHost.ip,ip);
 		m_HostListConfig->AddHost(tempHost);
-		nIndex = ((CLoginDialog*)GetParent())->m_cmbServerList.AddString(csName.GetString());
+		nIndex = IDOK;
 		//m_szHostName = csName;
 		//::SendMessage(HWND_BROADCAST,WM_ADDIP,0,0);
 	}

@@ -2,7 +2,7 @@
 **             Guangzhou ZHIYUAN electronics Co.,LTD
 **
 **
-**                   http://www.electronics.com 
+**                   http://www.electronics.com
 **-------------File Info---------------------------------------------------
 **File Name:ImageMsg.h
 **Latest modified Data:2013-4-1  15:59:04
@@ -26,13 +26,13 @@
 #define __IMAGEMSG_H__
 #include "bytearraymsg.h"
 #include <windows.h>
-/*ImageMsgÊÇÍ¼ÏñÏûÏ¢µÄÀà£¬ÆäÖĞm_buffer´¢´æÏûÏ¢µÄÊµ¼ÊÊı¾İ
-  Êı¾İÅÅÁĞ·½Ê½ÈçÏÂ£º
-  ÀàĞÍ		±äÁ¿Ãû			×Ö½ÚÊı
+/*ImageMsgæ˜¯å›¾åƒæ¶ˆæ¯çš„ç±»ï¼Œå…¶ä¸­m_bufferå‚¨å­˜æ¶ˆæ¯çš„å®é™…æ•°æ®
+  æ•°æ®æ’åˆ—æ–¹å¼å¦‚ä¸‹ï¼š
+  ç±»å‹		å˜é‡å			å­—èŠ‚æ•°
   __int8	MsgType         (1bits)
   RECT		Rect            (16bits)
   size_t	imageSize       (4bits)
-  char*		Imagebuffer     (imageSize bits) 
+  char*		Imagebuffer     (imageSize bits)
 */
 class ImageMsg :
 	public ByteArrayMsg
@@ -42,24 +42,24 @@ public:
 	~ImageMsg(void);
 
 	/**
-	   @brief:·µ»Ø´æ´¢Í¼ÏñµÄbufferµÄ´óĞ¡£¬¼´Õû¸öÏûÏ¢buffer´óĞ¡¼õÈ¥Ç°ÃæÆäËûĞÅÏ¢µÄ´óĞ¡
+	   @brief:è¿”å›å­˜å‚¨å›¾åƒçš„bufferçš„å¤§å°ï¼Œå³æ•´ä¸ªæ¶ˆæ¯bufferå¤§å°å‡å»å‰é¢å…¶ä»–ä¿¡æ¯çš„å¤§å°
 	   @Return:size_t
 	*/
 	size_t GetImageSize();
 	/**
-	   @brief:·µ»ØÍ¼Ïñ¿éµÄ¾ØĞÎÇøÓò
+	   @brief:è¿”å›å›¾åƒå—çš„çŸ©å½¢åŒºåŸŸ
 	   @Return:RECT
 	*/
 	RECT  GetImageRect();
 	/**
-	   @brief:·µ»ØÍ¼ÏñÊı¾İµÄbufferµÄÖ¸Õë
+	   @brief:è¿”å›å›¾åƒæ•°æ®çš„bufferçš„æŒ‡é’ˆ
 	   @Parameter:char * ImageBuffer
 	   @Return:bool
 	*/
 	bool  GetImageBuffer(char* ImageBuffer);
 	char* GetImageBufferPtr();
 	/**
-	   @brief:´ò°üÍ¼ÏñÏûÏ¢
+	   @brief:æ‰“åŒ…å›¾åƒæ¶ˆæ¯
 	   @Parameter:__int8 type
 	   @Parameter:RECT rect
 	   @Parameter:size_t ImageSize
@@ -70,5 +70,3 @@ public:
 };
 
 #endif
-
-

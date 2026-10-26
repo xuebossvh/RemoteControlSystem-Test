@@ -1,7 +1,7 @@
 /************************************************************************/
-/* ÔÚÊ¹ÓÃStringBuffer.pointer()½ÓÊÕÊı¾İÖ®Ç°£¬±ØĞëµ÷ÓÃprepareº¯Êı£¬
-   ÍêÁËÔÙµ÷ÓÃupdateº¯Êı¸üĞÂÊı¾İµ½StringBufferÖĞ
-/* 
+/* åœ¨ä½¿ç”¨StringBuffer.pointer()æ¥æ”¶æ•°æ®ä¹‹å‰ï¼Œå¿…é¡»è°ƒç”¨prepareå‡½æ•°ï¼Œ
+   å®Œäº†å†è°ƒç”¨updateå‡½æ•°æ›´æ–°æ•°æ®åˆ°StringBufferä¸­
+/*
 /************************************************************************/
 #ifndef CPPSOCKET_STRINGBUFFER_H
 #define CPPSOCKET_STRINGBUFFER_H
@@ -10,7 +10,7 @@
 
   using std::string;
 
-  /** 
+  /**
     * Buffer for text-transport.    *
     * The size is including the terminating zero.
     */
@@ -24,14 +24,14 @@
     ~TCPStringBuffer() throw();
 
     operator string &() throw();
-   
-	/** 
+
+	/**
     * get the buffer size
     * The size is including the terminating zero.
     */
     virtual size_t Size() const throw();
 
-   /** 
+   /**
     * get the buffer address , point to the char address
     * The size is including the terminating zero.
     */
@@ -42,8 +42,8 @@
     virtual void Update(size_t) throw();
 
   private:
-    
-    string  m_strBuffer;         /// Buffered text    
+
+    string  m_strBuffer;         /// Buffered text
     char*  m_pPtrToBuffer;      /// Pointer to temporary buffer.
     size_t  m_stBufferSize;      /// Size of temporary buffer.
   };

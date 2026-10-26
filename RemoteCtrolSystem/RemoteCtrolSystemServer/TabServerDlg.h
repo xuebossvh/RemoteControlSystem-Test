@@ -1,19 +1,19 @@
 /**************************************************************************
 **             Guangzhou ZHIYUAN electronics Co.,LTD
-**             
 **
-**                   http://www.embedtools.com  
+**
+**                   http://www.embedtools.com
 **-------------File Info---------------------------------------------------
 **File Name:   TabServerDlg.h
 **Latest modified Data:
 **Latest Version:
-**Description:  
+**Description:
 **
 **-------------------------------------------------------------------------
-**Create by:   
+**Create by:
 **Create date:  2013/05/03   9:20
 **Version:
-**Description: 
+**Description:
 **
 **
 **-------------------------------------------------------------------------
@@ -35,21 +35,21 @@
 #include "afxwin.h"
 
 
-// TabServerDlg ¶Ô»°¿ò
+// TabServerDlg å¯¹è¯æ¡†
 
 class TabServerDlg : public CDialog
 {
 	DECLARE_DYNAMIC(TabServerDlg)
 
 public:
-	TabServerDlg(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	TabServerDlg(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~TabServerDlg();
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_TAB_SERVER };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 public:

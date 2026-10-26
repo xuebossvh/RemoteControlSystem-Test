@@ -1,4 +1,4 @@
-// TabAccountDlg.cpp : ÊµÏÖÎÄ¼ş
+// TabAccountDlg.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -11,7 +11,7 @@
 #include <vector>
 
 
-// TabAccountDlg ¶Ô»°¿ò
+// TabAccountDlg å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(TabAccountDlg, CDialog)
 
@@ -32,14 +32,14 @@ void TabAccountDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 
-BEGIN_MESSAGE_MAP(TabAccountDlg, CDialog)	
+BEGIN_MESSAGE_MAP(TabAccountDlg, CDialog)
 	ON_BN_CLICKED(IDC_BTN_ADD, &TabAccountDlg::OnBnClickedBtnAdd)
 	ON_BN_CLICKED(IDC_BTN_EDIT, &TabAccountDlg::OnBnClickedBtnEdit)
 	ON_BN_CLICKED(IDC_BTN_DELETE, &TabAccountDlg::OnBnClickedBtnDelete)
 END_MESSAGE_MAP()
 
 
-// TabAccountDlg ÏûÏ¢´¦Àí³ÌĞò
+// TabAccountDlg æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 BOOL TabAccountDlg::OnInitDialog()
 {
@@ -48,26 +48,26 @@ BOOL TabAccountDlg::OnInitDialog()
 	LVCOLUMN lvcol;
 	lvcol.mask = LVCF_TEXT | LVCF_FMT | LVCF_SUBITEM | LVCF_WIDTH;
 	lvcol.fmt = LVCFMT_CENTER;
-	lvcol.pszText = L"µÇÂ¼Ãû";
-	lvcol.iSubItem = 1;  //Óë±íÁĞÏà¹ØµÄ×Ó±íÏîË÷ÒıºÅ
+	lvcol.pszText = L"ç™»å½•å";
+	lvcol.iSubItem = 1;  //ä¸è¡¨åˆ—ç›¸å…³çš„å­è¡¨é¡¹ç´¢å¼•å·
 	lvcol.cx = 120;
 
 	m_listUsers.InsertColumn(0,&lvcol);
-	lvcol.pszText = L"ÃÜÂë";
+	lvcol.pszText = L"å¯†ç ";
 	m_listUsers.InsertColumn(1,&lvcol);
 	lvcol.cx = 84;
-	lvcol.pszText = L"È¨ÏŞ";
+	lvcol.pszText = L"æƒé™";
 	m_listUsers.InsertColumn(2,&lvcol);
 
 	UpdateListData();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// Òì³£: OCX ÊôĞÔÒ³Ó¦·µ»Ø FALSE
+	// å¼‚å¸¸: OCX å±æ€§é¡µåº”è¿”å› FALSE
 }
 
 void TabAccountDlg::OnBnClickedBtnAdd()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	CAddUserDlg userDlg;
 	userDlg.DoModal();
 	UpdateListData();
@@ -79,9 +79,9 @@ void TabAccountDlg::UpdateListData(void)
 	CUserFile fileOp;
 	std::vector<UserData> userLists =fileOp.GetAllUsers();
 
-	//TRACE(_T("\nÓÃ»§µÄÊıÁ¿£º%d"),userLists.size());
+	//TRACE(_T("\nç”¨æˆ·çš„æ•°é‡ï¼š%d"),userLists.size());
 	/*CString temp;
-	temp.Format(_T("\nÓÃ»§µÄÊıÁ¿£º%d"),userLists.size());
+	temp.Format(_T("\nç”¨æˆ·çš„æ•°é‡ï¼š%d"),userLists.size());
 	MessageBox(temp);*/
 
 	m_listUsers.DeleteAllItems();
@@ -96,29 +96,29 @@ void TabAccountDlg::UpdateListData(void)
 			m_listUsers.SetItemText(0,1,_T("***"));
 			if (theIter->power == 0)
 			{
-				m_listUsers.SetItemText(0,2,_T("¹Û¿´"));
+				m_listUsers.SetItemText(0,2,_T("è§‚çœ‹"));
 			}
 			if (theIter->power == 1)
 			{
-				m_listUsers.SetItemText(0,2,_T("¿ØÖÆ"));
+				m_listUsers.SetItemText(0,2,_T("æ§åˆ¶"));
 			}
 		}
-		
+
 	}
 }
 
 void TabAccountDlg::OnBnClickedBtnEdit()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	POSITION pos = m_listUsers.GetFirstSelectedItemPosition();
 	if (NULL == pos)
 	{
 		TRACE(_T("No item were selected!\n"));
-		AfxMessageBox(_T("ÇëÑ¡ÔñÒª±à¼­µÄĞĞ£¡"));
+		AfxMessageBox(_T("è¯·é€‰æ‹©è¦ç¼–è¾‘çš„è¡Œï¼"));
 	}
 	else
 	{
-		
+
 		int nItem = m_listUsers.GetNextSelectedItem(pos);
 		TCHAR szBuff[1024];
 		LVITEM lvi;
@@ -138,7 +138,7 @@ void TabAccountDlg::OnBnClickedBtnEdit()
 
 		lvi.iSubItem = 2;
 		m_listUsers.GetItem(&lvi);
-		if(lstrcmp(lvi.pszText,_T("¹Û¿´")) == 0)
+		if(lstrcmp(lvi.pszText,_T("è§‚çœ‹")) == 0)
 		{
 			user.power = 0;
 		}
@@ -150,27 +150,27 @@ void TabAccountDlg::OnBnClickedBtnEdit()
 		AfxMessageBox(user.pwd);*/
 
 		CAddUserDlg userDlg;
-		userDlg.SetUserData(user);  //ÉèÖÃµ¯³ö½çÃæµÄÖµ
+		userDlg.SetUserData(user);  //è®¾ç½®å¼¹å‡ºç•Œé¢çš„å€¼
 		userDlg.SetStats(userDlg.EDIT);
-		userDlg.DoModal();  
+		userDlg.DoModal();
 
 		UpdateListData();
-		
+
 	}
 }
 
 void TabAccountDlg::OnBnClickedBtnDelete()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	POSITION pos = m_listUsers.GetFirstSelectedItemPosition();
 	if (NULL == pos)
 	{
 		TRACE(_T("No item were selected!\n"));
-		AfxMessageBox(_T("ÇëÑ¡ÔñÒªÉ¾³ıµÄĞĞ£¡"));
+		AfxMessageBox(_T("è¯·é€‰æ‹©è¦åˆ é™¤çš„è¡Œï¼"));
 	}
 	else
 	{
-		
+
 		int nItem = m_listUsers.GetNextSelectedItem(pos);
 		TCHAR szBuff[1024];
 		LVITEM lvi;

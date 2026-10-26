@@ -2,12 +2,12 @@
 **             Guangzhou ZHIYUAN electronics Co.,LTD
 **
 **
-**                   http://www.electronics.com 
+**                   http://www.electronics.com
 **-------------File Info---------------------------------------------------
 **File Name:MessageData.h
 **Latest modified Data:2013-3-29  16:47:01
 **Latest Version:v1.0
-**Description:用于网络传输的数据的基类
+**Description:鐢ㄤ簬缃戠粶浼犺緭鐨勬暟鎹殑鍩虹被
 **
 **-------------------------------------------------------------------------
 **Create by:XuWunJun
@@ -24,6 +24,7 @@
 **************************************************************************/
 #ifndef __MESSAGEDATA_H__
 #define __MESSAGEDATA_H__
+#include <cstddef>
 
 // Message definition
 #define RCS_MSG_IMAGE		1
@@ -39,19 +40,19 @@ public:
 	virtual ~MessageData(void);
 
 	/**
-	   @brief:返回消息类型
+	   @brief:杩斿洖娑堟伅绫诲瀷
 	   @Return:unsigned __int8
 	*/
 	virtual unsigned __int8 GetType() = 0;
 	/**
-	   @brief:返回实际储存消息的m_buffer
+	   @brief:杩斿洖瀹為檯鍌ㄥ瓨娑堟伅鐨刴_buffer
 	   @Parameter:void * buffer
 	   @Parameter:size_t len
 	   @Return:size_t
 	*/
 	virtual size_t GetBuffer(void* buffer,size_t len) = 0;
 	/**
-	   @brief:设置消息
+	   @brief:璁剧疆娑堟伅
 	   @Parameter:void * buffer
 	   @Parameter:size_t len
 	   @Return:size_t
@@ -59,5 +60,3 @@ public:
 	virtual size_t SetBuffer(const void* buffer) = 0;
 };
 #endif
-
-

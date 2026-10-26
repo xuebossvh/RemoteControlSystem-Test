@@ -3,47 +3,47 @@
 #include "iprulefile.h"
 
 
-// CAddEditIpDlg ¶Ô»°¿ò
+// CAddEditIpDlg å¯¹è¯æ¡†
 
 class CAddEditIpDlg : public CDialog
 {
 	DECLARE_DYNAMIC(CAddEditIpDlg)
 
 public:
-	CAddEditIpDlg(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CAddEditIpDlg(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CAddEditIpDlg();
 
 	enum {ADD,EDIT};
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_ACCESS_IP_CONTROL };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
-public:	
+public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedBtnOk();
 
 	/**
-	 * @Brief SetStats ÉèÖÃ±¾½çÃæËù´¦ÓÚµÄ×´Ì¬
-	 * @Parameter int stats ADD±íÊ¾ÊÇÔö¼Ó¹æÔòµÄ×´Ì¬£¬EDITÔò±íÊ¾Îª±à¼­¹æÔòµÄ×´Ì¬
+	 * @Brief SetStats è®¾ç½®æœ¬ç•Œé¢æ‰€å¤„äºçš„çŠ¶æ€
+	 * @Parameter int stats ADDè¡¨ç¤ºæ˜¯å¢åŠ è§„åˆ™çš„çŠ¶æ€ï¼ŒEDITåˆ™è¡¨ç¤ºä¸ºç¼–è¾‘è§„åˆ™çš„çŠ¶æ€
 	 * @Returns void
-	 * @Remark   ÒòÎªÔÚÌí¼Ó¹æÔòºÍĞŞ¸Ä¹æÔòµÄÊ±ºò£¬ÓÃµ½µÄÊÇÍ¬Ò»¸ö½çÃæ
+	 * @Remark   å› ä¸ºåœ¨æ·»åŠ è§„åˆ™å’Œä¿®æ”¹è§„åˆ™çš„æ—¶å€™ï¼Œç”¨åˆ°çš„æ˜¯åŒä¸€ä¸ªç•Œé¢
 	 **/
 	void SetStats(int stats);
 
 	/**
-	 * @Brief SetRule ÉèÖÃ±¾½çÃæµÄ¹æÔòÊı¾İ£¬ÓÃÓÚ´«ÈëÒª±à¼­µÄ¹æÔò
-	 * @Parameter IpRule rule  ¾ßÌåµÄ¹æÔòÊı¾İ
+	 * @Brief SetRule è®¾ç½®æœ¬ç•Œé¢çš„è§„åˆ™æ•°æ®ï¼Œç”¨äºä¼ å…¥è¦ç¼–è¾‘çš„è§„åˆ™
+	 * @Parameter IpRule rule  å…·ä½“çš„è§„åˆ™æ•°æ®
 	 * @Returns void
-	 * @Remark  
+	 * @Remark
 	 **/
 	void SetRule(IpRule rule);
 
-	CIPAddressCtrl m_ipStart;  //¹æÔòÆğÊ¼ipµØÖ·¿Ø¼ş±äÁ¿
-	CIPAddressCtrl m_ipEnd;  //¹æÔòÖÕÖ¹ipµØÖ·¿Ø¼ş±äÁ¿
+	CIPAddressCtrl m_ipStart;  //è§„åˆ™èµ·å§‹ipåœ°å€æ§ä»¶å˜é‡
+	CIPAddressCtrl m_ipEnd;  //è§„åˆ™ç»ˆæ­¢ipåœ°å€æ§ä»¶å˜é‡
 private:
-	IpRule m_rule;  //ÓÃÓÚ±íÊ¾½çÃæÉÏµÄ¹æÔòÊı¾İ
-	int m_stats;  //½çÃæËù´¦ÓÚµÄ×´Ì¬
+	IpRule m_rule;  //ç”¨äºè¡¨ç¤ºç•Œé¢ä¸Šçš„è§„åˆ™æ•°æ®
+	int m_stats;  //ç•Œé¢æ‰€å¤„äºçš„çŠ¶æ€
 };

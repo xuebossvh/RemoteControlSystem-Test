@@ -25,10 +25,11 @@ std::vector<Notes> OperationNotes::GetOperationNotes()
 {
 	m_vtNotes.clear();
 	char* old_locale = _strdup( setlocale(LC_CTYPE,NULL) );
-	setlocale( LC_CTYPE, "chs" );//Éè¶¨<ctpye.h>ÖĞ×Ö·û´¦Àí·½Ê½
+	setlocale( LC_CTYPE, "chs" );//è®¾å®š<ctpye.h>ä¸­å­—ç¬¦å¤„ç†æ–¹å¼
 	if(!m_file.Open(m_strFilePath,CFile::modeRead))
 	{
-		AfxMessageBox(_T("Open file error!"));
+		setlocale(LC_CTYPE, old_locale);
+		free(old_locale);
 		return m_vtNotes;
 	}
 	CString strLine;
@@ -41,10 +42,10 @@ std::vector<Notes> OperationNotes::GetOperationNotes()
 		note.time = strLine.Mid(36,20).Trim();
 		note.path  = strLine.Right(strLine.GetLength()-56).Trim();
 		m_vtNotes.push_back(note);
-	}	
-	m_file.Close(); 
+	}
+	m_file.Close();
 	setlocale( LC_CTYPE, old_locale );
-	free( old_locale );//»¹Ô­ÇøÓòÉè¶¨
+	free( old_locale );//è¿˜åŸåŒºåŸŸè®¾å®š
 	return m_vtNotes;
 }
 
@@ -60,7 +61,7 @@ std::vector<Notes> OperationNotes::GetNotesByType( int type )
 		std::vector<Notes>::iterator iter;
 		for (iter = m_vtNotes.begin();iter!=m_vtNotes.end();iter++)
 		{
-			if (iter->action == CString(_T("Æô¶¯")) || iter->action ==  CString(_T("¹Ø±Õ")))
+			if (iter->action == CString(_T("å¯åŠ¨")) || iter->action ==  CString(_T("å…³é—­")))
 			{
 				tempNotes.push_back(*iter);
 			}
@@ -73,7 +74,7 @@ std::vector<Notes> OperationNotes::GetNotesByType( int type )
 		std::vector<Notes>::iterator iter;
 		for (iter = m_vtNotes.begin();iter!=m_vtNotes.end();iter++)
 		{
-			if (!(iter->action == CString(_T("Æô¶¯")) || iter->action ==  CString(_T("¹Ø±Õ"))))
+			if (!(iter->action == CString(_T("å¯åŠ¨")) || iter->action ==  CString(_T("å…³é—­"))))
 			{
 				tempNotes.push_back(*iter);
 			}
@@ -106,7 +107,7 @@ std::vector<Notes> OperationNotes::GetNotesByNameAndType( CString name,int type 
 	std::vector<Notes>::iterator iter;
 	for (iter = m_vtNotes.begin();iter!=m_vtNotes.end();iter++)
 	{
-		if (name == _T(""))  //Èç¹û´«ÈëµÄÃû×ÖÎª¿Õ
+		if (name == _T(""))  //å¦‚æœä¼ å…¥çš„åå­—ä¸ºç©º
 		{
 			if (type == 0)
 			{
@@ -114,21 +115,21 @@ std::vector<Notes> OperationNotes::GetNotesByNameAndType( CString name,int type 
 			}
 			else if (1 == type)
 			{
-				if (iter->action == CString(_T("Æô¶¯")) || iter->action ==  CString(_T("¹Ø±Õ")))
+				if (iter->action == CString(_T("å¯åŠ¨")) || iter->action ==  CString(_T("å…³é—­")))
 				{
 					tempNotes.push_back(*iter);
 				}
 			}
 			else
 			{
-				if (!(iter->action == CString(_T("Æô¶¯")) || iter->action ==  CString(_T("¹Ø±Õ"))))
+				if (!(iter->action == CString(_T("å¯åŠ¨")) || iter->action ==  CString(_T("å…³é—­"))))
 				{
 					tempNotes.push_back(*iter);
 				}
 			}
 			continue;
 		}
-		if (iter->name == name) //Èç¹û´«ÈëµÄÃû×ÖÎª¿Õ
+		if (iter->name == name) //å¦‚æœä¼ å…¥çš„åå­—ä¸ºç©º
 		{
 			if (type == 0)
 			{
@@ -136,19 +137,19 @@ std::vector<Notes> OperationNotes::GetNotesByNameAndType( CString name,int type 
 			}
 			else if (1 == type)
 			{
-				if (iter->action == CString(_T("Æô¶¯")) || iter->action ==  CString(_T("¹Ø±Õ")))
+				if (iter->action == CString(_T("å¯åŠ¨")) || iter->action ==  CString(_T("å…³é—­")))
 				{
 					tempNotes.push_back(*iter);
 				}
 			}
 			else
 			{
-				if (!(iter->action == CString(_T("Æô¶¯")) || iter->action ==  CString(_T("¹Ø±Õ"))))
+				if (!(iter->action == CString(_T("å¯åŠ¨")) || iter->action ==  CString(_T("å…³é—­"))))
 				{
 					tempNotes.push_back(*iter);
 				}
 			}
-			
+
 		}
 	}
 	return tempNotes;

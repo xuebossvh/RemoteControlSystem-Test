@@ -1,73 +1,32 @@
 #include "ImageMsg.h"
-#include <wchar.h>
-
-ImageMsg::ImageMsg(void)
-{
+#include <cstring>
+#include <cstdint>
+ImageMsg::ImageMsg() {}
+ImageMsg::~ImageMsg() {}
+size_t ImageMsg::GetImageSize() {
+    if (m_size < 21 || GetType() != RCS_MSG_IMAGE) return 0;
+    uint32_t length = 0; memcpy(&length, m_buffer + 17, 4);
+    return length == m_size - 21 ? length : 0;
 }
-
-ImageMsg::~ImageMsg(void)
-{
+RECT ImageMsg::GetImageRect() {
+    RECT rect = {};
+    if (m_size >= 21 && GetType() == RCS_MSG_IMAGE) memcpy(&rect, m_buffer + 1, 16);
+    return rect;
 }
-
-size_t ImageMsg::GetImageSize()
-{
-	size_t* ImageSizePtr = (size_t*)(m_buffer + sizeof(unsigned __int8) + sizeof(RECT));
-	return *ImageSizePtr;
+bool ImageMsg::GetImageBuffer(char* buffer) {
+    if (!buffer || !GetImageSize()) return false;
+    memcpy(buffer, m_buffer + 21, GetImageSize()); return true;
 }
-
-RECT ImageMsg::GetImageRect()
-{
-	RECT* ImageRectPtr = (RECT*)(m_buffer + sizeof(unsigned __int8));
-	return *ImageRectPtr;
-}
-
-bool ImageMsg::GetImageBuffer(char* ImageBuffer)
-{
-	if (NULL == ImageBuffer)
-	{
-		return false;
-	}
-	char* ImagePtr = m_buffer+ sizeof(unsigned __int8) + sizeof(RECT) + sizeof(size_t);
-	memcpy(ImageBuffer,ImagePtr,GetImageSize());
-	return true;
-}
-
-bool ImageMsg::PacketMsg( RECT rect,size_t ImageSize,char* buffer )
-{
-	__int8 type =	RCS_MSG_IMAGE;
-	size_t newSize = sizeof(type) + sizeof(rect) + sizeof(ImageSize) + ImageSize;
-	
-	//图像消息数据结构请参考头文件中的注释
-	//根据消息数据结构，将需要打包的数据拷贝到一个字节数组m_buffer中
-	if (m_size < newSize)
-	{
-		if (m_buffer != NULL)
-		{
-			delete []m_buffer;
-		}
-		
-		m_buffer = new char[newSize];
-		m_size = newSize;
-	}
-	char* pCur = m_buffer;
-	memcpy(pCur,&type,sizeof(type));
-	pCur += sizeof(type);
-
-	memcpy(pCur,&rect,sizeof(rect));
-	pCur += sizeof(rect);
-
-	memcpy(pCur,&ImageSize,sizeof(ImageSize));
-	pCur += sizeof(ImageSize);
-
-	memcpy(pCur,buffer,ImageSize);
-	pCur = NULL;
-
-	return true;
-}
-
-char* ImageMsg::GetImageBufferPtr()
-{
-	
-	char* ImagePtr = m_buffer+ sizeof(unsigned __int8) + sizeof(RECT) + sizeof(size_t);
-	return ImagePtr;
+char* ImageMsg::GetImageBufferPtr() { return GetImageSize() ? m_buffer + 21 : NULL; }
+bool ImageMsg::PacketMsg(RECT rect, size_t imageSize, char* buffer) {
+    if (!buffer || !imageSize || imageSize > MAX_IMAGE_BYTES || rect.right <= rect.left || rect.bottom <= rect.top) return false;
+    const size_t length = 21 + imageSize;
+    char* data = new char[length];
+    data[0] = RCS_MSG_IMAGE;
+    memcpy(data + 1, &rect, 16);
+    const uint32_t size = static_cast<uint32_t>(imageSize);
+    memcpy(data + 17, &size, 4);
+    memcpy(data + 21, buffer, imageSize);
+    delete[] m_buffer; m_buffer = data; m_size = length;
+    return true;
 }

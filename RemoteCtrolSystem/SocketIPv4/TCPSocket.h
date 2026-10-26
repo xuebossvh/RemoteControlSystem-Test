@@ -2,7 +2,7 @@
 **             Guangzhou ZHIYUAN electronics Co.,LTD
 **
 **
-**                   http://www.embedtools.com  
+**                   http://www.embedtools.com
 **-------------File Info---------------------------------------------------
 **File Name:
 **Latest modified Data:
@@ -37,6 +37,7 @@
 #include "../Message/ByteArrayMsg.h"
 #include "../Thread/LocalMutex.h"
 #include <WinSock2.h>
+#include <atomic>
 
 #pragma warning(disable:4290)
 
@@ -76,7 +77,7 @@ public:
 	   @brief:Close the socket
 	   @Return:void
 	*/
-	void Close() throw (TCPException); 
+	void Close() throw (TCPException);
 	operator Descriptor() throw(){return m_descriptor;}
 	/**
 	   @brief:If the descriptor is opened?
@@ -85,31 +86,31 @@ public:
 	bool IsOpened() throw(){return m_descriptor!=INVALID_SOCKET;}
 	/**
 	   @brief:Bind descriptor to sock address addr
-	   @Parameter:addr server address 
+	   @Parameter:addr server address
 	   @Return:void
 	*/
-	void Bind(const sockaddr_in& addr) 
+	void Bind(const sockaddr_in& addr)
         throw (TCPException);
 	/**
 	   @brief:Bind descriptor to address addr
-	   @Parameter:addr server address 
+	   @Parameter:addr server address
 	   @Return:void
 	*/
-	void Bind(const TCPSocketAddress& addr) 
+	void Bind(const TCPSocketAddress& addr)
         throw(TCPException);
 	/**
 	   @brief:Connect to the server, with address addr
 	   @Parameter:addr  server addr
 	   @Return:void
 	*/
-	void Connect(const sockaddr_in& addr) 
+	void Connect(const sockaddr_in& addr)
         throw (TCPException);
 	/**
 	   @brief:Connect to the server, with address addr
 	   @Parameter:addr  server address
 	   @Return:void
 	*/
-	void Connect(const TCPSocketAddress& addr) 
+	void Connect(const TCPSocketAddress& addr)
         throw (TCPException);
 	/**
 	   @brief:Send char buffer to another peer end-point,most used in TCP
@@ -140,7 +141,7 @@ public:
 	*/
 	int Sendto(const sockaddr_in& addr,
         const char* data, size_t size, int flags = 0) throw (TCPException) ;
-    int Sendto(const TCPSocketAddress& addr, 
+    int Sendto(const TCPSocketAddress& addr,
         const TCPBuffer& data, int flags = 0) throw (TCPException);
 	/**
 	   @brief:Receive data through opening socket,from the addr,most used in TCP
@@ -150,9 +151,9 @@ public:
 	   @Parameter:lags
 	   @Return:int
 	*/
-	int Recvfrom(sockaddr_in& addr, char* data, 
+	int Recvfrom(sockaddr_in& addr, char* data,
         size_t size, int flags = 0) throw (TCPException);
-	int Recvfrom(TCPSocketAddress& addr, 
+	int Recvfrom(TCPSocketAddress& addr,
         TCPBuffer& data, int flags = 0) throw (TCPException);
 
 	/**
@@ -166,9 +167,9 @@ public:
 	   @Parameter:sockaddr_in & addr
 	   @Return:TCPSocket::Descriptor
 	*/
-	Descriptor Accept(sockaddr_in& addr) 
+	Descriptor Accept(sockaddr_in& addr)
         throw (TCPException);
-	Descriptor Accept(TCPSocketAddress& addr) 
+	Descriptor Accept(TCPSocketAddress& addr)
         throw (TCPException);
 	/**
 	   @brief:Get socket name through descriptor
@@ -181,7 +182,7 @@ public:
 	*/
 	TCPSocketAddress GetPeerName() throw (TCPException);
 	/**
-	   @brief:Wait for special things happened,Socket can 
+	   @brief:Wait for special things happened,Socket can
               be read, write or exception
 	   @Parameter:bool & read
 	   @Parameter:bool & write
@@ -190,7 +191,7 @@ public:
 	   @Parameter:int useconds
 	   @Return:int
 	*/
-	int Wait(bool& read, bool& write, bool& exception, 
+	int Wait(bool& read, bool& write, bool& exception,
         int seconds = 0, int useconds = 0) throw (TCPException);
 
 	int SetRecvBufLength(int recvlength);
@@ -199,7 +200,7 @@ public:
 	int SetNodelay(bool delay);
 
 private:
-	Descriptor m_descriptor;        // Socket number
+	std::atomic<Descriptor> m_descriptor;        // Socket number
     LocalMutex  *m_localmutex;  // Thread safety
 };
 

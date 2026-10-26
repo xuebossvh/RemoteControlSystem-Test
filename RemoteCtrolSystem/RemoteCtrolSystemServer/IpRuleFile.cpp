@@ -15,11 +15,11 @@ CIpRuleFile::~CIpRuleFile(void)
 }
 
 BOOL CIpRuleFile::Add(IpRule &rule )
-{	
+{
 	if (m_file.Open(m_pszFilePath,CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite))
 	{
 		m_file.SeekToEnd();
-		
+
 		/*CIniFile iniFile(_T("RemoteConfig.ini"));
 		int ruleCount = iniFile.GetProfileInt(_T("connection"),_T("ruleCount"));
 		ruleCount++;
@@ -27,13 +27,13 @@ BOOL CIpRuleFile::Add(IpRule &rule )
 		m_DataInFile.push_back(rule);
 		m_file.Write(&rule,sizeof(IpRule));
 		//iniFile.SetProfileInt(_T("connection"),_T("ruleCount"),ruleCount);
-		//AfxMessageBox(L"Ğ´ÈëÍê±Ï");	
-	} 
+		//AfxMessageBox(L"å†™å…¥å®Œæ¯•");
+	}
 	else
 	{
-		AfxMessageBox(L"ÏµÍ³Òì³££¬ÇëÍË³öºóÖØĞÂÆô¶¯£¡");
+		AfxMessageBox(L"ç³»ç»Ÿå¼‚å¸¸ï¼Œè¯·é€€å‡ºåé‡æ–°å¯åŠ¨ï¼");
 		return FALSE;
-	}	
+	}
 	m_file.Close();
 	return TRUE;
 }
@@ -105,7 +105,7 @@ void CIpRuleFile::SetDataToFile()
 		{
 			m_file.Write(&(*theIter),sizeof(IpRule));
 		}
-	}	
+	}
 	m_file.Close();
 }
 

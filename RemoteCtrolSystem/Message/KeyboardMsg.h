@@ -2,7 +2,7 @@
 **             Guangzhou ZHIYUAN electronics Co.,LTD
 **
 **
-**                   http://www.electronics.com 
+**                   http://www.electronics.com
 **-------------File Info---------------------------------------------------
 **File Name:KeyboardMsg.h
 **Latest modified Data:2013-4-7  10:29:18
@@ -25,17 +25,17 @@
 #ifndef __KEYBOARDMSG_H__
 #define __KEYBOARDMSG_H__
 #include "ByteArrayMsg.h"
-/*MouseMsgÊÇÊó±êÏûÏ¢µÄÀà£¬ÆäÖĞm_buffer´¢´æÏûÏ¢µÄÊµ¼ÊÊı¾İ
-  Êı¾İÅÅÁĞ·½Ê½ÈçÏÂ£º
-  ÀàĞÍ		±äÁ¿Ãû			×Ö½ÚÊı
+/*MouseMsgæ˜¯é¼ æ ‡æ¶ˆæ¯çš„ç±»ï¼Œå…¶ä¸­m_bufferå‚¨å­˜æ¶ˆæ¯çš„å®é™…æ•°æ®
+  æ•°æ®æ’åˆ—æ–¹å¼å¦‚ä¸‹ï¼š
+  ç±»å‹		å˜é‡å			å­—èŠ‚æ•°
   __int8	MsgType			(1bits)
   int		key				(4bits)
-  int		status			(4bits) 
+  int		status			(4bits)
 
-  statusµÄÀàĞÍÓĞ£º
+  statusçš„ç±»å‹æœ‰ï¼š
   #define RCS_KEY_UP		0xFFFF
   #define RCS_KEY_DOWN		0xFFFE
-  ³ıÒÔÉÏËÄ¸öÏûÏ¢Ö®Íâ£¬Êó±êÖĞ¼ü¹öÂÖÉÏÏÂÒÆ¶¯ÒÔstatusµÄÊıÖµ±íÊ¾
+  é™¤ä»¥ä¸Šå››ä¸ªæ¶ˆæ¯ä¹‹å¤–ï¼Œé¼ æ ‡ä¸­é”®æ»šè½®ä¸Šä¸‹ç§»åŠ¨ä»¥statusçš„æ•°å€¼è¡¨ç¤º
 */
 #define RCS_KEY_UP		0xFFFF
 #define RCS_KEY_DOWN	0xFFFE
@@ -48,17 +48,17 @@ public:
 	~KeyboardMsg(void);
 
 	/**
-	   @brief:·µ»Ø¼üÅÌ°´¼ü¶ÔÓ¦µÄASCIIÂë
+	   @brief:è¿”å›é”®ç›˜æŒ‰é”®å¯¹åº”çš„ASCIIç 
 	   @Return:int
 	*/
 	int   GetKey();
 	/**
-	   @brief:·µ»Ø¼üÅÌµÄ×´Ì¬°´ÏÂRCS_KEY_UP»òÕß·Å¿ªRCS_KEY_DOWN
+	   @brief:è¿”å›é”®ç›˜çš„çŠ¶æ€æŒ‰ä¸‹RCS_KEY_UPæˆ–è€…æ”¾å¼€RCS_KEY_DOWN
 	   @Return:int
 	*/
 	int   GetKeyStatus();
 	/**
-	   @brief:´ò°üÏûÏ¢
+	   @brief:æ‰“åŒ…æ¶ˆæ¯
 	   @Parameter:int key
 	   @Parameter:int status
 	   @Return:bool

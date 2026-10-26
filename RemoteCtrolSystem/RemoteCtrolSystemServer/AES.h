@@ -45,47 +45,47 @@ public:
 public:
 	//char *name(void);
 	/**
-	 * @Brief set_key ÉèÖÃ¼Ó¡¢½âÃÜÊ±Ê¹ÓÃµÄÃÜÔ¿
-	 * @Parameter const u1byte key[]  ±£´æÓĞÃÜÔ¿µÄÊı×é
-	 * @Parameter const u4byte key_len  ÃÜÔ¿³¤¶È
+	 * @Brief set_key è®¾ç½®åŠ ã€è§£å¯†æ—¶ä½¿ç”¨çš„å¯†é’¥
+	 * @Parameter const u1byte key[]  ä¿å­˜æœ‰å¯†é’¥çš„æ•°ç»„
+	 * @Parameter const u4byte key_len  å¯†é’¥é•¿åº¦
 	 * @Returns void
-	 * @Remark  
+	 * @Remark
 	 **/
 	void set_key(const u1byte key[], const u4byte key_len);
 
 	/**
-	 * @Brief encrypt ¼ÓÃÜÒ»¸ö16×Ö½ÚÒ²¾ÍÊÇ128Î»µÄÊı¾İ
-	 * @Parameter const u1byte in_blk[16]  Òª¼ÓÃÜµÄ128Î»Êı¾İ
-	 * @Parameter u1byte out_blk[16]  ¼ÓÃÜºóµÄ128Î»Êı¾İ
-	 * @Returns void  
-	 * @Remark  
+	 * @Brief encrypt åŠ å¯†ä¸€ä¸ª16å­—èŠ‚ä¹Ÿå°±æ˜¯128ä½çš„æ•°æ®
+	 * @Parameter const u1byte in_blk[16]  è¦åŠ å¯†çš„128ä½æ•°æ®
+	 * @Parameter u1byte out_blk[16]  åŠ å¯†åçš„128ä½æ•°æ®
+	 * @Returns void
+	 * @Remark
 	 **/
 	void encrypt(const u1byte in_blk[16], u1byte out_blk[16]);
 
 	/**
-	 * @Brief decrypt ½âÃÜÒ»¸ö16×Ö½ÚµÄÊı¾İ
-	 * @Parameter const u1byte in_blk[16]  Òª½âÃÜµÄ16×Ö½ÚµÄÊı¾İ
-	 * @Parameter u1byte out_blk[16] ½âÃÜºóµÄ16×Ö½ÚµÄÊı¾İ
+	 * @Brief decrypt è§£å¯†ä¸€ä¸ª16å­—èŠ‚çš„æ•°æ®
+	 * @Parameter const u1byte in_blk[16]  è¦è§£å¯†çš„16å­—èŠ‚çš„æ•°æ®
+	 * @Parameter u1byte out_blk[16] è§£å¯†åçš„16å­—èŠ‚çš„æ•°æ®
 	 * @Returns void
-	 * @Remark  
+	 * @Remark
 	 **/
 	void decrypt(const u1byte in_blk[16], u1byte out_blk[16]);
 
 	/**
-	 * @Brief encrypt ¼ÓÃÜÎÄ¼ş
-	 * @Parameter CString fileName  Òª¼ÓÃÜµÄÎÄ¼ş
+	 * @Brief encrypt åŠ å¯†æ–‡ä»¶
+	 * @Parameter CString fileName  è¦åŠ å¯†çš„æ–‡ä»¶
 	 * @Returns void
-	 * @Remark  ÔÚ±¾ÏîÄ¿ÖĞ£¬Ö»ĞèÒª´«ÈëÒª¼ÓÃÜµÄÎÄ¼şµÄÃû×Ö£¬²»°üÀ¨ºó×º¡£
-	            ÒòÎª£¬±¾ÏîÄ¿ÖĞ¼Ù¶¨Òª¼ÓÃÜµÄÎÄ¼şºó×ºÃûÎª.plain,Òª½âÃÜµÄÎÄ¼şÃûÎª.crypt
+	 * @Remark  åœ¨æœ¬é¡¹ç›®ä¸­ï¼Œåªéœ€è¦ä¼ å…¥è¦åŠ å¯†çš„æ–‡ä»¶çš„åå­—ï¼Œä¸åŒ…æ‹¬åç¼€ã€‚
+	            å› ä¸ºï¼Œæœ¬é¡¹ç›®ä¸­å‡å®šè¦åŠ å¯†çš„æ–‡ä»¶åç¼€åä¸º.plain,è¦è§£å¯†çš„æ–‡ä»¶åä¸º.crypt
 	 **/
 	void encrypt(CString fileName);
 
 	/**
-	 * @Brief decrypt ½âÃÜÎÄ¼ş
-	 * @Parameter CString fileName  Òª½âÃÜµÄÎÄ¼ş
+	 * @Brief decrypt è§£å¯†æ–‡ä»¶
+	 * @Parameter CString fileName  è¦è§£å¯†çš„æ–‡ä»¶
 	 * @Returns void
-	 * @Remark   ÔÚ±¾ÏîÄ¿ÖĞ£¬Ö»ĞèÒª´«ÈëÒª½âÃÜµÄÎÄ¼şµÄÃû×Ö£¬²»°üÀ¨ºó×º¡£
-				 ÒòÎª£¬±¾ÏîÄ¿ÖĞ¼Ù¶¨Òª¼ÓÃÜµÄÎÄ¼şºó×ºÃûÎª.plain,Òª½âÃÜµÄÎÄ¼şÃûÎª.crypt
+	 * @Remark   åœ¨æœ¬é¡¹ç›®ä¸­ï¼Œåªéœ€è¦ä¼ å…¥è¦è§£å¯†çš„æ–‡ä»¶çš„åå­—ï¼Œä¸åŒ…æ‹¬åç¼€ã€‚
+				 å› ä¸ºï¼Œæœ¬é¡¹ç›®ä¸­å‡å®šè¦åŠ å¯†çš„æ–‡ä»¶åç¼€åä¸º.plain,è¦è§£å¯†çš„æ–‡ä»¶åä¸º.crypt
 	 **/
 	void decrypt(CString fileName);
 

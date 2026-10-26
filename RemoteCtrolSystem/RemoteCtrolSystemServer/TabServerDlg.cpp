@@ -1,4 +1,4 @@
-// TabServerDlg.cpp : ÊµÏÖÎÄ¼ş
+// TabServerDlg.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -12,7 +12,7 @@
 #include <strsafe.h>
 
 
-// TabServerDlg ¶Ô»°¿ò
+// TabServerDlg å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(TabServerDlg, CDialog)
 
@@ -49,11 +49,11 @@ BEGIN_MESSAGE_MAP(TabServerDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// TabServerDlg ÏûÏ¢´¦Àí³ÌĞò
+// TabServerDlg æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 void TabServerDlg::OnBnClickedBtnAddip()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	CAddEditIpDlg addIp;
 	addIp.DoModal();
 	UpdateIpList();
@@ -63,19 +63,19 @@ BOOL TabServerDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// TODO:  ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯
+	// TODO:  åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–
 	m_list.SetExtendedStyle(m_list.GetExtendedStyle()| LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES );
 	LVCOLUMN lvcol;
 	lvcol.mask = LVCF_TEXT | LVCF_FMT | LVCF_SUBITEM | LVCF_WIDTH;
 	lvcol.fmt = LVCFMT_CENTER;
-	lvcol.pszText = L"ÆğÊ¼µØÖ·";
-	lvcol.iSubItem = 1;  //Óë±íÁĞÏà¹ØµÄ×Ó±íÏîË÷ÒıºÅ
+	lvcol.pszText = L"èµ·å§‹åœ°å€";
+	lvcol.iSubItem = 1;  //ä¸è¡¨åˆ—ç›¸å…³çš„å­è¡¨é¡¹ç´¢å¼•å·
 	lvcol.cx = 120;
 
 	m_list.InsertColumn(0,&lvcol);
-	lvcol.pszText = L"½áÊøµØÖ·";
+	lvcol.pszText = L"ç»“æŸåœ°å€";
 	m_list.InsertColumn(1,&lvcol);
-	lvcol.pszText = L"¶¯×÷";
+	lvcol.pszText = L"åŠ¨ä½œ";
 	lvcol.cx = 70;
 	m_list.InsertColumn(2,&lvcol);
 
@@ -83,7 +83,7 @@ BOOL TabServerDlg::OnInitDialog()
 
 	UpdateIpList();
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// Òì³£: OCX ÊôĞÔÒ³Ó¦·µ»Ø FALSE
+	// å¼‚å¸¸: OCX å±æ€§é¡µåº”è¿”å› FALSE
 }
 
 
@@ -92,7 +92,7 @@ void TabServerDlg::UpdateConfig(void)
 {
 	//CIniFile iniFile(_T("RemoteConfig.ini"));
 	Config config;
-	//ÔÊĞíÔ¶³Ì¿ØÖÆ
+	//å…è®¸è¿œç¨‹æ§åˆ¶
 	if(BST_CHECKED == ((CButton *)GetDlgItem(IDC_CB_ALLOWCONTROL))->GetCheck())
 	{
 		config.SetIsAllowControl(TRUE);
@@ -104,7 +104,7 @@ void TabServerDlg::UpdateConfig(void)
 		config.SetIsAllowControl(FALSE);
 	}
 
-	//¿ª»úÆô¶¯
+	//å¼€æœºå¯åŠ¨
 	if(BST_CHECKED == ((CButton *)GetDlgItem(IDC_CB_STARTWINDOWS))->GetCheck())
 	{
 		config.SetIsAutoRun(TRUE);
@@ -116,7 +116,7 @@ void TabServerDlg::UpdateConfig(void)
 		//iniFile.SetProfileInt(_T("sets"),_T("autoRun"),0);
 	}
 
-	//ÍĞÅÌÏÔÊ¾
+	//æ‰˜ç›˜æ˜¾ç¤º
 	if(BST_CHECKED == ((CButton *)GetDlgItem(IDC_CB_SHOWTASK))->GetCheck())
 	{
 		config.SetIsShowInTask(TRUE);
@@ -128,7 +128,7 @@ void TabServerDlg::UpdateConfig(void)
 		config.SetIsShowInTask(FALSE);
 	}
 
-	//¼ÓÃÜÎÄ¼ş
+	//åŠ å¯†æ–‡ä»¶
 	if(BST_CHECKED == ((CButton *)GetDlgItem(IDC_CB_CODEFILE))->GetCheck())
 	{
 		config.SetIsEncryptFile(TRUE);
@@ -138,9 +138,9 @@ void TabServerDlg::UpdateConfig(void)
 	{
 		config.SetIsEncryptFile(FALSE);
 		//iniFile.SetProfileInt(_T("sets"),_T("codingFile"),0);
-	}	
+	}
 
-	//Ê¹ÓÃÃÜÂë±£»¤
+	//ä½¿ç”¨å¯†ç ä¿æŠ¤
 	if(BST_CHECKED == ((CButton *)GetDlgItem(IDC_CB_PWDPROTED))->GetCheck())
 	{
 		config.SetIsUsePwdProtection(TRUE);
@@ -152,17 +152,17 @@ void TabServerDlg::UpdateConfig(void)
 		//iniFile.SetProfileInt(_T("admin"),_T("usePwdProtect"),0);
 	}
 
-	UpdateData(TRUE); //¸üĞÂ±äÁ¿µÄÖµ
+	UpdateData(TRUE); //æ›´æ–°å˜é‡çš„å€¼
 	config.SetConnectPort(m_iConnectPort);
 	//iniFile.SetProfileInt(_T("connection"),_T("mainPort"),m_iConnectPort);
-	 
-	
+
+
 
 }
 
 void TabServerDlg::OnBnClickedCbPwdproted()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	if (m_cbPwdProtect.GetCheck() == BST_CHECKED)
 	{
 		((CButton *)GetDlgItem(IDC_BTN_CHANGE))->EnableWindow(TRUE);
@@ -171,7 +171,7 @@ void TabServerDlg::OnBnClickedCbPwdproted()
 	{
 		((CButton *)GetDlgItem(IDC_BTN_CHANGE))->EnableWindow(FALSE);
 	}
-	
+
 }
 
 void TabServerDlg::InitStats( void )
@@ -182,7 +182,7 @@ void TabServerDlg::InitStats( void )
 
 	if(ifFind)
 	{
-		//Ô¶³Ì¿ØÖÆ
+		//è¿œç¨‹æ§åˆ¶
 		if (iniFile.GetProfileInt(_T("sets"),_T("allowControl")) == 1)
 		{
 			((CButton *)GetDlgItem(IDC_CB_ALLOWCONTROL))->SetCheck(TRUE);
@@ -192,7 +192,7 @@ void TabServerDlg::InitStats( void )
 			((CButton *)GetDlgItem(IDC_CB_ALLOWCONTROL))->SetCheck(FALSE);
 		}
 
-		//¿ª»úÆô¶¯
+		//å¼€æœºå¯åŠ¨
 		if(1 == iniFile.GetProfileInt(_T("sets"),_T("autoRun")))
 		{
 			((CButton *)GetDlgItem(IDC_CB_STARTWINDOWS))->SetCheck(TRUE);
@@ -202,7 +202,7 @@ void TabServerDlg::InitStats( void )
 			((CButton *)GetDlgItem(IDC_CB_STARTWINDOWS))->SetCheck(FALSE);
 		}
 
-		//ÍĞÅÌÏÔÊ¾
+		//æ‰˜ç›˜æ˜¾ç¤º
 		if(1 == iniFile.GetProfileInt(_T("sets"),_T("showTask")))
 		{
 			((CButton *)GetDlgItem(IDC_CB_SHOWTASK))->SetCheck(TRUE);
@@ -212,7 +212,7 @@ void TabServerDlg::InitStats( void )
 			((CButton *)GetDlgItem(IDC_CB_SHOWTASK))->SetCheck(FALSE);
 		}
 
-		//¼ÓÃÜÎÄ¼ş
+		//åŠ å¯†æ–‡ä»¶
 		if(1 == iniFile.GetProfileInt(_T("sets"),_T("codingFile")))
 		{
 			((CButton *)GetDlgItem(IDC_CB_CODEFILE))->SetCheck(TRUE);
@@ -222,7 +222,7 @@ void TabServerDlg::InitStats( void )
 			((CButton *)GetDlgItem(IDC_CB_CODEFILE))->SetCheck(FALSE);
 		}
 
-		//Ê¹ÓÃÃÜÂë±£»¤
+		//ä½¿ç”¨å¯†ç ä¿æŠ¤
 		if(1 == iniFile.GetProfileInt(_T("admin"),_T("usePwdProtect")))
 		{
 			((CButton *)GetDlgItem(IDC_CB_PWDPROTED))->SetCheck(TRUE);
@@ -235,7 +235,7 @@ void TabServerDlg::InitStats( void )
 
 		m_iConnectPort = iniFile.GetProfileInt(_T("connection"),_T("mainPort"));
 		UpdateData(FALSE);
-		
+
 	}
 
 
@@ -244,7 +244,7 @@ void TabServerDlg::InitStats( void )
 
 void TabServerDlg::OnBnClickedBtnChange()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	CChangeAdminPwd changePwdDlg;
 	changePwdDlg.DoModal();
 }
@@ -253,42 +253,42 @@ void TabServerDlg::UpdateIpList(void)
 {
 	m_list.DeleteAllItems();
 	CIpRuleFile ipFile;
-	std::vector<IpRule> rules(ipFile.GetAllRules());	
+	std::vector<IpRule> rules(ipFile.GetAllRules());
 
 	std::vector<IpRule>::iterator theIter;
 	for (theIter = rules.begin();theIter!=rules.end();theIter++)
 	{
 		int nIndex = m_list.GetItemCount();
 		LV_ITEM lvItem;
-		lvItem.mask = LVIF_TEXT ; 
-		lvItem.iItem = nIndex;     //ĞĞÊı
+		lvItem.mask = LVIF_TEXT ;
+		lvItem.iItem = nIndex;     //è¡Œæ•°
 		lvItem.iSubItem = 0;
-		lvItem.pszText = theIter->start;   //µÚÒ»ÁĞ
-		//ÔÚ×îºóÒ»ĞĞ²åÈë¼ÇÂ¼Öµ.
-		m_list.InsertItem(&lvItem); 
-		//²åÈëÆäËüÁĞ
+		lvItem.pszText = theIter->start;   //ç¬¬ä¸€åˆ—
+		//åœ¨æœ€åä¸€è¡Œæ’å…¥è®°å½•å€¼.
+		m_list.InsertItem(&lvItem);
+		//æ’å…¥å…¶å®ƒåˆ—
 		m_list.SetItemText(nIndex,1,theIter->end);
 		if (theIter->power == 0)
 		{
-			m_list.SetItemText(nIndex,2,_T("½ûÖ¹"));
+			m_list.SetItemText(nIndex,2,_T("ç¦æ­¢"));
 		}
 		if (theIter->power== 1)
 		{
-			m_list.SetItemText(nIndex,2,_T("ÔÊĞí"));
+			m_list.SetItemText(nIndex,2,_T("å…è®¸"));
 		}
-		
+
 	}
 
 }
 
 void TabServerDlg::OnBnClickedBtnDeleteip()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	POSITION pos = m_list.GetFirstSelectedItemPosition();
 	if (NULL == pos)
 	{
 		TRACE(_T("No item were selected!\n"));
-		AfxMessageBox(_T("ÇëÑ¡ÔñÒªÉ¾³ıµÄĞĞ£¡"));
+		AfxMessageBox(_T("è¯·é€‰æ‹©è¦åˆ é™¤çš„è¡Œï¼"));
 	}
 	else
 	{
@@ -317,16 +317,16 @@ void TabServerDlg::OnBnClickedBtnDeleteip()
 
 void TabServerDlg::OnBnClickedBtnEditip()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	POSITION pos = m_list.GetFirstSelectedItemPosition();
 	if (NULL == pos)
 	{
 		TRACE(_T("No item were selected!\n"));
-		AfxMessageBox(_T("ÇëÑ¡ÔñÒª±à¼­µÄĞĞ£¡"));
+		AfxMessageBox(_T("è¯·é€‰æ‹©è¦ç¼–è¾‘çš„è¡Œï¼"));
 	}
 	else
 	{
-		
+
 		int nItem = m_list.GetNextSelectedItem(pos);
 		TCHAR szBuff[1024];
 		LVITEM lvi;
@@ -346,7 +346,7 @@ void TabServerDlg::OnBnClickedBtnEditip()
 
 		lvi.iSubItem = 2;
 		m_list.GetItem(&lvi);
-		if(lstrcmp(lvi.pszText,_T("½ûÖ¹")) == 0)
+		if(lstrcmp(lvi.pszText,_T("ç¦æ­¢")) == 0)
 		{
 			rule.power = 0;
 		}
@@ -358,19 +358,19 @@ void TabServerDlg::OnBnClickedBtnEditip()
 		AfxMessageBox(user.pwd);*/
 
 		CAddEditIpDlg ipDlg;
-		ipDlg.SetRule(rule);  //ÉèÖÃµ¯³ö½çÃæµÄÖµ
+		ipDlg.SetRule(rule);  //è®¾ç½®å¼¹å‡ºç•Œé¢çš„å€¼
 		ipDlg.SetStats(ipDlg.EDIT);
-		ipDlg.DoModal();  
+		ipDlg.DoModal();
 		UpdateIpList();
-		
+
 	}
 }
 
 void TabServerDlg::OnBnClickedBtnMoveupip()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	POSITION pos =  m_list.GetFirstSelectedItemPosition();
-	int selectIndex= m_list.GetNextSelectedItem(pos);   //È¡µÃµ±Ç°ĞĞºÅ
+	int selectIndex= m_list.GetNextSelectedItem(pos);   //å–å¾—å½“å‰è¡Œå·
 	if (selectIndex>=1)
 	{
 		CIpRuleFile fileOp;
@@ -386,9 +386,9 @@ void TabServerDlg::OnBnClickedBtnMoveupip()
 
 void TabServerDlg::OnBnClickedBtnMovedownip()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	POSITION pos =  m_list.GetFirstSelectedItemPosition();
-	int selectIndex= m_list.GetNextSelectedItem(pos);   //È¡µÃµ±Ç°ĞĞºÅ
+	int selectIndex= m_list.GetNextSelectedItem(pos);   //å–å¾—å½“å‰è¡Œå·
 	if (selectIndex < m_list.GetItemCount() - 1)
 	{
 		CIpRuleFile fileOp;
@@ -404,7 +404,7 @@ void TabServerDlg::OnBnClickedBtnMovedownip()
 
 void TabServerDlg::OnBnClickedBtnTestrule()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 
 	BYTE f0,f1,f2,f3;
 	m_testIp.GetAddress(f0,f1,f2,f3);
@@ -418,10 +418,10 @@ void TabServerDlg::OnBnClickedBtnTestrule()
 	int relust = fileOp.GetPowerByIp(ipTested);
 	if (relust == 1)
 	{
-		MessageBox(_T("¸ÃIpµØÖ·±»ÔÊĞíÁ¬½Ó!"));
+		MessageBox(_T("è¯¥Ipåœ°å€è¢«å…è®¸è¿æ¥!"));
 	}
 	else
 	{
-		MessageBox(_T("¸ÃIpµØÖ·±»½ûÖ¹Á¬½Ó!"));
+		MessageBox(_T("è¯¥Ipåœ°å€è¢«ç¦æ­¢è¿æ¥!"));
 	}
 }

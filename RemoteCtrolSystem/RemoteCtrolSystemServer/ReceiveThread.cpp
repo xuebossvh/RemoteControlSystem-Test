@@ -20,15 +20,15 @@ void ReceiveThread::Run()
 		switch(msg->GetType())
 		{
 		case RCS_MSG_KEYBOARD:
-			_trace(L"收到键盘消息");
+			_trace(L"鏀跺埌閿洏娑堟伅");
 			break;
 		case  RCS_MSG_MOUSE:
-			_trace(L"收到鼠标消息\n");
+			_trace(L"鏀跺埌榧犳爣娑堟伅\n");
 			SetCursorPos(((MouseMsg*)msg)->GetMouseX(),((MouseMsg*)msg)->GetMouseY());
 
 			break;
 		case RCS_MSG_SETUP:
-			_trace(L"收到设置消息");
+			_trace(L"鏀跺埌璁剧疆娑堟伅");
 			break;
 		default:
 			break;

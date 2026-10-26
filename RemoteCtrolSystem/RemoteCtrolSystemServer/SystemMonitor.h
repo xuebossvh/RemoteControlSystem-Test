@@ -1,19 +1,19 @@
 /**************************************************************************
 **             Guangzhou ZHIYUAN electronics Co.,LTD
-**             
 **
-**                   http://www.embedtools.com  
+**
+**                   http://www.embedtools.com
 **-------------File Info---------------------------------------------------
 **File Name:   SystemMonitor.h
 **Latest modified Data:
 **Latest Version:
-**Description:  
+**Description:
 **
 **-------------------------------------------------------------------------
-**Create by:   ÎºØ·
+**Create by:   é­èƒ¤
 **Create date:  2013/05/03   9:10
 **Version:
-**Description: 
+**Description:
 **
 **
 **-------------------------------------------------------------------------
@@ -44,53 +44,53 @@ public:
 	~SystemMonitor(void);
 
 	/**
-	 * @Brief SetName ÉèÖÃµ±Ç°Ëù¼à¿ØµÄÓÃ»§
-	 * @Parameter const char name[20] ÓÃ»§Ãû
+	 * @Brief SetName è®¾ç½®å½“å‰æ‰€ç›‘æ§çš„ç”¨æˆ·
+	 * @Parameter const char name[20] ç”¨æˆ·å
 	 * @Returns void
-	 * @Remark  
+	 * @Remark
 	 **/
-	void SetName(const char name[20]);  
+	void SetName(const char name[20]);
 	/**
-	 * @Brief SetIp ÉèÖÃµ±Ç°Ëù¼à¿ØµÄÓÃ»§ËùÔÚµÄIPµØÖ·
-	 * @Parameter const char * ip ipµØÖ·
+	 * @Brief SetIp è®¾ç½®å½“å‰æ‰€ç›‘æ§çš„ç”¨æˆ·æ‰€åœ¨çš„IPåœ°å€
+	 * @Parameter const char * ip ipåœ°å€
 	 * @Returns void
-	 * @Remark  
+	 * @Remark
 	 **/
 	void SetIp(const char *ip);
 	/**
-	 * @Brief SetFilePath ÉèÖÃ±£´æ¼à¿Ø¼ÇÂ¼µÄÎÄ¼şÂ·¾¶
-	 * @Parameter const char path[MAX_PATH]  ÎÄ¼şËùÔÚµÄÂ·¾¶
+	 * @Brief SetFilePath è®¾ç½®ä¿å­˜ç›‘æ§è®°å½•çš„æ–‡ä»¶è·¯å¾„
+	 * @Parameter const char path[MAX_PATH]  æ–‡ä»¶æ‰€åœ¨çš„è·¯å¾„
 	 * @Returns void
-	 * @Remark  
+	 * @Remark
 	 **/
 	void SetFilePath(const char path[MAX_PATH]);
 
 	/**
-	 * @Brief Start Æô¶¯¼à¿Ø
+	 * @Brief Start å¯åŠ¨ç›‘æ§
 	 * @Returns void
-	 * @Remark  
+	 * @Remark
 	 **/
 	void Start();
 	/**
-	 * @Brief Stop Í£Ö¹¼à¿Ø
+	 * @Brief Stop åœæ­¢ç›‘æ§
 	 * @Returns void
-	 * @Remark  
+	 * @Remark
 	 **/
 	void Stop();
 
 	/**
-	 * @Brief isMonitorActive ²âÊÔµ±Ç°µÄ¼à¿Ø×´Ì¬
+	 * @Brief isMonitorActive æµ‹è¯•å½“å‰çš„ç›‘æ§çŠ¶æ€
 	 * @Returns BOOL
-	 * @Remark  
+	 * @Remark
 	 **/
 	BOOL isMonitorActive();
 
 private:
-	BOOL isActive; //±£´æµ±Ç°¼à¿Ø×´Ì¬
-	std::vector<FileSystemWatcher*> m_vpFSW;  //±£´æ¶Ô¸÷¸öÎÄ¼ş¼Ğ¼à¿ØµÄÎÄ¼ş¼à¿ØÆ÷
-	_AddApplicatinMonitor appStartMonitor;  //Ó¦ÓÃ³ÌĞò¼à¿ØËùÔÚDLLµÄÆô¶¯º¯ÊıµØÖ·
-	_RemoveApplicationMonitor appStopMonitor; //Ó¦ÓÃ³ÌĞò¼à¿ØËùÔÚDLLµÄÍ£Ö¹¼à¿Øº¯ÊıµØÖ·
-	char m_szFilePath[MAX_PATH];  //±£´æµÄÎÄ¼ş¶ÔÏó
+	BOOL isActive; //ä¿å­˜å½“å‰ç›‘æ§çŠ¶æ€
+	std::vector<FileSystemWatcher*> m_vpFSW;  //ä¿å­˜å¯¹å„ä¸ªæ–‡ä»¶å¤¹ç›‘æ§çš„æ–‡ä»¶ç›‘æ§å™¨
+	_AddApplicatinMonitor appStartMonitor;  //åº”ç”¨ç¨‹åºç›‘æ§æ‰€åœ¨DLLçš„å¯åŠ¨å‡½æ•°åœ°å€
+	_RemoveApplicationMonitor appStopMonitor; //åº”ç”¨ç¨‹åºç›‘æ§æ‰€åœ¨DLLçš„åœæ­¢ç›‘æ§å‡½æ•°åœ°å€
+	char m_szFilePath[MAX_PATH];  //ä¿å­˜çš„æ–‡ä»¶å¯¹è±¡
 	char m_szName[20],m_szIp[20];
 };
 #endif//__SYSTEMMONITOR_H__

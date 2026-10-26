@@ -1,20 +1,20 @@
 /**************************************************************************
 **             Guangzhou ZHIYUAN electronics Co.,LTD
-**             
 **
-**                   http://www.embedtools.com  
+**
+**                   http://www.embedtools.com
 **-------------File Info---------------------------------------------------
 **File Name:   CUserFile.h
 **Latest modified Data:
 **Latest Version:
-**Description:  
+**Description:
 **
 **-------------------------------------------------------------------------
-**Create by:    ÎºØ·
+**Create by:    é­èƒ¤
 **Create date:  2013/03/27   14:59
 **Version:
-**Description:  ¶ÔÎÄ¼ş²Ù×÷µÄÀà£¬Ö÷ÒªÊµÏÖÓÃ»§ÕË»§µÄÔö¡¢É¾¡¢¸Ä¡¢²é¼¸¸ö¹¦ÄÜ£¬ÒªÇó
-**   ÓÃ»§ÃûµÄÎ¨Ò»¡£¶ÔÎÄ¼şµÄ²Ù×÷Ê¹ÓÃCFileÀ´Íê³É
+**Description:  å¯¹æ–‡ä»¶æ“ä½œçš„ç±»ï¼Œä¸»è¦å®ç°ç”¨æˆ·è´¦æˆ·çš„å¢ã€åˆ ã€æ”¹ã€æŸ¥å‡ ä¸ªåŠŸèƒ½ï¼Œè¦æ±‚
+**   ç”¨æˆ·åçš„å”¯ä¸€ã€‚å¯¹æ–‡ä»¶çš„æ“ä½œä½¿ç”¨CFileæ¥å®Œæˆ
 **
 **-------------------------------------------------------------------------
 **Modified by:
@@ -33,12 +33,12 @@
 
 #include <vector>
 
-//ÓÃÀ´±íÊ¾ÓÃ»§Êı¾İµÄ½á¹¹Ìå
-struct UserData 
+//ç”¨æ¥è¡¨ç¤ºç”¨æˆ·æ•°æ®çš„ç»“æ„ä½“
+struct UserData
 {
-	int power;  //-1±íÊ¾ÎŞĞ§ÓÃ»§¡¢0±íÊ¾¹Û¿´È¨ÏŞ¡¢1±íÊ¾¿ØÖÆÓÃ»§
+	int power;  //-1è¡¨ç¤ºæ— æ•ˆç”¨æˆ·ã€0è¡¨ç¤ºè§‚çœ‹æƒé™ã€1è¡¨ç¤ºæ§åˆ¶ç”¨æˆ·
 	TCHAR name[20];
-	TCHAR pwd[20];	
+	TCHAR pwd[20];
 };
 
 class CUserFile
@@ -48,54 +48,54 @@ public:
 	~CUserFile(void);
 
 	/**
-	 * @Brief Add Ìí¼ÓÒ»¸öÓÃ»§Êı¾İµ½ÎÄ¼şÖĞ
-	 * @Parameter UserData & user ÓÃ»§Êı¾İ
+	 * @Brief Add æ·»åŠ ä¸€ä¸ªç”¨æˆ·æ•°æ®åˆ°æ–‡ä»¶ä¸­
+	 * @Parameter UserData & user ç”¨æˆ·æ•°æ®
 	 * @Returns BOOL
-	 * @Remark  
+	 * @Remark
 	 **/
 	BOOL Add(UserData &user);
 
 	/**
-	 * @Brief Delete ´ÓÎÄ¼şÖĞÉ¾³ıÒ»¸öÓÃ»§Êı¾İ
-	 * @Parameter UserData & user ÒªÉ¾³ıµÄÓÃ»§Êı¾İ
+	 * @Brief Delete ä»æ–‡ä»¶ä¸­åˆ é™¤ä¸€ä¸ªç”¨æˆ·æ•°æ®
+	 * @Parameter UserData & user è¦åˆ é™¤çš„ç”¨æˆ·æ•°æ®
 	 * @Returns BOOL
-	 * @Remark  ÆäÊµÕâÀïÖ»ÓĞËûµÄÓÃ»§ÃûºÍÃÜÂëÊÇÓĞĞ§µÄ¡£
+	 * @Remark  å…¶å®è¿™é‡Œåªæœ‰ä»–çš„ç”¨æˆ·åå’Œå¯†ç æ˜¯æœ‰æ•ˆçš„ã€‚
 	 **/
 	BOOL Delete( UserData &user);
 
 	/**1
-	 * @Brief Update ¸üĞÂÓÃ»§Êı¾İ
-	 * @Parameter UserData & user  ÓÃ»§Êı¾İ
+	 * @Brief Update æ›´æ–°ç”¨æˆ·æ•°æ®
+	 * @Parameter UserData & user  ç”¨æˆ·æ•°æ®
 	 * @Returns BOOL
-	 * @Remark  ¸ù¾İÓÃ»§ÃûÀ´¸üĞÂÊı¾İ£¬Ö»ÄÜ¸ü¸ÄÈ¨ÏŞ
+	 * @Remark  æ ¹æ®ç”¨æˆ·åæ¥æ›´æ–°æ•°æ®ï¼Œåªèƒ½æ›´æ”¹æƒé™
 	 **/
 	BOOL Update( UserData &user);
 
 	/**
-	 * @Brief GetUserPower »ñÈ¡ÓÃ»§È¨ÏŞ
-	 * @Parameter const TCHAR * name  ÓÃ»§Ãû
-	 * @Parameter const TCHAR * pwd ÃÜÂë
-	 * @Returns int È¨ÏŞÖµ
-	 * @Remark  
+	 * @Brief GetUserPower è·å–ç”¨æˆ·æƒé™
+	 * @Parameter const TCHAR * name  ç”¨æˆ·å
+	 * @Parameter const TCHAR * pwd å¯†ç 
+	 * @Returns int æƒé™å€¼
+	 * @Remark
 	 **/
 	int GetUserPower(const TCHAR* name,const TCHAR* pwd);
 
 	/**
-	 * @Brief GetAllUsers »ñÈ¡ËùÓĞÓÃ»§Êı¾İ
-	 * @Returns std::vector<UserData>  ËùÓĞÓÃ»§Êı×é
-	 * @Remark  
+	 * @Brief GetAllUsers è·å–æ‰€æœ‰ç”¨æˆ·æ•°æ®
+	 * @Returns std::vector<UserData>  æ‰€æœ‰ç”¨æˆ·æ•°ç»„
+	 * @Remark
 	 **/
 	std::vector<UserData> GetAllUsers();
 
 private:
-	CString m_pszFilePath;  //ÎÄ¼şËùÔÚÂ·¾¶
-	CFile m_file;  //ÎÄ¼ş¶ÔÏó
-	std::vector<UserData> m_DataInFile; //¶ÔÓ¦ÓÚÎÄ¼şÖĞµÄÄÚÈİÊı×é
+	CString m_pszFilePath;  //æ–‡ä»¶æ‰€åœ¨è·¯å¾„
+	CFile m_file;  //æ–‡ä»¶å¯¹è±¡
+	std::vector<UserData> m_DataInFile; //å¯¹åº”äºæ–‡ä»¶ä¸­çš„å†…å®¹æ•°ç»„
 
 private:
-	void GetDataFromFile(); //´ÓÎÄ¼şÄÇÀï¸üĞÂÊı¾İ
-	void SetDataToFile();  //¸üĞÂÎÄ¼ş
-	BOOL InitFile(void);  //³õÊ¼»¯ÎÄ¼ş
+	void GetDataFromFile(); //ä»æ–‡ä»¶é‚£é‡Œæ›´æ–°æ•°æ®
+	void SetDataToFile();  //æ›´æ–°æ–‡ä»¶
+	BOOL InitFile(void);  //åˆå§‹åŒ–æ–‡ä»¶
 };
 
 #endif//__CUserFile_H__

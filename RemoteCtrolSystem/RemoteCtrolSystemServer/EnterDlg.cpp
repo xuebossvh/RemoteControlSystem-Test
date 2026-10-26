@@ -1,4 +1,4 @@
-// EnterDlg.cpp : ÊµÏÖÎÄ¼ş
+// EnterDlg.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -7,7 +7,7 @@
 #include "RemoteCtrolSystemServerDlg.h"
 #include "RemoteCtrolSystemServer.h"
 
-// CEnterDlg ¶Ô»°¿ò
+// CEnterDlg å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CEnterDlg, CDialog)
 
@@ -34,11 +34,11 @@ BEGIN_MESSAGE_MAP(CEnterDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// CEnterDlg ÏûÏ¢´¦Àí³ÌĞò
+// CEnterDlg æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 void CEnterDlg::OnBnClickedBtnOk()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	CString enterPwd,pwdInFile;
 	m_enterPwd.GetWindowText(enterPwd);
 	CIniFile conFile(_T("RemoteConfig.ini"));
@@ -47,17 +47,17 @@ void CEnterDlg::OnBnClickedBtnOk()
 	{
 		OnOK();
 		CRemoteCtrolSystemServerDlg dlg;
-		((CRemoteCtrolSystemServerApp *)AfxGetApp())->m_pMainWnd = &dlg; //ÖØĞÂÉèÖÃÏµÍ³µÄÖ÷½çÃæ
+		((CRemoteCtrolSystemServerApp *)AfxGetApp())->m_pMainWnd = &dlg; //é‡æ–°è®¾ç½®ç³»ç»Ÿçš„ä¸»ç•Œé¢
 		dlg.DoModal();
 	}
 	else
 	{
-		MessageBox(_T("ÃÜÂë´íÎó£¡"));
+		MessageBox(_T("å¯†ç é”™è¯¯ï¼"));
 	}
 }
 
 void CEnterDlg::OnBnClickedBtnCancel()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	OnCancel();
 }

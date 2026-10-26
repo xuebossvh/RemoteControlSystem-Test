@@ -1,4 +1,4 @@
-// AddUserDlg.cpp : ÊµÏÖÎÄ¼ş
+// AddUserDlg.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -7,7 +7,7 @@
 
 #include "UserFile.h"
 
-// CAddUserDlg ¶Ô»°¿ò
+// CAddUserDlg å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CAddUserDlg, CDialog)
 
@@ -16,7 +16,7 @@ CAddUserDlg::CAddUserDlg(CWnd* pParent /*=NULL*/)
 	, m_stats(0)
 {
 	lstrcpy(m_user.name,_T(""));
-	lstrcpy(m_user.pwd,_T(""));	
+	lstrcpy(m_user.pwd,_T(""));
 	m_user.power = 0;
 	m_stats = ADD;
 }
@@ -38,14 +38,16 @@ BEGIN_MESSAGE_MAP(CAddUserDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// CAddUserDlg ÏûÏ¢´¦Àí³ÌĞò
+// CAddUserDlg æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 BOOL CAddUserDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// TODO:  ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯
-	
+	// TODO:  åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–
+
+	((CEdit*)GetDlgItem(IDC_ET_NAME))->SetLimitText(19);
+	((CEdit*)GetDlgItem(IDC_ET_PWD))->SetLimitText(19);
 	SetDlgItemText(IDC_ET_NAME,m_user.name);
 	SetDlgItemText(IDC_ET_PWD,m_user.pwd);
 	if (m_user.power == 0)
@@ -62,43 +64,48 @@ BOOL CAddUserDlg::OnInitDialog()
 		((CButton*)GetDlgItem(IDC_ET_PWD))->EnableWindow(FALSE);
 	}
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// Òì³£: OCX ÊôĞÔÒ³Ó¦·µ»Ø FALSE
+	// å¼‚å¸¸: OCX å±æ€§é¡µåº”è¿”å› FALSE
 }
 
 void CAddUserDlg::OnBnClickedBtnOk()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
-	
-	if (BST_CHECKED==((CButton *)GetDlgItem(IDC_RD_VIEW))->GetCheck()) //¹Û¿´Ñ¡ÔñÏî±»Ñ¡Ôñ
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
+
+	if (BST_CHECKED==((CButton *)GetDlgItem(IDC_RD_VIEW))->GetCheck()) //è§‚çœ‹é€‰æ‹©é¡¹è¢«é€‰æ‹©
 	{
 		m_user.power = 0;
-		TRACE("ÊÇ¹Û¿´È¨ÏŞÀ²\n");
+		TRACE("æ˜¯è§‚çœ‹æƒé™å•¦\n");
 	}
-	else  //¿ØÖÆÑ¡ÔñÏî±»Ñ¡Ôñ
+	else  //æ§åˆ¶é€‰æ‹©é¡¹è¢«é€‰æ‹©
 	{
 		m_user.power = 1;
-		TRACE("ÎÒ¿ÉÒÔ¿ØÖÆÅ¶\n");
-	}
-	
-	if (GetDlgItemText(IDC_ET_NAME,m_user.name,20))
-	{
-		TRACE(_T("\n%s"),m_user.name);
-	}
-	if (GetDlgItemText(IDC_ET_PWD,m_user.pwd,15))
-	{
-		TRACE(_T("\n%s"),m_user.pwd);
+		TRACE("æˆ‘å¯ä»¥æ§åˆ¶å“¦\n");
 	}
 
-	CUserFile fileOp;
-	if (m_stats == ADD)  //Ìí¼Ó×´Ì¬ÏÂ
+	if (GetDlgItemText(IDC_ET_NAME,m_user.name,20))
 	{
-		fileOp.Add(m_user);
+
 	}
-	else  //±à¼­×´Ì¬ÏÂ
+	if (GetDlgItemText(IDC_ET_PWD,m_user.pwd,20))
+	{
+
+	}
+
+	if (!m_user.name[0] || !m_user.pwd[0]) { MessageBox(L"Username and password are required."); return; }
+    for (int i = 0; m_user.name[i]; ++i)
+        if (m_user.name[i] < 33 || m_user.name[i] > 126) { MessageBox(L"Use an ASCII username (1-19 characters)."); return; }
+    for (int i = 0; m_user.pwd[i]; ++i)
+        if (m_user.pwd[i] < 32 || m_user.pwd[i] > 126) { MessageBox(L"Use an ASCII password (1-19 characters)."); return; }
+    CUserFile fileOp;
+	if (m_stats == ADD)  //æ·»åŠ çŠ¶æ€ä¸‹
+	{
+		if (!fileOp.Add(m_user)) { MessageBox(L"This username already exists."); return; }
+	}
+	else  //ç¼–è¾‘çŠ¶æ€ä¸‹
 	{
 		fileOp.Update(m_user);
 	}
-	
+
 	OnOK();
 	//user.power =
 
@@ -106,7 +113,7 @@ void CAddUserDlg::OnBnClickedBtnOk()
 
 void CAddUserDlg::OnBnClickedBtnCancel()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	OnCancel();
 }
 

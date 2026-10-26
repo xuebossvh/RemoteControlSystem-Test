@@ -1,4 +1,4 @@
-// DisplayDlg.cpp :  µœ÷Œƒº˛
+// DisplayDlg.cpp : ÂÆûÁé∞Êñá‰ª∂
 //
 
 #include "stdafx.h"
@@ -6,7 +6,7 @@
 #include "DisplayDlg.h"
 #include  <math.h>
 
-// CDisplayDlg ∂‘ª∞øÚ
+// CDisplayDlg ÂØπËØùÊ°Ü
 
 IMPLEMENT_DYNAMIC(CDisplayDlg, CDialog)
 
@@ -38,46 +38,46 @@ BEGIN_MESSAGE_MAP(CDisplayDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// CDisplayDlg œ˚œ¢¥¶¿Ì≥Ã–Ú
+// CDisplayDlg Ê∂àÊÅØÂ§ÑÁêÜÁ®ãÂ∫è
 
 void CDisplayDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
-	int h = 10;   
-	SCROLLINFO si;   
-	si.cbSize = sizeof(SCROLLINFO);   
-	si.fMask = SIF_ALL;   
-	GetScrollInfo(SB_HORZ, &si);   
-	int nOldPos = si.nPos;   
+	int h = 10;
+	SCROLLINFO si;
+	si.cbSize = sizeof(SCROLLINFO);
+	si.fMask = SIF_ALL;
+	GetScrollInfo(SB_HORZ, &si);
+	int nOldPos = si.nPos;
 
-	switch (nSBCode)   
-	{   
-	case SB_LINEDOWN:   
-		si.nPos = min(si.nPos + h, si.nMax);   
-		break;   
-	case SB_PAGEDOWN:   
-		si.nPos = min(si.nPos + h * 10, si.nMax);   
-		break;   
-	case SB_LINEUP:   
-		si.nPos = max(si.nPos - h, si.nMin);   
-		break;   
-	case SB_PAGEUP:   
-		si.nPos = max(si.nPos - h * 10, si.nMin);   
-		break;   
-	case SB_THUMBPOSITION:   
-	case SB_THUMBTRACK:   
-		si.nPos = si.nTrackPos;   
-		break;   
-	case SB_TOP:   
-		si.nPos = si.nMin;   
-		break;   
-	case SB_BOTTOM:   
-		si.nPos = si.nMax;   
-		break;   
-	}   
+	switch (nSBCode)
+	{
+	case SB_LINEDOWN:
+		si.nPos = min(si.nPos + h, si.nMax);
+		break;
+	case SB_PAGEDOWN:
+		si.nPos = min(si.nPos + h * 10, si.nMax);
+		break;
+	case SB_LINEUP:
+		si.nPos = max(si.nPos - h, si.nMin);
+		break;
+	case SB_PAGEUP:
+		si.nPos = max(si.nPos - h * 10, si.nMin);
+		break;
+	case SB_THUMBPOSITION:
+	case SB_THUMBTRACK:
+		si.nPos = si.nTrackPos;
+		break;
+	case SB_TOP:
+		si.nPos = si.nMin;
+		break;
+	case SB_BOTTOM:
+		si.nPos = si.nMax;
+		break;
+	}
 
-	SetScrollInfo(SB_HORZ, &si); 
-	GetScrollInfo(SB_HORZ, &si); //÷ÿ–¬ªÒ»°–¬µƒŒª÷√ 
-	ScrollWindowEx(nOldPos - si.nPos,0,NULL, NULL, NULL, NULL, SW_ERASE|SW_SCROLLCHILDREN);   
+	SetScrollInfo(SB_HORZ, &si);
+	GetScrollInfo(SB_HORZ, &si); //ÈáçÊñ∞Ëé∑ÂèñÊñ∞ÁöÑ‰ΩçÁΩÆ
+	ScrollWindowEx(nOldPos - si.nPos,0,NULL, NULL, NULL, NULL, SW_ERASE|SW_SCROLLCHILDREN);
 	UpdateWindow();
 	//m_ScreenDisplayer->ReflashDC();
 	CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
@@ -85,130 +85,74 @@ void CDisplayDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 
 void CDisplayDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
-	int h = 10;   
-	SCROLLINFO si;   
-	si.cbSize = sizeof(SCROLLINFO);   
-	si.fMask = SIF_ALL;   
-	GetScrollInfo(SB_VERT, &si);   
-	int nOldPos = si.nPos;   
+	int h = 10;
+	SCROLLINFO si;
+	si.cbSize = sizeof(SCROLLINFO);
+	si.fMask = SIF_ALL;
+	GetScrollInfo(SB_VERT, &si);
+	int nOldPos = si.nPos;
 
-	switch (nSBCode)   
-	{   
-	case SB_LINEDOWN:   
-		si.nPos = min(si.nPos + h, si.nMax);   
-		break;   
-	case SB_PAGEDOWN:   
-		si.nPos = min(si.nPos + h * 10, si.nMax);   
-		break;   
-	case SB_LINEUP:   
-		si.nPos = max(si.nPos - h, si.nMin);   
-		break;   
-	case SB_PAGEUP:   
-		si.nPos = max(si.nPos - h * 10, si.nMin);   
-		break;   
-	case SB_THUMBPOSITION:   
-	case SB_THUMBTRACK:   
-		si.nPos = si.nTrackPos;   
-		break;   
-	case SB_TOP:   
-		si.nPos = si.nMin;   
-		break;   
-	case SB_BOTTOM:   
-		si.nPos = si.nMax;   
-		break;   
-	}   
+	switch (nSBCode)
+	{
+	case SB_LINEDOWN:
+		si.nPos = min(si.nPos + h, si.nMax);
+		break;
+	case SB_PAGEDOWN:
+		si.nPos = min(si.nPos + h * 10, si.nMax);
+		break;
+	case SB_LINEUP:
+		si.nPos = max(si.nPos - h, si.nMin);
+		break;
+	case SB_PAGEUP:
+		si.nPos = max(si.nPos - h * 10, si.nMin);
+		break;
+	case SB_THUMBPOSITION:
+	case SB_THUMBTRACK:
+		si.nPos = si.nTrackPos;
+		break;
+	case SB_TOP:
+		si.nPos = si.nMin;
+		break;
+	case SB_BOTTOM:
+		si.nPos = si.nMax;
+		break;
+	}
 
-	SetScrollInfo(SB_VERT, &si); 
-	GetScrollInfo(SB_VERT, &si); //÷ÿ–¬ªÒ»°–¬µƒŒª÷√  
+	SetScrollInfo(SB_VERT, &si);
+	GetScrollInfo(SB_VERT, &si); //ÈáçÊñ∞Ëé∑ÂèñÊñ∞ÁöÑ‰ΩçÁΩÆ
 
 
-	ScrollWindowEx(0, nOldPos - si.nPos,NULL, NULL, NULL, NULL, SW_ERASE|SW_SCROLLCHILDREN);   
+	ScrollWindowEx(0, nOldPos - si.nPos,NULL, NULL, NULL, NULL, SW_ERASE|SW_SCROLLCHILDREN);
 	UpdateWindow();
 	RepositionBars(AFX_IDW_CONTROLBAR_FIRST,AFX_IDW_CONTROLBAR_LAST,0);
 	//m_ScreenDisplayer->ReflashDC();
 	CDialog::OnVScroll(nSBCode, nPos, pScrollBar);
 }
 
-bool CDisplayDlg::SetSize( int x,int y,int cx,int cy )
+bool CDisplayDlg::SetSize(int x, int y, int cx, int cy)
 {
-	
-	
-////	if (m_cx != 0 || m_cy != 0)
-//	{	
-//		ScrollWindowEx(GetScrollPos(SB_HORZ) - (GetScrollPos(SB_HORZ)*(m_ScreenWidth - cx+ 15))/(m_ScreenWidth - m_cx+ 15),
-//			GetScrollPos(SB_VERT) - (GetScrollPos(SB_VERT)*(m_ScreenHeight - cy+ 15))/(m_ScreenHeight - m_cy+ 15),NULL, NULL, NULL, NULL, SW_ERASE|SW_SCROLLCHILDREN);    
-//		/*SetScrollPos(SB_HORZ,(GetScrollPos(SB_HORZ)*m_cx)/cx);
-//		SetScrollPos(SB_VERT,(GetScrollPos(SB_VERT)*m_cy)/cy);*/
-//		SetScrollPos(SB_HORZ,(GetScrollPos(SB_HORZ)*(m_ScreenWidth - cx+ 15))/)(m_ScreenWidth - m_cx+ 15);
-//		SetScrollPos(SB_VERT,(GetScrollPos(SB_VERT)*(m_ScreenHeight - cy+ 15))/(m_ScreenHeight - m_cy+ 15));
-//	}
-
-	if (m_cx != cx || m_cy  != cy)
-	{
-	ScrollWindowEx(GetScrollPos(SB_HORZ),GetScrollPos(SB_VERT),NULL, NULL, NULL, NULL, SW_ERASE|SW_SCROLLCHILDREN);
-	SetScrollPos(SB_HORZ,0);
-	SetScrollPos(SB_VERT,0);
-	}
-	
-	/*SCROLLINFO siHorz;   
-	SCROLLINFO siVert;
-	siHorz.cbSize = sizeof(SCROLLINFO);   
-	siHorz.fMask = SIF_ALL; 
-	GetScrollInfo(SB_VERT, &siHorz);
-	siVert.cbSize = sizeof(SCROLLINFO);   
-	siVert.fMask = SIF_ALL; 
-	GetScrollInfo(SB_HORZ, &siVert);
-	siHorz.nPos = 0;
-	siVert.nPos = 0;
-	siVert.nPage = cy - (m_ScreenHeight - cy+ 15);
-	siHorz.nPage = cx - (m_ScreenWidth - cx+ 15);
-	SetScrollInfo(SB_VERT,&siVert);
-	SetScrollInfo(SB_HORZ,&siHorz);*/
-	//SetScrollRange(SB_VERT,0,m_ScreenHeight - cy+ 15);
-	//SetScrollRange(SB_HORZ,0,m_ScreenWidth - cx+ 15);
-	
-	SCROLLINFO siHorz;   
-	SCROLLINFO siVert;
-	siVert.cbSize = sizeof (SCROLLINFO);
-	siVert.fMask = SIF_RANGE | SIF_PAGE; 
-	siVert.nMin = 0 ; 
-	siVert.nMax = m_ScreenHeight - cy+ 15; 
-	siVert.nPage =  siVert.nMax*(m_ScreenHeight - siVert.nMax)/m_ScreenHeight;
-	siVert.nMax = m_ScreenHeight - cy+ 15 + siVert.nPage;
-	SetScrollInfo ( SB_VERT, &siVert, TRUE);
-
-	siHorz.cbSize = sizeof (SCROLLINFO);
-	siHorz.fMask = SIF_RANGE | SIF_PAGE; 
-	siHorz.nMin = 0 ; 
-	siHorz.nMax = m_ScreenWidth - cx+ 15; 
-	siHorz.nPage = siHorz.nMax*(m_ScreenWidth-siHorz.nMax)/m_ScreenWidth;
-	siHorz.nMax = m_ScreenWidth - cx+ 15 + siHorz.nPage; 
-	SetScrollInfo ( SB_HORZ, &siHorz, TRUE);
-	MoveWindow(x,y,cx,cy);
-	m_cx  = cx;
-	m_cy  = cy;
-	m_left = x;
-	m_top = y;
-	return true;
+    if (!GetSafeHwnd() || cx <= 0 || cy <= 0) return false;
+    m_left = x; m_top = y; m_cx = cx; m_cy = cy;
+    ShowScrollBar(SB_BOTH, FALSE);
+    MoveWindow(x, y, cx, cy);
+    CRect area; GetClientRect(&area);
+    LayoutSurface(area.Width(), area.Height());
+    return true;
 }
 
-void CDisplayDlg::OnSize(UINT nType, int cx, int cy)
+void CDisplayDlg::OnSize(UINT type, int cx, int cy)
 {
-	CDialog::OnSize(nType, cx, cy);
+    CDialog::OnSize(type, cx, cy);
+    LayoutSurface(cx, cy);
+}
 
-	if ( NULL != m_pctDisplay.GetSafeHwnd())
-	{
-		//m_pctDisplay.SetWindowPos(m_pctDisplay.GetWindow(GW_CHILD),0,0,1024,768,SWP_NOACTIVATE);
-		/*SetScrollPos(SB_VERT,GetScrollPos(SB_VERT)*(m_ScreenHeight - cy)/(m_ScreenHeight - m_cy));
-		SetScrollPos(SB_VERT,GetScrollPos(SB_HORZ)*(m_ScreenWidth - cx)/(m_ScreenWidth - m_cx));*/
-		/*SetScrollPos(SB_HORZ,0);
-		SetScrollPos(SB_VERT,0);*/
-		/*SetScrollRange(SB_VERT,0,m_ScreenHeight - cy + 15);
-		SetScrollRange(SB_HORZ,0,m_ScreenWidth - cx + 15);*/
-		
-	}	
-	//m_cx  = cx;
-	//m_cy  = cy;
+void CDisplayDlg::LayoutSurface(int cx, int cy)
+{
+    if (!m_pctDisplay.GetSafeHwnd() || cx <= 0 || cy <= 0) return;
+    m_pctDisplay.MoveWindow(0, 0, cx, cy);
+    if (m_ScreenDisplayer) {
+        m_ScreenDisplayer->SetSize(cx, cy);
+    }
 }
 
 HWND CDisplayDlg::GetDisplayHwnd()
@@ -246,8 +190,8 @@ void CDisplayDlg::FullScreen()
 bool CDisplayDlg::EndFullScreen()
 {
 	m_IsFullScreen = false;
-	ShowScrollBar(SB_HORZ,TRUE);
-	ShowScrollBar(SB_VERT,TRUE);
+	ShowScrollBar(SB_HORZ,FALSE);
+	ShowScrollBar(SB_VERT,FALSE);
 	return SetSize(m_left,m_top,m_cx,m_cy);
 }
 
@@ -271,7 +215,7 @@ BOOL CDisplayDlg::PreTranslateMessage(MSG* pMsg)
 
 void CDisplayDlg::OnOK()
 {
-	// TODO: ‘⁄¥ÀÃÌº”◊®”√¥˙¬Î∫Õ/ªÚµ˜”√ª˘¿‡
+	// TODO: Âú®Ê≠§Ê∑ªÂä†‰∏ìÁî®‰ª£Á†ÅÂíå/ÊàñË∞ÉÁî®Âü∫Á±ª
 
 	//CDialog::OnOK();
 }

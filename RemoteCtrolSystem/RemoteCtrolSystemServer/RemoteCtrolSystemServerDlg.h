@@ -1,4 +1,4 @@
-// RemoteCtrolSystemServerDlg.h : Í·ÎÄ¼ş
+// RemoteCtrolSystemServerDlg.h : å¤´æ–‡ä»¶
 //
 
 #pragma once
@@ -14,25 +14,25 @@
 #include "afxwin.h"
 
 #include "../SocketIPv4/TCPThreadedServer.h"
-// CRemoteCtrolSystemServerDlg ¶Ô»°¿ò
+// CRemoteCtrolSystemServerDlg å¯¹è¯æ¡†
 class CRemoteCtrolSystemServerDlg : public CDialog
 {
-// ¹¹Ôì
+// æ„é€ 
 public:
-	CRemoteCtrolSystemServerDlg(CWnd* pParent = NULL);	// ±ê×¼¹¹Ôìº¯Êı
+	CRemoteCtrolSystemServerDlg(CWnd* pParent = NULL);	// æ ‡å‡†æ„é€ å‡½æ•°
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_REMOTECTROLSYSTEMSERVER_DIALOG };
 
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV æ”¯æŒ
 
 
-// ÊµÏÖ
+// å®ç°
 protected:
 	HICON m_hIcon;
 
-	// Éú³ÉµÄÏûÏ¢Ó³Éäº¯Êı
+	// ç”Ÿæˆçš„æ¶ˆæ¯æ˜ å°„å‡½æ•°
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
@@ -44,14 +44,14 @@ public:
 	TabConnectionDlg m_dlgConnection;
 	TabAccountDlg m_dlgAcount;
 	TabAboutDlg m_dlgAbout;
-	
+
 	//CAboutDlg m_dlgAbout;
 	afx_msg void OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedBtnOk();
 
 	//************************************
-	// Method:    SetAutoRun ÉèÖÃ¿ª»úÆô¶¯Ïî
-	// Parameter: BOOL bAutoRun  true±íÊ¾¿ª»úÆô¶¯£¬false±íÊ¾¿ª»ú²»Æô¶¯
+	// Method:    SetAutoRun è®¾ç½®å¼€æœºå¯åŠ¨é¡¹
+	// Parameter: BOOL bAutoRun  trueè¡¨ç¤ºå¼€æœºå¯åŠ¨ï¼Œfalseè¡¨ç¤ºå¼€æœºä¸å¯åŠ¨
 	// Returns:   void
 	//************************************
 	void SetAutoRun(BOOL bAutoRun);
@@ -60,32 +60,33 @@ public:
 	LRESULT OnShowTask(WPARAM wParam, LPARAM lParam);
 
 	/**
-	 * @Brief AddToTray Ìí¼ÓÍĞÅÌÍ¼±ê
+	 * @Brief AddToTray æ·»åŠ æ‰˜ç›˜å›¾æ ‡
 	 * @Returns void
-	 * @Remark  
+	 * @Remark
 	 **/
 	void AddToTray();
 
 	/**
-	 * @Brief DeleteFromTray  É¾³ıÍĞÅÌÍ¼±ê
+	 * @Brief DeleteFromTray  åˆ é™¤æ‰˜ç›˜å›¾æ ‡
 	 * @Returns void
-	 * @Remark  
+	 * @Remark
 	 **/
 	void DeleteFromTray();
 
 	//************************************
-	// Method:    UpdateWindowControl  ¸ù¾İÅäÖÃÎÄ¼ş£¬¸ü¸ÄÏµÍ³µÄĞĞÎª¡£ÀıÈç¿ª»úÆô¶¯¡¢ÔÊĞíÔ¶³ÌÁ¬½ÓµÈ
+	// Method:    UpdateWindowControl  æ ¹æ®é…ç½®æ–‡ä»¶ï¼Œæ›´æ”¹ç³»ç»Ÿçš„è¡Œä¸ºã€‚ä¾‹å¦‚å¼€æœºå¯åŠ¨ã€å…è®¸è¿œç¨‹è¿æ¥ç­‰
 	// Returns:   void
 	//************************************
 	void UpdateWindowControl();
 	afx_msg void OnBnClickedBtnStartserver();
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg void OnDestroy();
 
-	TCPThreadedServer m_threadServer;  //Ê¹ÓÃ¶àÏß³ÌµÄTCP·şÎñÆ÷
-	TCPServiceFactoryTemplate<DealConnection> servicFactory;  //ÓÃÓÚ´´½¨Ò»¸öTCPÁ¬½Ó¶ÔÏóµÄ¹¤³§
+	TCPThreadedServer m_threadServer;  //ä½¿ç”¨å¤šçº¿ç¨‹çš„TCPæœåŠ¡å™¨
+	TCPServiceFactoryTemplate<DealConnection> servicFactory;  //ç”¨äºåˆ›å»ºä¸€ä¸ªTCPè¿æ¥å¯¹è±¡çš„å·¥å‚
 	CButton m_btnStartServer;
 
 private:
 	BOOL m_bIsServerStarted;
-	SystemMonitor watcher;  //ÏµÍ³¼àÌıÆ÷£¬ÓÃÀ´¼àÌıÓ¦ÓÃ³ÌĞòµÄÆô¶¯ºÍ¶ÔÎÄ¼şÏµÍ³µÄ²Ù×÷
+
 };

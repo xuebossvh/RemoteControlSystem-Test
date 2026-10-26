@@ -31,9 +31,9 @@ bool FrameBuffer::setBuffer( char* src )
 
 char* FrameBuffer::getBufferPtr( int x,int y )
 {
-	if (x < m_bufferRect.left || 
-		x>m_bufferRect.right || 
-		y > m_bufferRect.top || 
+	if (x < m_bufferRect.left ||
+		x>m_bufferRect.right ||
+		y > m_bufferRect.top ||
 		y<m_bufferRect.bottom)
 	{
 		return NULL;
@@ -45,9 +45,9 @@ char* FrameBuffer::getBufferPtr( int x,int y )
 
 bool FrameBuffer::getRectBuffer( char* dst,RECT srcRect )
 {
-	if (srcRect.left < m_bufferRect.left || 
-		srcRect.right >m_bufferRect.right || 
-		srcRect.top > m_bufferRect.top || 
+	if (srcRect.left < m_bufferRect.left ||
+		srcRect.right >m_bufferRect.right ||
+		srcRect.top > m_bufferRect.top ||
 		srcRect.bottom < m_bufferRect.bottom)
 	{
 		return false;
@@ -65,9 +65,9 @@ bool FrameBuffer::getRectBuffer( char* dst,RECT srcRect )
 
 bool FrameBuffer::setRectBuffer( char* src,RECT dstRect )
 {
-	if (dstRect.left < m_bufferRect.left || 
-		dstRect.right >m_bufferRect.right || 
-		dstRect.top > m_bufferRect.top || 
+	if (dstRect.left < m_bufferRect.left ||
+		dstRect.right >m_bufferRect.right ||
+		dstRect.top > m_bufferRect.top ||
 		dstRect.bottom < m_bufferRect.bottom)
 	{
 		return false;

@@ -1,20 +1,22 @@
 #include "TCPSocket.h"
 #include "trace.h"
+#include <vector>
 #pragma comment(lib,"Ws2_32.lib")
 
-TCPSocket::TCPSocket(void) 
+TCPSocket::TCPSocket(void)
 :m_descriptor(INVALID_SOCKET)
 {
 	m_localmutex = new LocalMutex;
 }
 
-TCPSocket::TCPSocket( Descriptor sfd ) 
+TCPSocket::TCPSocket( Descriptor sfd )
 :m_descriptor(sfd)
 {
 	m_localmutex = new LocalMutex;
 }
 
 TCPSocket::TCPSocket( Protocol protocol )
+:m_descriptor(INVALID_SOCKET)
 {
 	m_localmutex = new LocalMutex;
 	Open(protocol);
@@ -26,31 +28,31 @@ TCPSocket::~TCPSocket(void)
 	if (IsOpened())
 	{
 		::closesocket(m_descriptor);
-	}	
+	}
 }
 
 
-int TCPSocket::Recvfrom( sockaddr_in& addr, 
+int TCPSocket::Recvfrom( sockaddr_in& addr,
 						char* data, size_t size, int flags /*= 0*/ ) throw (TCPException)
 {
 	int bytes;
 
 	if(!IsOpened())
 	{
-		throw TCPException("Socket::recvfrom", "SocketÃ»ÓĞ´ò¿ª", 0);
+		throw TCPException("Socket::recvfrom", "Socketæ²¡æœ‰æ‰“å¼€", 0);
 	}
 	int SenderAddrSize = sizeof(addr);
 	sockaddr* socketAddress = reinterpret_cast<sockaddr*>(&addr);
-	bytes = ::recvfrom(m_descriptor, data, size, 
+	bytes = ::recvfrom(m_descriptor, data, size,
 		flags, socketAddress, &SenderAddrSize);
 	if (bytes ==  SOCKET_ERROR)
 	{
-		throw TCPException("Socket::recvfrom","recvFromº¯ÊıÊ§°Ü");
+		throw TCPException("Socket::recvfrom","recvFromå‡½æ•°å¤±è´¥");
 	}
 	return bytes;
 }
 
-int TCPSocket::Recvfrom(TCPSocketAddress& addr, 
+int TCPSocket::Recvfrom(TCPSocketAddress& addr,
 						TCPBuffer& data, int flags /* = 0 */) throw (TCPException)
 {
 	int bytes;
@@ -66,24 +68,19 @@ void TCPSocket::Open( Protocol protocol ) throw (TCPException)
 {
 	if (IsOpened())
 	{
-		throw TCPException("Socket::Open","ÖØ¸´´ò¿ª");
+		throw TCPException("Socket::Open","é‡å¤æ‰“å¼€");
 	}
 	m_descriptor = socket(AF_INET,protocol,0);
 	if (m_descriptor == SOCKET_ERROR)
 	{
-		throw TCPException("Socket::Open","´´½¨Ê§°Ü",0);
+		throw TCPException("Socket::Open","åˆ›å»ºå¤±è´¥",0);
 	}
 }
 
 void TCPSocket::Close()
 {
-	if(IsOpened())
-	{
-		::closesocket(m_descriptor);
-		//WSACleanup();
-		m_descriptor  = INVALID_SOCKET;
-	}
-	
+    const Descriptor socket = m_descriptor.exchange(INVALID_SOCKET);
+    if (socket != INVALID_SOCKET) { ::shutdown(socket, SD_BOTH); ::closesocket(socket); }
 }
 
 void TCPSocket::Bind( const sockaddr_in& addr )
@@ -91,13 +88,13 @@ void TCPSocket::Bind( const sockaddr_in& addr )
 	int error;
 	if (!IsOpened())
 	{
-		throw TCPException("Socket::bind","SocketÃ»ÓĞ´ò¿ª");
+		throw TCPException("Socket::bind","Socketæ²¡æœ‰æ‰“å¼€");
 	}
 	const sockaddr* socketAddress = reinterpret_cast<const sockaddr*>(&addr);
 	error = ::bind(m_descriptor,socketAddress,sizeof(addr));
 	if(error == SOCKET_ERROR )
 	{
-		throw TCPException("Socket::bind","°ó¶¨SocketÊ§°Ü",error);
+		throw TCPException("Socket::bind","ç»‘å®šSocketå¤±è´¥",error);
 	}
 }
 
@@ -111,24 +108,24 @@ void TCPSocket::Connect( const sockaddr_in& addr ) throw(TCPException)
 	int error;
 	if(!IsOpened())
 	{
-		throw TCPException("Socket::connect", "SocketÃ»ÓĞ´ò¿ª");
+		throw TCPException("Socket::connect", "Socketæ²¡æœ‰æ‰“å¼€");
 	}
 	const sockaddr* socketAddress = reinterpret_cast<const sockaddr*>(&addr);
 	error = ::connect(m_descriptor, socketAddress, sizeof(addr));
 	if (error ==  SOCKET_ERROR)
 	{
-		//throw TCPException("Socket::connect","SocketÁ¬½Ó³ö´í",error);
+        throw TCPException("Socket::connect", "Connection failed", WSAGetLastError());
 	}
 }
 
 int TCPSocket::Send( const char* data, size_t size, int flags /*= 0 */ )
 {
-	
+
     //m_localmutex->Lock();
 	int bytes;
 	if(!IsOpened())
 	{
-		throw TCPException("Socket::send", "SocketÃ»ÓĞ¿ª´ò", 0);
+		throw TCPException("Socket::send", "Socketæ²¡æœ‰å¼€æ‰“", 0);
 	}
 	bytes = ::send(m_descriptor,data,size,flags);
     return bytes;
@@ -139,25 +136,25 @@ int TCPSocket::Send( const TCPBuffer& data,int flags/*=0*/ ) throw(TCPException)
 	return Send(data.Pointer(),data.Size(),flags);
 }
 
-int TCPSocket::Sendto( const sockaddr_in& addr, 
+int TCPSocket::Sendto( const sockaddr_in& addr,
 					  const char* data, size_t size, int flags /*= 0*/ )
 {
 	int bytes;
 
 	if(!IsOpened())
 	{
-		throw TCPException("Socket::sendto", "SocketÃ»ÓĞ´ò¿ª", 0);
+		throw TCPException("Socket::sendto", "Socketæ²¡æœ‰æ‰“å¼€", 0);
 	}
 	const sockaddr* socketAddress = reinterpret_cast<const sockaddr*>(&addr);
 	bytes = ::sendto(m_descriptor, data, size, flags, socketAddress, sizeof(addr));
 	if(bytes == SOCKET_ERROR)
 	{
-		throw TCPException("Socket::sendto", "sendto³ö´í");
+		throw TCPException("Socket::sendto", "sendtoå‡ºé”™");
 	}
 	return bytes;
 }
 
-int TCPSocket::Sendto( const TCPSocketAddress& addr, 
+int TCPSocket::Sendto( const TCPSocketAddress& addr,
 					  const TCPBuffer& data, int flags /*= 0*/ ) throw (TCPException)
 {
 	return Sendto(addr,data.Pointer(),data.Size(),flags);
@@ -169,7 +166,7 @@ int TCPSocket::Recv( char* data, size_t size, int flags /*= 0*/ )
 
 	if(!IsOpened())
 	{
-		throw TCPException("Socket::recv", "SocketÃ»ÓĞ´ò¿ª");
+		throw TCPException("Socket::recv", "Socketæ²¡æœ‰æ‰“å¼€");
 	}
 	bytes = ::recv(m_descriptor, data, size, flags);
 	//_trace(L"TCPSocket::Recv \n");
@@ -182,14 +179,26 @@ int TCPSocket::Recv( TCPBuffer& data, int flags /*= 0*/ ) throw (TCPException)
 	return bytes;
 }
 
-// FIXME to detect the performers
-char buffer[4096];
-
-int TCPSocket::Recv( ByteArrayMsg &data, int flags/* = 0*/ ) throw (TCPException)
-{
-	int bytes = Recv(buffer,4096,flags);
-	data.SetBuffer(buffer);
-    return bytes;
+int TCPSocket::Recv(ByteArrayMsg& data, int flags) {
+    char header[21] = {};
+    if (Recv(header, 1, flags) != 1) return 0;
+    size_t length = ByteArrayMsg::GetSize(header, 1);
+    const int headerLength = header[0] == RCS_MSG_IMAGE ? 21 : 1;
+    for (int offset = 1; offset < headerLength;) {
+        int count = Recv(header + offset, headerLength - offset, flags);
+        if (count <= 0) return -1;
+        offset += count;
+    }
+    length = ByteArrayMsg::GetSize(header, headerLength);
+    if (!length || length == ByteArrayMsg::INVALID_SIZE) return -1;
+    std::vector<char> bytes(length);
+    memcpy(bytes.data(), header, headerLength);
+    for (size_t offset = headerLength; offset < length;) {
+        int count = Recv(bytes.data() + offset, length - offset, flags);
+        if (count <= 0) return -1;
+        offset += count;
+    }
+    return static_cast<int>(data.SetBuffer(bytes.data(), bytes.size()));
 }
 
 void TCPSocket::Listen( int queuelen ) throw (TCPException)
@@ -198,13 +207,13 @@ void TCPSocket::Listen( int queuelen ) throw (TCPException)
 
 	if(!IsOpened())
 	{
-		throw TCPException("Socket::listen","SocketÎ´´ò¿ª");
+		throw TCPException("Socket::listen","Socketæœªæ‰“å¼€");
 	}
 
 	error = ::listen(m_descriptor, queuelen);
 	if(error == SOCKET_ERROR)
 	{
-		throw TCPException("Socket::listen","listenº¯ÊıÓĞ´íÎó");
+		throw TCPException("Socket::listen","listenå‡½æ•°æœ‰é”™è¯¯");
 	}
 }
 
@@ -213,7 +222,7 @@ TCPSocket::Descriptor TCPSocket::Accept( sockaddr_in& addr ) throw (TCPException
 	Descriptor sfd;
 	if(!IsOpened())
 	{
-		throw TCPException("Socket::accept","SocketÎ´´ò¿ª");
+		throw TCPException("Socket::accept","Socketæœªæ‰“å¼€");
 	}
 
 	int addrLen = sizeof(addr);
@@ -222,7 +231,7 @@ TCPSocket::Descriptor TCPSocket::Accept( sockaddr_in& addr ) throw (TCPException
 	if(sfd == SOCKET_ERROR)
 	{
 		int errorCode = WSAGetLastError();
-		throw TCPException("Socket::accept","::acceptº¯Êı·¢Éú´íÎó");
+		throw TCPException("Socket::accept","::acceptå‡½æ•°å‘ç”Ÿé”™è¯¯");
 	}
 	return sfd;
 }
@@ -236,12 +245,12 @@ TCPSocket::Descriptor TCPSocket::Accept(TCPSocketAddress& addr) throw (TCPExcept
 	return tempSocket;
 }
 
-int TCPSocket::Wait( bool& read, bool& write, bool& exception, 
+int TCPSocket::Wait( bool& read, bool& write, bool& exception,
 					int seconds /*= 0*/, int useconds /*= 0*/ ) throw (TCPException)
 {
 	if(!IsOpened())
 	{
-		throw TCPException("Socket::wait","SocketÎ´´ò¿ª",NOT_OPENED_CODE);
+		throw TCPException("Socket::wait","Socketæœªæ‰“å¼€",NOT_OPENED_CODE);
 	}
 
 	struct timeval time;
@@ -266,18 +275,18 @@ int TCPSocket::Wait( bool& read, bool& write, bool& exception,
 		FD_SET(m_descriptor,writefds);
 	}
 
-	if (exceptfds)
+	if (exception)
 	{
 		exceptfds = new fd_set;
 		FD_ZERO(exceptfds);
 		FD_SET(m_descriptor,exceptfds);
 	}
-	
+
 	int ret = select(m_descriptor+1,readfds,writefds,exceptfds,&time);
-	
+
 	if (read)
 	{
-		//¼ì²ém_descriptorÔÚreadfds¼¯ºÏÖĞµÄ×´Ì¬ÊÇ·ñ·¢Éú±ä»¯£¬·µ»Øtrue£¬±íÊ¾ÓĞ±ä»¯
+		//æ£€æŸ¥m_descriptoråœ¨readfdsé›†åˆä¸­çš„çŠ¶æ€æ˜¯å¦å‘ç”Ÿå˜åŒ–ï¼Œè¿”å›trueï¼Œè¡¨ç¤ºæœ‰å˜åŒ–
 		read = (bool)(FD_ISSET(m_descriptor,readfds));
 	}
 
@@ -288,7 +297,7 @@ int TCPSocket::Wait( bool& read, bool& write, bool& exception,
 
 	if (exception)
 	{
-		exception = (bool)(FD_ISSET(m_descriptor,exception));
+		exception = (bool)(FD_ISSET(m_descriptor,exceptfds));
 	}
 	delete readfds;
 	delete writefds;
@@ -296,7 +305,7 @@ int TCPSocket::Wait( bool& read, bool& write, bool& exception,
 
 	if (ret < 0)
 	{
-		throw TCPException("Socket::wait","select ·¢Éú´íÎó");
+		throw TCPException("Socket::wait","select å‘ç”Ÿé”™è¯¯");
 	}
 	return (ret!=0);
 }
@@ -311,7 +320,7 @@ TCPSocketAddress TCPSocket::GetSockName() throw (TCPException)
 	int error;
 	if (!IsOpened())
 	{
-		throw TCPException("Socket::getsockname()","SocketÎ´´ò¿ª");
+		throw TCPException("Socket::getsockname()","Socketæœªæ‰“å¼€");
 	}
 	sockaddr_in address;
 	int addrLen = sizeof(address);
@@ -319,7 +328,7 @@ TCPSocketAddress TCPSocket::GetSockName() throw (TCPException)
 	error = ::getsockname(m_descriptor,socketAddress,&addrLen);
 	if (error ==  SOCKET_ERROR)
 	{
-		throw TCPException("Socket::getSockName","getsocknameÓĞÒì³£");
+		throw TCPException("Socket::getSockName","getsocknameæœ‰å¼‚å¸¸");
 	}
 	return TCPSocketAddress(address);
 }
@@ -330,7 +339,7 @@ TCPSocketAddress TCPSocket::GetPeerName() throw (TCPException)
 
 	if(!IsOpened())
 	{
-		throw TCPException("Socket::getPeerName","SocketÎ´´ò¿ª");
+		throw TCPException("Socket::getPeerName","Socketæœªæ‰“å¼€");
 	}
 	sockaddr_in address;
 	int addrLen = sizeof(address);
@@ -339,7 +348,7 @@ TCPSocketAddress TCPSocket::GetPeerName() throw (TCPException)
 
 	if(error == SOCKET_ERROR)
 	{
-		throw TCPException("Socket::getPeerName0","getpeername³ö´í");
+		throw TCPException("Socket::getPeerName0","getpeernameå‡ºé”™");
 	}
 
 	return TCPSocketAddress(address);
@@ -347,18 +356,18 @@ TCPSocketAddress TCPSocket::GetPeerName() throw (TCPException)
 
 int TCPSocket::SetRecvBufLength(int recvlength)
 {
-	return (::setsockopt(m_descriptor, SOL_SOCKET, 
+	return (::setsockopt(m_descriptor, SOL_SOCKET,
 		SO_RCVBUF, (char *)&recvlength, sizeof(recvlength)));
 }
 
 int TCPSocket::SetSendBufLength(int sendlength)
 {
-	return (::setsockopt(m_descriptor, SOL_SOCKET, 
+	return (::setsockopt(m_descriptor, SOL_SOCKET,
 		SO_SNDBUF, (char *)&sendlength, sizeof(sendlength)));
 }
 
 int TCPSocket::SetNodelay(bool delay)
 {
-	return ::setsockopt(m_descriptor, IPPROTO_TCP, 
-		TCP_NODELAY,(char *)&delay, sizeof(int));
+    const int value = delay ? 1 : 0;
+    return ::setsockopt(m_descriptor, IPPROTO_TCP, TCP_NODELAY, (const char*)&value, sizeof(value));
 }

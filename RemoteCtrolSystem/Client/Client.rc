@@ -1,4 +1,4 @@
-// Microsoft Visual C++ generated resource script.
+Ôªø// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -16,12 +16,12 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// ÷–Œƒ(÷–ª™»À√Òπ≤∫Õπ˙) resources
+// ‰∏≠Êñá(‰∏≠Âçé‰∫∫Ê∞ëÂÖ±ÂíåÂõΩ) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 #ifdef _WIN32
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
-#pragma code_page(936)
+#pragma code_page(65001)
 #endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
@@ -30,12 +30,12 @@ LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE 
+1 TEXTINCLUDE
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE 
+2 TEXTINCLUDE
 BEGIN
     "#ifndef APSTUDIO_INVOKED\r\n"
     "#include ""targetver.h""\r\n"
@@ -44,7 +44,7 @@ BEGIN
     "\0"
 END
 
-3 TEXTINCLUDE 
+3 TEXTINCLUDE
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -53,9 +53,9 @@ BEGIN
     "\r\n"
     "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
     "LANGUAGE 4, 2\r\n"
-    "#pragma code_page(936)\r\n"
-    "#include ""res\\Client.rc2""  // ∑« Microsoft Visual C++ ±‡º≠µƒ◊ ‘¥\r\n"
-    "#include ""l.CHS\\afxres.rc""      // ±Í◊º◊Èº˛\r\n"
+    "#pragma code_page(65001)\r\n"
+    "#include ""res\\Client.rc2""  // Èùû Microsoft Visual C++ ÁºñËæëÁöÑËµÑÊ∫ê\r\n"
+    "#include ""l.CHS\\afxres.rc""      // Ê†áÂáÜÁªÑ‰ª∂\r\n"
     "#endif\r\n"
     "\0"
 END
@@ -79,51 +79,51 @@ IDR_MAINFRAME           ICON                    "res\\Client.ico"
 
 IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "πÿ”⁄ Client"
+CAPTION "ÂÖ≥‰∫é Client"
 FONT 9, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,14,14,21,20
-    LTEXT           "Client£¨1.0 ∞Ê",IDC_STATIC,42,14,114,8,SS_NOPREFIX
+    LTEXT           "ClientÔºå1.0 Áâà",IDC_STATIC,42,14,114,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2013",IDC_STATIC,42,26,114,8
-    DEFPUSHBUTTON   "»∑∂®",IDOK,113,41,50,14,WS_GROUP
+    DEFPUSHBUTTON   "Á°ÆÂÆö",IDOK,113,41,50,14,WS_GROUP
 END
 
 IDD_LOGIN_DIALOG DIALOGEX 0, 0, 165, 118
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
-CAPTION "º∆À„ª˙‘∂≥Ãøÿ÷∆"
+CAPTION "ËÆ°ÁÆóÊú∫ËøúÁ®ãÊéßÂà∂"
 FONT 9, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     COMBOBOX        IDC_SERVER_COMBO,33,16,93,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     EDITTEXT        IDC_USER_NAME_EDIT,33,39,93,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_PASSWORD_EDIT,33,64,93,14,ES_PASSWORD | ES_AUTOHSCROLL
-    PUSHBUTTON      "µ«¬º",IDC_BUTTON_LOGIN,22,89,50,14
-    PUSHBUTTON      "ÕÀ≥ˆ",IDC_BUTTON_EXIT,82,89,50,14
-    LTEXT           "’À∫≈£∫",IDC_STATIC,4,42,23,8
-    LTEXT           "√‹¬Î£∫",IDC_STATIC,4,67,24,8
-    LTEXT           "∑˛ŒÒ∂À£∫",IDC_STATIC,3,18,28,8
+    PUSHBUTTON      "ÁôªÂΩï",IDC_BUTTON_LOGIN,22,89,50,14
+    PUSHBUTTON      "ÈÄÄÂá∫",IDC_BUTTON_EXIT,82,89,50,14
+    LTEXT           "Ë¥¶Âè∑Ôºö",IDC_STATIC,4,42,23,8
+    LTEXT           "ÂØÜÁ†ÅÔºö",IDC_STATIC,4,67,24,8
+    LTEXT           "ÊúçÂä°Á´ØÔºö",IDC_STATIC,3,18,28,8
 END
 
 IDD_ADD_IP_DIALOG DIALOGEX 0, 0, 194, 141
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "ÃÌº”‘∂≥Ã÷˜ª˙"
-FONT 8, "Œ¢»Ì—≈∫⁄", 400, 0, 0x86
+CAPTION "Ê∑ªÂä†ËøúÁ®ã‰∏ªÊú∫"
+FONT 8, "ÂæÆËΩØÈõÖÈªë", 400, 0, 0x86
 BEGIN
-    DEFPUSHBUTTON   "»∑∂®",IDOK,35,105,50,14
-    PUSHBUTTON      "»°œ˚",IDCANCEL,111,105,50,14
+    DEFPUSHBUTTON   "Á°ÆÂÆö",IDOK,35,105,50,14
+    PUSHBUTTON      "ÂèñÊ∂à",IDCANCEL,111,105,50,14
     EDITTEXT        IDC_EDIT_HOST_NAME,57,25,101,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT_HOST_PORT,57,79,101,14,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "",IDC_IPADDRESS_HOST,"SysIPAddress32",WS_TABSTOP,57,53,101,15
     LTEXT           "IP:",IDC_STATIC,23,54,30,13
-    LTEXT           "Name£∫",IDC_STATIC,24,27,30,8
-    LTEXT           "Port£∫",IDC_STATIC,23,81,22,8
+    LTEXT           "NameÔºö",IDC_STATIC,24,27,30,8
+    LTEXT           "PortÔºö",IDC_STATIC,23,81,22,8
 END
 
 IDD_CIENT_MAIN_DIALOG DIALOGEX 0, 0, 441, 206
 STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_WINDOWEDGE | WS_EX_STATICEDGE
-CAPTION "º∆À„ª˙‘∂≥Ãøÿ÷∆-øÕªß∂À"
-FONT 8, "Œ¢»Ì—≈∫⁄", 400, 0, 0x0
+CAPTION "ËÆ°ÁÆóÊú∫ËøúÁ®ãÊéßÂà∂-ÂÆ¢Êà∑Á´Ø"
+FONT 8, "ÂæÆËΩØÈõÖÈªë", 400, 0, 0x0
 BEGIN
     CONTROL         "",IDC_STATIC_DISPLAY,"Static",SS_BLACKFRAME,0,57,438,143
 END
@@ -133,21 +133,21 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "Dialog"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "»∑∂®",IDOK,205,165,50,14
-    PUSHBUTTON      "»°œ˚",IDCANCEL,259,165,50,14
+    DEFPUSHBUTTON   "Á°ÆÂÆö",IDOK,205,165,50,14
+    PUSHBUTTON      "ÂèñÊ∂à",IDCANCEL,259,165,50,14
 END
 
 IDD_DIALOG_SETUP DIALOGEX 0, 0, 244, 190
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "…Ë÷√"
+CAPTION "ËÆæÁΩÆ"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "",IDC_SLIDER1,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,80,24,100,26
-    LTEXT           "ÕºœÒ÷ ¡ø£∫",IDC_STATIC,21,30,41,8
-    LTEXT           "¥´ ‰ÀŸ¬ £∫",IDC_STATIC,21,66,41,8
-    PUSHBUTTON      "»∑∂®",IDC_BUTTON_SETUP_OK,28,159,50,14
-    PUSHBUTTON      "”¶”√",IDC_BUTTON_SETUP_APPLY,96,159,50,14
-    PUSHBUTTON      "»°œ˚",IDC_BUTTON_SETUP_CANCEL,163,159,50,14
+    LTEXT           "ÂõæÂÉèË¥®ÈáèÔºö",IDC_STATIC,21,30,41,8
+    LTEXT           "‰º†ËæìÈÄüÁéáÔºö",IDC_STATIC,21,66,41,8
+    PUSHBUTTON      "Á°ÆÂÆö",IDC_BUTTON_SETUP_OK,28,159,50,14
+    PUSHBUTTON      "Â∫îÁî®",IDC_BUTTON_SETUP_APPLY,96,159,50,14
+    PUSHBUTTON      "ÂèñÊ∂à",IDC_BUTTON_SETUP_CANCEL,163,159,50,14
     PUSHBUTTON      "-",IDC_BUTTON_IMG_SUB,64,30,13,12
     PUSHBUTTON      "-",IDC_BUTTON_FRAME_SUB,64,62,13,12
     PUSHBUTTON      "+",IDC_BUTTON_IMG_ADD,181,30,13,12
@@ -163,13 +163,13 @@ BEGIN
     CONTROL         "",IDC_SLIDER2,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,80,56,100,28
     CONTROL         "",IDC_SLIDER_VERT_TILE,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,80,88,100,28
     CONTROL         "",IDC_SLIDER_HORZ_TILE,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,80,122,100,28
-    LTEXT           "¥π÷±∑÷øÈ£∫",IDC_STATIC,21,96,41,8
-    LTEXT           "ÀÆ∆Ω∑÷øÈ£∫",IDC_STATIC,21,129,41,8
+    LTEXT           "ÂûÇÁõ¥ÂàÜÂùóÔºö",IDC_STATIC,21,96,41,8
+    LTEXT           "Ê∞¥Âπ≥ÂàÜÂùóÔºö",IDC_STATIC,21,129,41,8
 END
 
 IDD_DIALOG_SERVER_LIST DIALOGEX 0, 0, 110, 326
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
-CAPTION "‘∂≥Ãøÿ÷∆¡–±Ì"
+CAPTION "ËøúÁ®ãÊéßÂà∂ÂàóË°®"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
 END
@@ -188,8 +188,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION 1,0,1,0
+ PRODUCTVERSION 1,0,1,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -204,14 +204,14 @@ BEGIN
     BEGIN
         BLOCK "080403a8"
         BEGIN
-            VALUE "CompanyName", "TODO: <π´Àæ√˚>"
-            VALUE "FileDescription", "TODO: <Œƒº˛Àµ√˜>"
-            VALUE "FileVersion", "1.0.0.1"
+            VALUE "CompanyName", "TODO: <ÂÖ¨Âè∏Âêç>"
+            VALUE "FileDescription", "TODO: <Êñá‰ª∂ËØ¥Êòé>"
+            VALUE "FileVersion", "1.0.1.0"
             VALUE "InternalName", "Client.exe"
-            VALUE "LegalCopyright", "TODO: (C) <π´Àæ√˚>°£±£¡ÙÀ˘”–»®¿˚°£"
+            VALUE "LegalCopyright", "TODO: (C) <ÂÖ¨Âè∏Âêç>„ÄÇ‰øùÁïôÊâÄÊúâÊùÉÂà©„ÄÇ"
             VALUE "OriginalFilename", "Client.exe"
-            VALUE "ProductName", "TODO: <≤˙∆∑√˚>"
-            VALUE "ProductVersion", "1.0.0.1"
+            VALUE "ProductName", "TODO: <‰∫ßÂìÅÂêç>"
+            VALUE "ProductVersion", "1.0.1.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -227,7 +227,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -335,7 +335,7 @@ IDR_TOOLBAR3            BITMAP                  "res\\toolbar3.bmp"
 IDD_LOGIN_DIALOG DLGINIT
 BEGIN
     IDC_SERVER_COMBO, 0x403, 11, 0
-0x2e2e, 0xcc2e, 0xbced, 0x2ed3, 0x2e2e, "\000" 
+0x2e2e, 0xcc2e, 0xbced, 0x2ed3, 0x2e2e, "\000"
     0
 END
 
@@ -345,36 +345,36 @@ END
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
-    IDS_ABOUTBOX            "πÿ”⁄ Client(&A)..."
+    IDS_ABOUTBOX            "ÂÖ≥‰∫é Client(&A)..."
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
-    ID_BUTTON32784          "Àı–°"
-    ID_BUTTON32787          "»´∆¡"
-    ID_BUTTON32788          "altº¸"
-    ID_BUTTON32789          "Ctrlº¸"
-    ID_BUTTON32793          "WinKeyº¸"
-    ID_BUTTON32794          "ΩÿÕº"
-    ID_BUTTON32795          "À¢–¬"
+    ID_BUTTON32784          "Áº©Â∞è"
+    ID_BUTTON32787          "ÂÖ®Â±è"
+    ID_BUTTON32788          "altÈîÆ"
+    ID_BUTTON32789          "CtrlÈîÆ"
+    ID_BUTTON32793          "WinKeyÈîÆ"
+    ID_BUTTON32794          "Êà™Âõæ"
+    ID_BUTTON32795          "Âà∑Êñ∞"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
-    ID_BUTTON32808          "‘∂≥Ãº‡øÿ¡–±Ì"
-    ID_BUTTON32809          "‘›Õ£"
-    ID_BUTTON_SHOT_SCREEN   "ΩÿÕº \n ΩÿÕº"
+    ID_BUTTON32808          "ËøúÁ®ãÁõëÊéßÂàóË°®"
+    ID_BUTTON32809          "ÊöÇÂÅú"
+    ID_BUTTON_SHOT_SCREEN   "Êà™Âõæ \n Êà™Âõæ"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
-    ID_BUTTON32782          "…Ë÷√"
-    ID_BUTTON32783          "∑≈¥Û"
+    ID_BUTTON32782          "ËÆæÁΩÆ"
+    ID_BUTTON32783          "ÊîæÂ§ß"
 END
 
-#endif    // ÷–Œƒ(÷–ª™»À√Òπ≤∫Õπ˙) resources
+#endif    // ‰∏≠Êñá(‰∏≠Âçé‰∫∫Ê∞ëÂÖ±ÂíåÂõΩ) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -391,11 +391,10 @@ END
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 LANGUAGE 4, 2
-#pragma code_page(936)
-#include "res\Client.rc2"  // ∑« Microsoft Visual C++ ±‡º≠µƒ◊ ‘¥
-#include "l.CHS\afxres.rc"      // ±Í◊º◊Èº˛
+#pragma code_page(65001)
+#include "res\Client.rc2"  // Èùû Microsoft Visual C++ ÁºñËæëÁöÑËµÑÊ∫ê
+#include "l.CHS\afxres.rc"      // Ê†áÂáÜÁªÑ‰ª∂
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-

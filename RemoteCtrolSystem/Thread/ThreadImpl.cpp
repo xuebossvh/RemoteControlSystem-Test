@@ -8,7 +8,7 @@ bool ThreadImpl::CreateThread(
 {
     ts.hThread = (HANDLE)::_beginthreadex(NULL,
         (unsigned int)cbStackSize,
-        (THREADPROC)thread_func,
+        thread_func,
         (void*)pThread,
         0,
         (unsigned int*)&ts.dwThreadId);
@@ -34,13 +34,7 @@ bool ThreadImpl::WaitForThreadEnd(const ThreadStruct &ts,int iTimeOut)
         dwTO = INFINITE;
     }
     DWORD dwRes = WaitForSingleObject(ts.hThread,dwTO);
-    if (dwRes == WAIT_TIMEOUT)
-    {
-        return false;
-    }else
-    {
-        return true;
-    }
+    return dwRes == WAIT_OBJECT_0;
 }
 
 void ThreadImpl::TerminateThread(const ThreadStruct &ts)

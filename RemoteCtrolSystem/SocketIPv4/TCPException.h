@@ -2,7 +2,7 @@
 **             Guangzhou ZHIYUAN electronics Co.,LTD
 **
 **
-**                   http://www.embedtools.com  
+**                   http://www.embedtools.com
 **-------------File Info---------------------------------------------------
 **File Name:
 **Latest modified Data:
@@ -39,13 +39,13 @@ using std::string;
 
 
 /**
- *  The error often occurs in the socket, so it's necessary to 
+ *  The error often occurs in the socket, so it's necessary to
  *  deal the error.
  */
-class TCPException : public exception 
+class TCPException : public exception
 {
 public:
-	explicit TCPException (const string & strMsg = "") 
+	explicit TCPException (const string & strMsg = "")
 		: m_strMsg(strMsg) {
 	}
 	TCPException(const string& _method,const string& strMsg,int code = 0)

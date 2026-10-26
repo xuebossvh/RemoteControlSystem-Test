@@ -1,198 +1,172 @@
 #include "ScreenDisplay.h"
+#include <algorithm>
+#include <cstdint>
+#include <cstring>
+#include <cmath>
+#include <memory>
 
-
-ScreenDisplay::ScreenDisplay(void)
-{
-	m_hClientDC = NULL;
+namespace {
+// Common window DCs belong to the current paint/layout state. Do not retain one
+// across resizing, scrolling or destruction of the MFC child control.
+struct WindowDC {
+    HWND window;
+    HDC handle;
+    explicit WindowDC(HWND hwnd) : window(hwnd), handle(IsWindow(hwnd) ? GetDC(hwnd) : nullptr) {}
+    ~WindowDC() { if (handle) ReleaseDC(window, handle); }
+};
 }
 
-ScreenDisplay::~ScreenDisplay(void)
-{
+bool ScreenViewGeometry::SetSourceSize(int width, int height) {
+    if (width <= 0 || height <= 0 || width > 16384 || height > 16384) return false;
+    sourceWidth_ = width; sourceHeight_ = height;
+    Recalculate();
+    return true;
+}
+bool ScreenViewGeometry::SetViewportSize(int width, int height) {
+    if (width <= 0 || height <= 0 || width > 32768 || height > 32768) return false;
+    viewportWidth_ = width; viewportHeight_ = height;
+    Recalculate();
+    return true;
+}
+void ScreenViewGeometry::Fit() { zoom_ = 1.0; Recalculate(); }
+bool ScreenViewGeometry::Zoom(double factor) {
+    if (!std::isfinite(factor) || factor <= 0 || sourceWidth_ <= 0 || viewportWidth_ <= 0)
+        return false;
+    const double next = (std::max)(0.1, (std::min)(8.0, zoom_ * factor));
+    if (next == zoom_) return false;
+    zoom_ = next;
+    Recalculate();
+    return true;
+}
+void ScreenViewGeometry::Recalculate() {
+    displayRect_ = RECT{};
+    if (sourceWidth_ <= 0 || sourceHeight_ <= 0 || viewportWidth_ <= 0 || viewportHeight_ <= 0)
+        return;
+    const double fit = (std::min)(static_cast<double>(viewportWidth_) / sourceWidth_,
+                                  static_cast<double>(viewportHeight_) / sourceHeight_);
+    const double scale = fit * zoom_;
+    // Always derive both dimensions from the original source, never from a
+    // previous rounded display rectangle. Even a subpixel axis needs one pixel.
+    const int width = (std::max)(1, static_cast<int>(std::floor(sourceWidth_ * scale + 0.5)));
+    const int height = (std::max)(1, static_cast<int>(std::floor(sourceHeight_ * scale + 0.5)));
+    displayRect_.left = (viewportWidth_ - width) / 2;
+    displayRect_.top = (viewportHeight_ - height) / 2;
+    displayRect_.right = displayRect_.left + width;
+    displayRect_.bottom = displayRect_.top + height;
+}
+bool ScreenViewGeometry::MapWindowPointToServer(int x, int y, int& serverX, int& serverY) const {
+    if (x < 0 || y < 0 || x >= viewportWidth_ || y >= viewportHeight_ ||
+        x < displayRect_.left || x >= displayRect_.right ||
+        y < displayRect_.top || y >= displayRect_.bottom) return false;
+    const int width = displayRect_.right - displayRect_.left;
+    const int height = displayRect_.bottom - displayRect_.top;
+    if (width <= 0 || height <= 0 || sourceWidth_ <= 0 || sourceHeight_ <= 0) return false;
+    // Map the displayed end pixels to the source end pixels, so desktop edges
+    // remain reachable when downscaled. A one-pixel axis represents its centre.
+    serverX = width == 1 ? (sourceWidth_ - 1) / 2 : static_cast<int>(
+        static_cast<std::int64_t>(x - displayRect_.left) * (sourceWidth_ - 1) / (width - 1));
+    serverY = height == 1 ? (sourceHeight_ - 1) / 2 : static_cast<int>(
+        static_cast<std::int64_t>(y - displayRect_.top) * (sourceHeight_ - 1) / (height - 1));
+    return true;
 }
 
-bool ScreenDisplay::Initialize( HWND hDisplayWin ,int WinWidth,int WinHeight,int ServerWidth,int ServerHeight)
-{
-	RECT rcClient;
-	GetWindowRect(hDisplayWin,&rcClient);
-	int DisplayWidth = rcClient.right - rcClient.left;
-	int DisplayHeight = rcClient.bottom - rcClient.top;
-	m_ServerWidth   = ServerWidth;
-	m_ServerHeight  = ServerHeight; 
-	if (!SetDevice(hDisplayWin))
-	{
-		return false;
-	}
-	if (!SetSize(DisplayWidth,DisplayHeight))
-	{
-		return false;
-	}
-	
- 
-	m_DisplayWidth  = WinWidth;
-	m_DisplayHeight = WinHeight;
-	return true;	
+ScreenDisplay::~ScreenDisplay() { ReleaseDevice(); }
+void ScreenDisplay::ReleaseDevice() {
+    if (memoryDC_ && originalBitmap_) SelectObject(memoryDC_, originalBitmap_);
+    if (bitmap_) DeleteObject(bitmap_);
+    if (memoryDC_) DeleteDC(memoryDC_);
+    window_ = nullptr; memoryDC_ = nullptr;
+    bitmap_ = nullptr; originalBitmap_ = nullptr;
 }
-
-bool ScreenDisplay::SetDevice( HWND hDisplayWin )
-{
-	if (NULL == hDisplayWin)
-	{
-		return false;
-	}
-	m_hClientWnd = hDisplayWin;
-	m_hClientDC = GetDC(hDisplayWin); //获显示窗口的HDC
-	m_hMemDC = CreateCompatibleDC(m_hClientDC);
-	m_FrameBuffer.Create(m_ServerWidth,m_ServerHeight,24,CXIMAGE_FORMAT_JPG);
-
-	return true;
+bool ScreenDisplay::Initialize(HWND window, int windowWidth, int windowHeight,
+                                int serverWidth, int serverHeight) {
+    if (!IsWindow(window) || windowWidth <= 0 || windowHeight <= 0) return false;
+    GdiImage frame;
+    if (!frame.Create(serverWidth, serverHeight)) return false;
+    ReleaseDevice();
+    window_ = window;
+    WindowDC windowDC(window_);
+    memoryDC_ = windowDC.handle ? CreateCompatibleDC(windowDC.handle) : nullptr;
+    if (!memoryDC_) { ReleaseDevice(); return false; }
+    frame_ = std::move(frame);
+    serverWidth_ = serverWidth; serverHeight_ = serverHeight;
+    view_ = ScreenViewGeometry{};
+    view_.SetSourceSize(serverWidth, serverHeight);
+    RECT rect = {};
+    if (!GetClientRect(window_, &rect)) { ReleaseDevice(); return false; }
+    if (!SetSize((std::max)(1L, rect.right), (std::max)(1L, rect.bottom))) {
+        ReleaseDevice(); return false;
+    }
+    return true;
 }
-
-void ScreenDisplay::Display()
-{
-	
-	m_FrameBuffer.Stretch(m_hMemDC,m_WinWidth/2 - m_DisplayWidth/2,m_WinHeight/2	- m_DisplayHeight/2,m_DisplayWidth,m_DisplayHeight);
-    BitBlt(m_hClientDC,0,0,m_WinWidth,m_WinHeight,m_hMemDC,0,0,SRCCOPY);
+bool ScreenDisplay::SetSize(int width, int height) {
+    if (!IsWindow(window_) || !memoryDC_ || width <= 0 || height <= 0 || width > 32768 || height > 32768)
+        return false;
+    if (bitmap_ && width == windowWidth_ && height == windowHeight_) {
+        view_.SetViewportSize(width, height);
+        return true;
+    }
+    WindowDC windowDC(window_);
+    if (!windowDC.handle) return false;
+    HBITMAP replacement = CreateCompatibleBitmap(windowDC.handle, width, height);
+    if (!replacement) return false;
+    HGDIOBJ old = SelectObject(memoryDC_, replacement);
+    if (!old || old == HGDI_ERROR) { DeleteObject(replacement); return false; }
+    if (!originalBitmap_) originalBitmap_ = old;
+    if (bitmap_) DeleteObject(bitmap_);
+    bitmap_ = replacement; windowWidth_ = width; windowHeight_ = height;
+    view_.SetViewportSize(width, height);
+    return ReflashDC();
 }
-
-void ScreenDisplay::RecvImageMsg( ByteArrayMsg* pMsg )
-{
-	ImageMsg* pImageMsg = static_cast<ImageMsg*>(pMsg);
-	CxImage   msgImage;
-	RECT	  rcDisplay = pImageMsg->GetImageRect();
-
-	size_t size2 = pImageMsg->GetImageSize();
-	msgImage.Decode((BYTE*)(pImageMsg->GetImageBufferPtr()),pImageMsg->GetImageSize(),CXIMAGE_FORMAT_JPG);
-	//msgImage.Stretch(m_hClientDC,ScaleRect(rcDisplay));
-	//很诡异的用MixFrom方式将图像保存进CxImage之后图像分块上下颠倒
-	m_FrameBuffer.MixFrom(msgImage,rcDisplay.left,m_ServerHeight - rcDisplay.bottom );
-
-	delete pImageMsg;
+void ScreenDisplay::Display() {
+    if (!memoryDC_ || !bitmap_) return;
+    WindowDC windowDC(window_);
+    if (!windowDC.handle) return;
+    PatBlt(memoryDC_, 0, 0, windowWidth_, windowHeight_, BLACKNESS);
+    const RECT rect = view_.GetDisplayRect();
+    frame_.Stretch(memoryDC_, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+    BitBlt(windowDC.handle, 0, 0, windowWidth_, windowHeight_, memoryDC_, 0, 0, SRCCOPY);
 }
-
-bool ScreenDisplay::SetSize( int width,int height )
-{
-	if (width <= 0 || height <= 0)
-	{
-		return false;
-	}
-	//当显示画布大小改变，刷新背景
-	if (m_WinWidth != width ||m_WinHeight != height)
-	{
-		m_WinWidth  = width;
-		m_WinHeight = height;
-		m_hBitmap = CreateCompatibleBitmap(m_hClientDC,m_WinWidth,m_WinHeight);
-		m_hOldBmp = SelectObject(m_hMemDC,m_hBitmap);
-	}
-	return true;
+void ScreenDisplay::RecvImageMsg(ByteArrayMsg* message) {
+    std::unique_ptr<ByteArrayMsg> owner(message);
+    if (!message || message->GetType() != RCS_MSG_IMAGE || message->GetSize() < 21) return;
+    // Queue objects can be ByteArrayMsg. Validate the header before decoding/copying data.
+    const char* bytes = message->GetBufferPtr();
+    if (!bytes) return;
+    RECT rect = {};
+    std::uint32_t encodedSize = 0;
+    std::memcpy(&rect, bytes + 1, 16);
+    std::memcpy(&encodedSize, bytes + 17, 4);
+    if (rect.left < 0 || rect.top < 0 || rect.right <= rect.left || rect.bottom <= rect.top ||
+        rect.right > serverWidth_ || rect.bottom > serverHeight_ ||
+        encodedSize != message->GetSize() - 21 || encodedSize > 16u * 1024u * 1024u) return;
+    GdiImage decoded;
+    if (!decoded.Decode(reinterpret_cast<const BYTE*>(bytes + 21), encodedSize)) return;
+    if (decoded.GetWidth() != rect.right - rect.left || decoded.GetHeight() != rect.bottom - rect.top)
+        return;
+    frame_.MixFrom(decoded, rect.left, rect.top);
 }
-
-int ScreenDisplay::GetDisplayWidth()
-{
-	return m_DisplayWidth;
+void ScreenDisplay::SetServerSize(int width, int height) {
+    if (width == serverWidth_ && height == serverHeight_) return;
+    GdiImage replacement;
+    if (!replacement.Create(width, height)) return;
+    frame_ = std::move(replacement); serverWidth_ = width; serverHeight_ = height;
+    view_.SetSourceSize(width, height);
 }
-
-int ScreenDisplay::GetDisplayHeight()
-{
-	return m_DisplayHeight;
+bool ScreenDisplay::ScaleUp() {
+    const bool changed = view_.Zoom(1.25);
+    ReflashDC(); return changed;
 }
-
-CxImage ScreenDisplay::GetDisplayImage()
-{
-	return m_FrameBuffer;
+bool ScreenDisplay::ScaleDown() {
+    const bool changed = view_.Zoom(0.8);
+    ReflashDC(); return changed;
 }
-
-RECT ScreenDisplay::ScaleRect( RECT srcRect )
-{
-	RECT	DisplayRect;
-	//显示画面以显示屏幕画布中央为中心点缩放，这里计算本地左上角起始点
-	int		leftBegin	= m_WinWidth/2 - m_DisplayWidth/2;
-	int		topBegin	= m_WinHeight/2	- m_DisplayHeight/2;
-	//计算传入的矩形在本地显示窗口中的实际矩形位置
-	DisplayRect.left	= leftBegin		+ (srcRect.left		* m_DisplayWidth)/m_ServerWidth;
-	DisplayRect.right	= leftBegin		+ (srcRect.right	* m_DisplayWidth)/m_ServerWidth;
-	DisplayRect.top 	= topBegin		+ (srcRect.top		* m_DisplayHeight)/m_ServerHeight;
-	DisplayRect.bottom 	= topBegin		+ (srcRect.bottom	* m_DisplayHeight)/m_ServerHeight;
-
-	return DisplayRect;
+bool ScreenDisplay::ReflashDC() {
+    return memoryDC_ && bitmap_ && PatBlt(memoryDC_, 0, 0, windowWidth_, windowHeight_, BLACKNESS) != FALSE;
 }
-
-void ScreenDisplay::SetServerSize( int ServerWidth,int ServerHeight )
-{
-	m_ServerHeight	= ServerHeight;
-	m_ServerWidth	= ServerWidth;
-	m_FrameBuffer.Create(m_ServerWidth,m_ServerHeight,24,CXIMAGE_FORMAT_JPG);
+void ScreenDisplay::Scale2LocalSize() {
+    view_.Fit(); ReflashDC();
 }
-
-int ScreenDisplay::GetSeverWidth()
-{
-	return m_ServerWidth;
-}
-
-int ScreenDisplay::GetServerHeight()
-{
-	return m_ServerHeight;
-}
-
-bool ScreenDisplay::ScaleUp()
-{
-	m_DisplayWidth *= 1.1;
-	m_DisplayHeight *= 1.1;
-	if(m_DisplayWidth >= m_ServerWidth * 2.0/*m_WinWidth*/)
-	{
-		m_DisplayWidth = m_ServerWidth * 2.0;
-		m_DisplayHeight = m_ServerHeight * 2.0;
-		ReflashDC();
-		return false;
-	}
-	else
-	{
-		ReflashDC();
-		return true;
-	}
-}
-
-bool ScreenDisplay::ScaleDown()
-{
-	m_DisplayWidth /= 1.25;
-	m_DisplayHeight /= 1.25;
-	if(m_DisplayWidth <= 480)
-	{
-		m_DisplayWidth = 480;
-		m_DisplayHeight = 360;
-		ReflashDC();
-		return false;
-	}
-	else
-	{
-		ReflashDC();
-		return true;
-	}
-	
-}
-
-bool ScreenDisplay::ReflashDC()
-{
-	//刷新背景
-	m_hBitmap = CreateCompatibleBitmap(m_hClientDC,m_WinWidth,m_WinHeight);
-	m_hOldBmp = SelectObject(m_hMemDC,m_hBitmap);
-	//BitBlt(m_hClientDC,0,0,m_WinWidth,m_WinHeight,m_hMemDC,0,0,SRCCOPY);
-	DeleteObject(m_hOldBmp);
-	return true;
-}
-
-int ScreenDisplay::GetWinWidth()
-{
-	return m_WinWidth;
-}
-
-int ScreenDisplay::GetWinHeigth()
-{
-	return m_WinHeight;
-}
-
-void ScreenDisplay::Scale2LocalSize()
-{
-	m_DisplayWidth = m_WinWidth;
-	m_DisplayHeight = m_WinHeight;
-	ReflashDC();
+bool ScreenDisplay::MapWindowPointToServer(int x, int y, int& serverX, int& serverY) const {
+    return view_.MapWindowPointToServer(x, y, serverX, serverY);
 }

@@ -26,7 +26,7 @@
 
   void StringBuffer::update(size_t) throw()
   {
-	//°Ñ»º´æptrToBufferµÄÄÚÈÝ¸üÐÂµ½bufferÖÐ¡£
+	//æŠŠç¼“å­˜ptrToBufferçš„å†…å®¹æ›´æ–°åˆ°bufferä¸­ã€‚
     buffer = ptrToBuffer;
     delete[] ptrToBuffer;
     ptrToBuffer = NULL;
@@ -54,4 +54,3 @@
   {
     return buffer;
   }
-

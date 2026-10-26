@@ -1,4 +1,4 @@
-// RemoteCtrolSystemServerDlg.cpp : ÊµÏÖÎÄ¼ş
+// RemoteCtrolSystemServerDlg.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -14,7 +14,7 @@
 #define new DEBUG_NEW
 #endif
 
-// CRemoteCtrolSystemServerDlg ¶Ô»°¿ò
+// CRemoteCtrolSystemServerDlg å¯¹è¯æ¡†
 
 
 CRemoteCtrolSystemServerDlg::CRemoteCtrolSystemServerDlg(CWnd* pParent /*=NULL*/)
@@ -47,18 +47,19 @@ BEGIN_MESSAGE_MAP(CRemoteCtrolSystemServerDlg, CDialog)
 	ON_MESSAGE(WM_SHOWTASK,OnShowTask)
 	ON_BN_CLICKED(IDC_BTN_STARTSERVER, &CRemoteCtrolSystemServerDlg::OnBnClickedBtnStartserver)
 	ON_WM_KEYDOWN()
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
-// CRemoteCtrolSystemServerDlg ÏûÏ¢´¦Àí³ÌĞò
+// CRemoteCtrolSystemServerDlg æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 BOOL CRemoteCtrolSystemServerDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// ½«¡°¹ØÓÚ...¡±²Ëµ¥ÏîÌí¼Óµ½ÏµÍ³²Ëµ¥ÖĞ¡£
+	// å°†â€œå…³äº...â€èœå•é¡¹æ·»åŠ åˆ°ç³»ç»Ÿèœå•ä¸­ã€‚
 
-	// IDM_ABOUTBOX ±ØĞëÔÚÏµÍ³ÃüÁî·¶Î§ÄÚ¡£
+	// IDM_ABOUTBOX å¿…é¡»åœ¨ç³»ç»Ÿå‘½ä»¤èŒƒå›´å†…ã€‚
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
@@ -74,25 +75,25 @@ BOOL CRemoteCtrolSystemServerDlg::OnInitDialog()
 		}
 	}
 
-	// ÉèÖÃ´Ë¶Ô»°¿òµÄÍ¼±ê¡£µ±Ó¦ÓÃ³ÌĞòÖ÷´°¿Ú²»ÊÇ¶Ô»°¿òÊ±£¬¿ò¼Ü½«×Ô¶¯
-	//  Ö´ĞĞ´Ë²Ù×÷
-	SetIcon(m_hIcon, TRUE);			// ÉèÖÃ´óÍ¼±ê
-	SetIcon(m_hIcon, FALSE);		// ÉèÖÃĞ¡Í¼±ê
+	// è®¾ç½®æ­¤å¯¹è¯æ¡†çš„å›¾æ ‡ã€‚å½“åº”ç”¨ç¨‹åºä¸»çª—å£ä¸æ˜¯å¯¹è¯æ¡†æ—¶ï¼Œæ¡†æ¶å°†è‡ªåŠ¨
+	//  æ‰§è¡Œæ­¤æ“ä½œ
+	SetIcon(m_hIcon, TRUE);			// è®¾ç½®å¤§å›¾æ ‡
+	SetIcon(m_hIcon, FALSE);		// è®¾ç½®å°å›¾æ ‡
 
-	// TODO: ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–ä»£ç 
 
 	TCITEM item;
 	item.mask = TCIF_TEXT;
-	item.pszText = L"·şÎñ";
+	item.pszText = L"æœåŠ¡";
 	m_tabCtrl.InsertItem(0,&item);
-	item.pszText = L"Á¬½Ó";
+	item.pszText = L"è¿æ¥";
 	m_tabCtrl.InsertItem(1,&item);
-	item.pszText = L"ÕËºÅ¹ÜÀí";
+	item.pszText = L"è´¦å·ç®¡ç†";
 	m_tabCtrl.InsertItem(2,&item);
-	item.pszText = L"¹ØÓÚ";
+	item.pszText = L"å…³äº";
 	m_tabCtrl.InsertItem(3,&item);
 
-	//ÉèÖÃÑ¡Ïî¿¨µÄÄÚÈİµÄ²¼¾ÖµÄ´óĞ¡
+	//è®¾ç½®é€‰é¡¹å¡çš„å†…å®¹çš„å¸ƒå±€çš„å¤§å°
 	CRect rc;
 	m_tabCtrl.GetClientRect(&rc);
 	rc.top+=30;
@@ -100,7 +101,7 @@ BOOL CRemoteCtrolSystemServerDlg::OnInitDialog()
 	rc.left+=8;
 	rc.right -=8;
 
-	//´´½¨ËÄ¸öÑ¡Ïî
+	//åˆ›å»ºå››ä¸ªé€‰é¡¹
 	m_tsdServer.Create(IDD_TAB_SERVER,&m_tabCtrl);
 	m_dlgConnection.Create(IDD_TAB_CONNECTION,&m_tabCtrl);
 	m_dlgAcount.Create(IDD_TAB_ACCOUNT,&m_tabCtrl);
@@ -120,7 +121,7 @@ BOOL CRemoteCtrolSystemServerDlg::OnInitDialog()
 	//m_tsdServer.SetWindowPos(NULL,10,30,440,240,SWP_SHOWWINDOW);
 	//m_tsdServer.ShowWindow(SW_SHOW);
 	UpdateWindowControl();
-	return TRUE;  // ³ı·Ç½«½¹µãÉèÖÃµ½¿Ø¼ş£¬·ñÔò·µ»Ø TRUE
+	return TRUE;  // é™¤éå°†ç„¦ç‚¹è®¾ç½®åˆ°æ§ä»¶ï¼Œå¦åˆ™è¿”å› TRUE
 }
 
 void CRemoteCtrolSystemServerDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -147,19 +148,19 @@ void CRemoteCtrolSystemServerDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
-// Èç¹ûÏò¶Ô»°¿òÌí¼Ó×îĞ¡»¯°´Å¥£¬ÔòĞèÒªÏÂÃæµÄ´úÂë
-//  À´»æÖÆ¸ÃÍ¼±ê¡£¶ÔÓÚÊ¹ÓÃÎÄµµ/ÊÓÍ¼Ä£ĞÍµÄ MFC Ó¦ÓÃ³ÌĞò£¬
-//  Õâ½«ÓÉ¿ò¼Ü×Ô¶¯Íê³É¡£
+// å¦‚æœå‘å¯¹è¯æ¡†æ·»åŠ æœ€å°åŒ–æŒ‰é’®ï¼Œåˆ™éœ€è¦ä¸‹é¢çš„ä»£ç 
+//  æ¥ç»˜åˆ¶è¯¥å›¾æ ‡ã€‚å¯¹äºä½¿ç”¨æ–‡æ¡£/è§†å›¾æ¨¡å‹çš„ MFC åº”ç”¨ç¨‹åºï¼Œ
+//  è¿™å°†ç”±æ¡†æ¶è‡ªåŠ¨å®Œæˆã€‚
 
 void CRemoteCtrolSystemServerDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // ÓÃÓÚ»æÖÆµÄÉè±¸ÉÏÏÂÎÄ
+		CPaintDC dc(this); // ç”¨äºç»˜åˆ¶çš„è®¾å¤‡ä¸Šä¸‹æ–‡
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// Ê¹Í¼±êÔÚ¹¤×÷Çø¾ØĞÎÖĞ¾ÓÖĞ
+		// ä½¿å›¾æ ‡åœ¨å·¥ä½œåŒºçŸ©å½¢ä¸­å±…ä¸­
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -167,7 +168,7 @@ void CRemoteCtrolSystemServerDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// »æÖÆÍ¼±ê
+		// ç»˜åˆ¶å›¾æ ‡
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -176,17 +177,17 @@ void CRemoteCtrolSystemServerDlg::OnPaint()
 	}
 }
 
-//µ±ÓÃ»§ÍÏ¶¯×îĞ¡»¯´°¿ÚÊ±ÏµÍ³µ÷ÓÃ´Ëº¯ÊıÈ¡µÃ¹â±ê
-//ÏÔÊ¾¡£
+//å½“ç”¨æˆ·æ‹–åŠ¨æœ€å°åŒ–çª—å£æ—¶ç³»ç»Ÿè°ƒç”¨æ­¤å‡½æ•°å–å¾—å…‰æ ‡
+//æ˜¾ç¤ºã€‚
 HCURSOR CRemoteCtrolSystemServerDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-//Ñ¡Ïî¿¨ÇĞ»»´¦Àí
+//é€‰é¡¹å¡åˆ‡æ¢å¤„ç†
 void CRemoteCtrolSystemServerDlg::OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	switch(m_tabCtrl.GetCurSel())
 	{
 	case 0:
@@ -229,42 +230,43 @@ void CRemoteCtrolSystemServerDlg::OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pRe
 
 void CRemoteCtrolSystemServerDlg::OnBnClickedBtnOk()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
-	// ÔÚÕâÀï±£´æÅäÖÃĞÅÏ¢
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
+	// åœ¨è¿™é‡Œä¿å­˜é…ç½®ä¿¡æ¯
 	m_tsdServer.UpdateConfig();
 }
 
 void CRemoteCtrolSystemServerDlg::SetAutoRun(BOOL bAutoRun)
 {
-	HKEY hKey;
-	//×¢²á±íÂ·¾¶
+	HKEY hKey = NULL;
+	//æ³¨å†Œè¡¨è·¯å¾„
 	CString strRegPath = _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
 	TCHAR* lpszAppKeyName = _T("RemoteControlServer");
-	//»ñÈ¡¹¤³ÌÎÄ¼şÍêÕûÎÄ¼şÃû
+	//è·å–å·¥ç¨‹æ–‡ä»¶å®Œæ•´æ–‡ä»¶å
 	TCHAR m_szAppPath[MAX_PATH];
 	DWORD cch = GetModuleFileName(NULL,m_szAppPath,MAX_PATH);
 	ASSERT(cch!=0);
 
-	//´ò¿ª×¢²á±í
-	if (ERROR_SUCCESS ==RegOpenKeyEx(HKEY_LOCAL_MACHINE,strRegPath,0,KEY_ALL_ACCESS,&hKey))
+	//æ‰“å¼€æ³¨å†Œè¡¨
+	if (ERROR_SUCCESS ==RegOpenKeyEx(HKEY_CURRENT_USER,strRegPath,0,KEY_SET_VALUE,&hKey))
 	{
-		if (bAutoRun) //¸ù¾İÌõ¼şÌí¼Ó»òÉ¾³ı×¢²á±íÏî
+		if (bAutoRun) //æ ¹æ®æ¡ä»¶æ·»åŠ æˆ–åˆ é™¤æ³¨å†Œè¡¨é¡¹
 		{
-			RegSetValueEx(hKey,lpszAppKeyName,0,REG_SZ,(const unsigned char *)m_szAppPath,sizeof(m_szAppPath));
+			CString quoted; quoted.Format(L"\"%s\"", m_szAppPath);
+			RegSetValueEx(hKey,lpszAppKeyName,0,REG_SZ,reinterpret_cast<const BYTE*>(quoted.GetString()), (quoted.GetLength()+1)*sizeof(wchar_t));
 		}
 		else
 		{
 			RegDeleteValue(hKey,lpszAppKeyName);
 		}
 	}
-	RegCloseKey(hKey);
-	
+	if (hKey) RegCloseKey(hKey);
+
 
 }
 
 void CRemoteCtrolSystemServerDlg::OnBnClickedBtnApply()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	m_tsdServer.UpdateConfig();
 	this->UpdateWindowControl();
 }
@@ -275,23 +277,23 @@ LRESULT CRemoteCtrolSystemServerDlg::OnShowTask( WPARAM wParam, LPARAM lParam )
 		return 1;
 	switch(lParam)
 	{
-	case WM_RBUTTONUP:                                        // ÓÒ¼üÆğÀ´Ê±µ¯³ö²Ëµ¥
+	case WM_RBUTTONUP:                                        // å³é”®èµ·æ¥æ—¶å¼¹å‡ºèœå•
 		{
 
 			LPPOINT lpoint = new tagPOINT;
-			::GetCursorPos(lpoint);                    // µÃµ½Êó±êÎ»ÖÃ
+			::GetCursorPos(lpoint);                    // å¾—åˆ°é¼ æ ‡ä½ç½®
 			CMenu menu;
-			menu.CreatePopupMenu();                    // ÉùÃ÷Ò»¸öµ¯³öÊ½²Ëµ¥
-			menu.AppendMenu(MF_STRING, WM_DESTROY, _T("¹Ø±Õ"));
+			menu.CreatePopupMenu();                    // å£°æ˜ä¸€ä¸ªå¼¹å‡ºå¼èœå•
+			menu.AppendMenu(MF_STRING, WM_DESTROY, _T("å…³é—­"));
 			menu.TrackPopupMenu(TPM_LEFTALIGN, lpoint->x ,lpoint->y, this);
 			HMENU hmenu = menu.Detach();
 			menu.DestroyMenu();
 			delete lpoint;
 		}
 		break;
-	case WM_LBUTTONDBLCLK:                                 // Ë«»÷×ó¼üµÄ´¦Àí
+	case WM_LBUTTONDBLCLK:                                 // åŒå‡»å·¦é”®çš„å¤„ç†
 		{
-			this->ShowWindow(SW_SHOWNORMAL);         // ÏÔÊ¾Ö÷´°¿Ú
+			this->ShowWindow(SW_SHOWNORMAL);         // æ˜¾ç¤ºä¸»çª—å£
 			DeleteFromTray();
 		}
 		break;
@@ -308,7 +310,7 @@ void CRemoteCtrolSystemServerDlg::AddToTray()
 	nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
 	nid.uCallbackMessage = WM_SHOWTASK;
 	nid.hIcon = LoadIcon(AfxGetInstanceHandle(),MAKEINTRESOURCE(IDR_MAINFRAME));
-	lstrcpy(nid.szTip,_T("¼ÆËã»úÔ¶³Ì¿ØÖÆ¡ª¡ª·şÎñ¶Ë"));
+	lstrcpy(nid.szTip,_T("è®¡ç®—æœºè¿œç¨‹æ§åˆ¶â€”â€”æœåŠ¡ç«¯"));
 	Shell_NotifyIcon(NIM_ADD,&nid);
 	ShowWindow(SW_HIDE);
 }
@@ -320,38 +322,47 @@ void CRemoteCtrolSystemServerDlg::DeleteFromTray()
 	nid.hWnd = this->m_hWnd;
 	nid.uID = IDR_MAINFRAME;
 	nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
-	nid.hIcon = LoadIcon(AfxGetInstanceHandle(),MAKEINTRESOURCE(IDR_MAINFRAME));		
+	nid.hIcon = LoadIcon(AfxGetInstanceHandle(),MAKEINTRESOURCE(IDR_MAINFRAME));
 	Shell_NotifyIcon(NIM_DELETE,&nid);
 }
 
 void CRemoteCtrolSystemServerDlg::OnBnClickedBtnStartserver()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
-	//ÔÚÕâÀïµÄÊÇÆô¶¯·şÎñµÄÏà¹Ø´úÂë	
-	if (m_bIsServerStarted)
-	{
-		m_threadServer.Stop();  //Í£Ö¹TCP·şÎñ
-		WndClassList::m_connectDlg->LoginOutAllUser();
-		MessageBox(_T("·şÎñÒÑÍ£Ö¹"));
-		((CButton*)GetDlgItem(IDC_BTN_STARTSERVER))->SetWindowText(_T("Æô¶¯·şÎñ"));
-		m_bIsServerStarted = FALSE;
-	}
-	else
-	{
-		Config config;
-		int serverPort =config.GetConnectPort();
-		m_threadServer.Start(servicFactory,serverPort);
-		WndClassList::m_watcher = new SystemMonitor;
-		MessageBox(_T("·şÎñÆô¶¯³É¹¦"));
-		((CButton*)GetDlgItem(IDC_BTN_STARTSERVER))->SetWindowText(_T("Í£Ö¹·şÎñ"));
-		m_bIsServerStarted = TRUE;
-	}
-	
+    if (m_bIsServerStarted) {
+        m_dlgConnection.LoginOutAllUser();
+        m_threadServer.Stop();
+        m_bIsServerStarted = FALSE;
+        m_btnStartServer.SetWindowText(L"Start server");
+    } else {
+        Config config;
+        const int port = config.GetConnectPort();
+        if (port < 1 || port > 65535) { MessageBox(L"Port must be between 1 and 65535."); return; }
+        try {
+            m_threadServer.Start(servicFactory, static_cast<unsigned short>(port));
+            m_bIsServerStarted = TRUE;
+            m_btnStartServer.SetWindowText(L"Stop server");
+            SetWindowText(L"Remote Control Server - running (operation monitor unavailable)");
+        } catch (...) {
+            MessageBox(L"Could not listen on this port. Check the port and network configuration.");
+        }
+    }
+}
+
+void CRemoteCtrolSystemServerDlg::OnDestroy()
+{
+    if (m_bIsServerStarted) {
+        m_dlgConnection.LoginOutAllUser();
+        m_threadServer.Stop();
+        m_bIsServerStarted = FALSE;
+    }
+    WndClassList::m_connectDlg = NULL;
+    DeleteFromTray();
+    CDialog::OnDestroy();
 }
 
 void CRemoteCtrolSystemServerDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	// TODO: ÔÚ´ËÌí¼ÓÏûÏ¢´¦Àí³ÌĞò´úÂëºÍ/»òµ÷ÓÃÄ¬ÈÏÖµ
+	// TODO: åœ¨æ­¤æ·»åŠ æ¶ˆæ¯å¤„ç†ç¨‹åºä»£ç å’Œ/æˆ–è°ƒç”¨é»˜è®¤å€¼
 	//AfxMessageBox(_T("aaaaaaaaaaa"));
 	CDialog::OnKeyDown(nChar, nRepCnt, nFlags);
 }
@@ -368,7 +379,7 @@ void CRemoteCtrolSystemServerDlg::UpdateWindowControl()
         ((CButton* )GetDlgItem(IDC_BTN_STARTSERVER))->EnableWindow(FALSE);
 	}
 
-	//ÅĞ¶ÏÊÇ·ñÔÊĞí¿ª»úÆô¶¯
+	//åˆ¤æ–­æ˜¯å¦å…è®¸å¼€æœºå¯åŠ¨
 	if (config.GetIsAutoRun())
 	{
 		SetAutoRun(TRUE);
@@ -378,46 +389,5 @@ void CRemoteCtrolSystemServerDlg::UpdateWindowControl()
 		SetAutoRun(FALSE);
 	}
 
-	if (config.GetIsEncryptFile())
-	{
-	
-		
-		OFSTRUCT ofn;
-		if(OpenFile("user.crypt",&ofn,OF_EXIST)==HFILE_ERROR)
-		{
-			//Èô²»´æÔÚ
-			AES aes;
-			char* key = "RemoteCtrolSystem";
-			aes.set_key((u1byte*)key,256);
-			aes.encrypt(_T("user"));
-		}
-		if(OpenFile("user.plain",&ofn,OF_EXIST)!=HFILE_ERROR)
-		{
-			//Èô´æÔÚ
-			OpenFile("user.plain",&ofn,OF_DELETE);
-			//DeleteFile(_T("user.plain"));
-		}
-	
-	}
-	else  //ÅäÖÃÎÄ¼şÏÔÊ¾£¬²»¼ÓÃÜÎÄ¼ş
-	{
-
-		OFSTRUCT ofn;
-		if(OpenFile("user.plain",&ofn,OF_EXIST)==HFILE_ERROR) //´ò¿ªÄãÓÖ¹Ø±ÕÊ§°Ü£¬ËµÃ÷ÎÄ¼ş²»´æÔÚ
-		{
-			//Èô²»´æÔÚ
-			AES aes;
-			char* key = "RemoteCtrolSystem";
-			aes.set_key((u1byte*)key,256);
-			aes.decrypt(_T("user"));
-		}
-		if(OpenFile("user.crypt",&ofn,OF_EXIST)!=HFILE_ERROR)
-		{
-			//Èô´æÔÚ
-			OpenFile("user.crypt",&ofn,OF_DELETE);
-			//DeleteFile(_T("user.crypt"));
-		}
-
-	}
-
+	// Account persistence is handled by CUserFile using DPAPI.
 }

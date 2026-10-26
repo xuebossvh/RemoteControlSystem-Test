@@ -5,7 +5,7 @@
 SystemMonitor::SystemMonitor( ): isActive(FALSE),appStartMonitor(NULL),appStopMonitor(NULL)
 {
 	HINSTANCE hMonitor = ::LoadLibrary(L"ApplicationMonitor.dll");
-	if(hMonitor == NULL){		
+	if(hMonitor == NULL){
 		return ;
 	}else{
 		appStartMonitor = (_AddApplicatinMonitor)::GetProcAddress(hMonitor,MAKEINTRESOURCEA(1));
@@ -35,7 +35,7 @@ void SystemMonitor::Start()
 		strDir+=m_szFilePath;
 		appStartMonitor(m_szName,m_szIp,CT2A(strDir));
 
-		/*TCHAR buf[100];  
+		/*TCHAR buf[100];
 		DWORD len=::GetLogicalDriveStrings(sizeof(buf)/sizeof(TCHAR),buf);
 		for (TCHAR* s = buf;*s;s+=_tcslen(s)+1)
 		{
@@ -52,7 +52,7 @@ void SystemMonitor::Start()
 			(*iter)->Start();
 		}
 		isActive = TRUE;
-	}	
+	}
 }
 
 
@@ -88,5 +88,5 @@ void SystemMonitor::Stop()
 		}
 		appStopMonitor();
 		isActive = FALSE;
-	}	
+	}
 }

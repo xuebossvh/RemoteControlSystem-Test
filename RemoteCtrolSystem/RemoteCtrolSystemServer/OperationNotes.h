@@ -1,19 +1,19 @@
 /**************************************************************************
 **             Guangzhou ZHIYUAN electronics Co.,LTD
-**             
 **
-**                   http://www.embedtools.com  
+**
+**                   http://www.embedtools.com
 **-------------File Info---------------------------------------------------
 **File Name:   OperationNotes.h
 **Latest modified Data:
 **Latest Version:
-**Description:  
+**Description:
 **
 **-------------------------------------------------------------------------
-**Create by:   
+**Create by:
 **Create date:  2013/05/03   9:04
 **Version:
-**Description: 
+**Description:
 **
 **
 **-------------------------------------------------------------------------
@@ -37,7 +37,7 @@ struct Notes{
 	CString name;
 	CString action;
 	CString path;
-	CString time;	
+	CString time;
 };
 
 class OperationNotes
@@ -49,32 +49,32 @@ public:
 	std::vector<Notes> GetOperationNotes();
 
 	/**
-	 * @Brief GetNotesByName »ñÈ¡Ä³Ò»ÓÃ»§µÄËùÓĞ²Ù×÷¼ÇÂ¼
-	 * @Parameter CString name  ÓÃ»§ÕË»§Ãû
+	 * @Brief GetNotesByName è·å–æŸä¸€ç”¨æˆ·çš„æ‰€æœ‰æ“ä½œè®°å½•
+	 * @Parameter CString name  ç”¨æˆ·è´¦æˆ·å
 	 * @Returns std::vector<Notes>
-	 * @Remark  
+	 * @Remark
 	 **/
 	std::vector<Notes> GetNotesByName(CString name);
 
 	//************************************
 	// Method:    GetNotesByType
-	// Parameter: int type 1:±íÊ¾Ö»»ñÈ¡Ó¦ÓÃ³ÌĞò´ò¿ª¹Ø±ÕµÄ¼ÇÂ¼£¬2:±íÊ¾Ö»»ñÈ¡ÎÄ¼ş²Ù×÷¼ÇÂ¼£¬0:±íÊ¾È«²¿»ñÈ¡
+	// Parameter: int type 1:è¡¨ç¤ºåªè·å–åº”ç”¨ç¨‹åºæ‰“å¼€å…³é—­çš„è®°å½•ï¼Œ2:è¡¨ç¤ºåªè·å–æ–‡ä»¶æ“ä½œè®°å½•ï¼Œ0:è¡¨ç¤ºå…¨éƒ¨è·å–
 	// Returns:   std::vector<Notes>
 	//************************************
 	std::vector<Notes> GetNotesByType(int type);
 
 	/**
-	 * @Brief GetNotesByNameAndType »ñÈ¡ÓÃ»§µÄÒ»ÖÖ²Ù×÷ÀàĞÍµÄËùÓĞ¼ÇÂ¼
-	 * @Parameter CString name ÓÃ»§Ãû
-	 * @Parameter int type ²Ù×÷ÀàĞÍ£¬1:±íÊ¾Ö»»ñÈ¡Ó¦ÓÃ³ÌĞò´ò¿ª¹Ø±ÕµÄ¼ÇÂ¼£¬2:±íÊ¾Ö»»ñÈ¡ÎÄ¼ş²Ù×÷¼ÇÂ¼£¬0:±íÊ¾È«²¿»ñÈ¡
-	 * @Returns std::vector<Notes> ²Ù×÷¼ÇÂ¼½á¹û¼¯
-	 * @Remark  
+	 * @Brief GetNotesByNameAndType è·å–ç”¨æˆ·çš„ä¸€ç§æ“ä½œç±»å‹çš„æ‰€æœ‰è®°å½•
+	 * @Parameter CString name ç”¨æˆ·å
+	 * @Parameter int type æ“ä½œç±»å‹ï¼Œ1:è¡¨ç¤ºåªè·å–åº”ç”¨ç¨‹åºæ‰“å¼€å…³é—­çš„è®°å½•ï¼Œ2:è¡¨ç¤ºåªè·å–æ–‡ä»¶æ“ä½œè®°å½•ï¼Œ0:è¡¨ç¤ºå…¨éƒ¨è·å–
+	 * @Returns std::vector<Notes> æ“ä½œè®°å½•ç»“æœé›†
+	 * @Remark
 	 **/
 	std::vector<Notes> GetNotesByNameAndType(CString name,int type);
 	/**
-	 * @Brief ClearLogFile Çå³ı²Ù×÷¼ÇÂ¼ÎÄ¼şµÄËùÓĞ¼ÇÂ¼
+	 * @Brief ClearLogFile æ¸…é™¤æ“ä½œè®°å½•æ–‡ä»¶çš„æ‰€æœ‰è®°å½•
 	 * @Returns void
-	 * @Remark  
+	 * @Remark
 	 **/
 	void ClearLogFile();
 

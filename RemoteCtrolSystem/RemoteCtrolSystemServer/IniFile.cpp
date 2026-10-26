@@ -8,12 +8,12 @@ CIniFile::CIniFile(void)
 
 CIniFile::CIniFile( LPCTSTR szFileName )
 {
-	// (1) ¾ø¶ÔÂ·¾¶£¬Ğè¼ìÑéÂ·¾¶ÊÇ·ñ´æÔÚ     
-	// (2) ÒÔ"./"¿ªÍ·£¬ÔòĞè¼ìÑéºóĞøÂ·¾¶ÊÇ·ñ´æÔÚ     
-	// (3) ÒÔ"../"¿ªÍ·£¬ÔòÉæ¼°Ïà¶ÔÂ·¾¶µÄ½âÎö
-	
+	// (1) ç»å¯¹è·¯å¾„ï¼Œéœ€æ£€éªŒè·¯å¾„æ˜¯å¦å­˜åœ¨
+	// (2) ä»¥"./"å¼€å¤´ï¼Œåˆ™éœ€æ£€éªŒåç»­è·¯å¾„æ˜¯å¦å­˜åœ¨
+	// (3) ä»¥"../"å¼€å¤´ï¼Œåˆ™æ¶‰åŠç›¸å¯¹è·¯å¾„çš„è§£æ
 
-	//Ïà¶ÔÂ·¾¶
+
+	//ç›¸å¯¹è·¯å¾„
 	m_szFileName.Format(_T(".//%s"),szFileName);
 	Init();
 }
@@ -26,7 +26,7 @@ void CIniFile::Init()
 {
 
 	m_unMaxSection  = 512;
-	m_unSetionNameMaxSize = 33; //32Î»UID´®
+	m_unSetionNameMaxSize = 33; //32ä½UIDä¸²
 }
 
 void CIniFile::SetFileName( LPCTSTR szFileName )
@@ -49,10 +49,10 @@ DWORD CIniFile::GetProfileSectionNames( CStringArray& strArray )
 	DWORD dwCopied = 0;
 
 	dwCopied = ::GetPrivateProfileSectionNames(pszSectionNames,nAllSectionNameMaxSize,m_szFileName);
-	
+
 	strArray.RemoveAll();
 	TCHAR *pSection = pszSectionNames;
-	do 
+	do
 	{
 		CString szSection(pSection);
 		if(szSection.GetLength()<1)
@@ -69,7 +69,7 @@ DWORD CIniFile::GetProfileSectionNames( CStringArray& strArray )
 	return dwCopied;
 }
 
-//×¢Òâ£ºÕâÀïÈôÊÇÃ»ÓĞÕÒµ½Ôò·µ»Ø0
+//æ³¨æ„ï¼šè¿™é‡Œè‹¥æ˜¯æ²¡æœ‰æ‰¾åˆ°åˆ™è¿”å›0
 int CIniFile::GetProfileInt( LPCTSTR lpszSectionName,LPCTSTR lpszKeyName )
 {
 	int nKeyValue = ::GetPrivateProfileInt(lpszSectionName,lpszKeyName,0,m_szFileName);
@@ -103,5 +103,3 @@ LPCTSTR CIniFile::GetFileName()
 {
 	return m_szFileName;
 }
-
-

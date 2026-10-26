@@ -1,4 +1,4 @@
-// SetupDlg.cpp : ÊµÏÖÎÄ¼ş
+// SetupDlg.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -7,7 +7,7 @@
 #include <shlwapi.h>
 #include "ClientMain.h"
 
-// CSetupDlg ¶Ô»°¿ò
+// CSetupDlg å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CSetupDlg, CDialog)
 
@@ -36,7 +36,7 @@ void CSetupDlg::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CSetupDlg, CDialog)
-	
+
 	ON_WM_CREATE()
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDC_BUTTON_SETUP_OK, &CSetupDlg::OnBnClickedButtonSetupOk)
@@ -66,7 +66,7 @@ ON_EN_CHANGE(IDC_EDIT_HOCZ_TILE, &CSetupDlg::OnEnChangeEditHoczTile)
 END_MESSAGE_MAP()
 
 
-// CSetupDlg ÏûÏ¢´¦Àí³ÌĞò
+// CSetupDlg æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 void CSetupDlg::OnStnClickedStaticFrame()
 {
@@ -91,7 +91,7 @@ int CSetupDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	m_bIsExist = TRUE;
 
-	
+
 	return 0;
 }
 
@@ -104,12 +104,12 @@ void CSetupDlg::OnDestroy()
 
 void CSetupDlg::OnBnClickedButtonSetupOk()
 {
-	
+
 	//OnOK();
 	((CClientMain*)GetParent())->SetFrame(m_nFrame);
 	((CClientMain*)GetParent())->SetImageQuality(m_nImageQuality);
 	((CClientMain*)GetParent())->SetTileNumber(m_nHorzTile,m_nVertTile);
-	EndDialog(1);
+	ShowWindow(SW_HIDE);
 }
 
 void CSetupDlg::OnBnClickedButtonSetupApply()
@@ -121,35 +121,35 @@ void CSetupDlg::OnBnClickedButtonSetupApply()
 
 void CSetupDlg::OnBnClickedButtonSetupCancel()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	//OnOK();
-	EndDialog(1);
+	ShowWindow(SW_HIDE);
 }
 
 
 void CSetupDlg::OnBnClickedButtonImgSub()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	SetImageQuality(GetImageQuality()-1);
 }
 
 void CSetupDlg::OnBnClickedButtonImgAdd()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
-	
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
+
 	SetImageQuality(GetImageQuality()+1);
 }
 
 
 void CSetupDlg::OnBnClickedButtonFrameSub()
-{	
+{
 	SetFrame(GetFrame()-1);
 }
 
 
 void CSetupDlg::OnBnClickedButtonFrameAdd()
 {
-	
+
 	SetFrame(GetFrame() + 1);
 }
 
@@ -177,7 +177,7 @@ BOOL CSetupDlg::OnInitDialog()
 	SetFrame(10);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// Òì³£: OCX ÊôĞÔÒ³Ó¦·µ»Ø FALSE
+	// å¼‚å¸¸: OCX å±æ€§é¡µåº”è¿”å› FALSE
 }
 
 int CSetupDlg::GetImageQuality()
@@ -208,7 +208,7 @@ bool CSetupDlg::SetImageQuality( int ImageQuality )
 		m_sldImageQuality.SetPos(m_nImageQuality);
 		m_tbImageQuality.SetWindowText((LPCTSTR)szImageQuality);
 	}
-	
+
 
 	return true;
 }
@@ -252,10 +252,10 @@ void CSetupDlg::OnNMReleasedcaptureSlider1(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CSetupDlg::OnEnChangeEditImageQuality()
 {
-	// TODO:  Èç¹û¸Ã¿Ø¼şÊÇ RICHEDIT ¿Ø¼ş£¬ÔòËü½«²»»á
-	// ·¢ËÍ¸ÃÍ¨Öª£¬³ı·ÇÖØĞ´ CDialog::OnInitDialog()
-	// º¯Êı²¢µ÷ÓÃ CRichEditCtrl().SetEventMask()£¬
-	// Í¬Ê±½« ENM_CHANGE ±êÖ¾¡°»ò¡±ÔËËãµ½ÑÚÂëÖĞ¡£
+	// TODO:  å¦‚æœè¯¥æ§ä»¶æ˜¯ RICHEDIT æ§ä»¶ï¼Œåˆ™å®ƒå°†ä¸ä¼š
+	// å‘é€è¯¥é€šçŸ¥ï¼Œé™¤éé‡å†™ CDialog::OnInitDialog()
+	// å‡½æ•°å¹¶è°ƒç”¨ CRichEditCtrl().SetEventMask()ï¼Œ
+	// åŒæ—¶å°† ENM_CHANGE æ ‡å¿—â€œæˆ–â€è¿ç®—åˆ°æ©ç ä¸­ã€‚
 
 	CString szImageQuality;
 	int     nImageQuality;
@@ -267,12 +267,12 @@ void CSetupDlg::OnEnChangeEditImageQuality()
 
 void CSetupDlg::OnEnChangeEditFrame()
 {
-	// TODO:  Èç¹û¸Ã¿Ø¼şÊÇ RICHEDIT ¿Ø¼ş£¬ÔòËü½«²»»á
-	// ·¢ËÍ¸ÃÍ¨Öª£¬³ı·ÇÖØĞ´ CDialog::OnInitDialog()
-	// º¯Êı²¢µ÷ÓÃ CRichEditCtrl().SetEventMask()£¬
-	// Í¬Ê±½« ENM_CHANGE ±êÖ¾¡°»ò¡±ÔËËãµ½ÑÚÂëÖĞ¡£
+	// TODO:  å¦‚æœè¯¥æ§ä»¶æ˜¯ RICHEDIT æ§ä»¶ï¼Œåˆ™å®ƒå°†ä¸ä¼š
+	// å‘é€è¯¥é€šçŸ¥ï¼Œé™¤éé‡å†™ CDialog::OnInitDialog()
+	// å‡½æ•°å¹¶è°ƒç”¨ CRichEditCtrl().SetEventMask()ï¼Œ
+	// åŒæ—¶å°† ENM_CHANGE æ ‡å¿—â€œæˆ–â€è¿ç®—åˆ°æ©ç ä¸­ã€‚
 
-	// TODO:  ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO:  åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	CString szFrame;
 	int     nFrame;
 	m_tbFrame.GetWindowText(szFrame);
@@ -317,10 +317,10 @@ void CSetupDlg::OnNMReleasedcaptureSliderHorzTile(NMHDR *pNMHDR, LRESULT *pResul
 
 void CSetupDlg::OnEnChangeEditVertTile()
 {
-	// TODO:  Èç¹û¸Ã¿Ø¼şÊÇ RICHEDIT ¿Ø¼ş£¬ÔòËü½«²»»á
-	// ·¢ËÍ¸ÃÍ¨Öª£¬³ı·ÇÖØĞ´ CDialog::OnInitDialog()
-	// º¯Êı²¢µ÷ÓÃ CRichEditCtrl().SetEventMask()£¬
-	// Í¬Ê±½« ENM_CHANGE ±êÖ¾¡°»ò¡±ÔËËãµ½ÑÚÂëÖĞ¡£
+	// TODO:  å¦‚æœè¯¥æ§ä»¶æ˜¯ RICHEDIT æ§ä»¶ï¼Œåˆ™å®ƒå°†ä¸ä¼š
+	// å‘é€è¯¥é€šçŸ¥ï¼Œé™¤éé‡å†™ CDialog::OnInitDialog()
+	// å‡½æ•°å¹¶è°ƒç”¨ CRichEditCtrl().SetEventMask()ï¼Œ
+	// åŒæ—¶å°† ENM_CHANGE æ ‡å¿—â€œæˆ–â€è¿ç®—åˆ°æ©ç ä¸­ã€‚
 
 	CString szVertTile;
 	int     nVertTile;
@@ -332,10 +332,10 @@ void CSetupDlg::OnEnChangeEditVertTile()
 
 void CSetupDlg::OnEnChangeEditHoczTile()
 {
-	// TODO:  Èç¹û¸Ã¿Ø¼şÊÇ RICHEDIT ¿Ø¼ş£¬ÔòËü½«²»»á
-	// ·¢ËÍ¸ÃÍ¨Öª£¬³ı·ÇÖØĞ´ CDialog::OnInitDialog()
-	// º¯Êı²¢µ÷ÓÃ CRichEditCtrl().SetEventMask()£¬
-	// Í¬Ê±½« ENM_CHANGE ±êÖ¾¡°»ò¡±ÔËËãµ½ÑÚÂëÖĞ¡£
+	// TODO:  å¦‚æœè¯¥æ§ä»¶æ˜¯ RICHEDIT æ§ä»¶ï¼Œåˆ™å®ƒå°†ä¸ä¼š
+	// å‘é€è¯¥é€šçŸ¥ï¼Œé™¤éé‡å†™ CDialog::OnInitDialog()
+	// å‡½æ•°å¹¶è°ƒç”¨ CRichEditCtrl().SetEventMask()ï¼Œ
+	// åŒæ—¶å°† ENM_CHANGE æ ‡å¿—â€œæˆ–â€è¿ç®—åˆ°æ©ç ä¸­ã€‚
 
 	CString szHorzTile;
 	int     nHorzTile;

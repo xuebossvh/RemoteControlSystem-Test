@@ -1,26 +1,26 @@
-// ClientDlg.h : Í·ÎÄ¼ş
+// ClientDlg.h : å¤´æ–‡ä»¶
 //
 
 #pragma once
 
 
-// CClientDlg ¶Ô»°¿ò
+// CClientDlg å¯¹è¯æ¡†
 class CClientDlg : public CDialog
 {
-// ¹¹Ôì
+// æ„é€ 
 public:
-	CClientDlg(CWnd* pParent = NULL);	// ±ê×¼¹¹Ôìº¯Êı
-// ¶Ô»°¿òÊı¾İ
+	CClientDlg(CWnd* pParent = NULL);	// æ ‡å‡†æ„é€ å‡½æ•°
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_DIALOG_CLIENT };
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV æ”¯æŒ
 
 
-// ÊµÏÖ
+// å®ç°
 protected:
 	HICON m_hIcon;
 
-	// Éú³ÉµÄÏûÏ¢Ó³Éäº¯Êı
+	// ç”Ÿæˆçš„æ¶ˆæ¯æ˜ å°„å‡½æ•°
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();

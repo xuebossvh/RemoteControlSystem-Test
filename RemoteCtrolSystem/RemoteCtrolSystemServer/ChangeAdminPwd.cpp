@@ -1,4 +1,4 @@
-// ChangeAdminPwd.cpp : ÊµÏÖÎÄ¼ş
+// ChangeAdminPwd.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -6,7 +6,7 @@
 #include "Config.h"
 
 
-// CChangeAdminPwd ¶Ô»°¿ò
+// CChangeAdminPwd å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CChangeAdminPwd, CDialog)
 
@@ -36,27 +36,27 @@ BEGIN_MESSAGE_MAP(CChangeAdminPwd, CDialog)
 END_MESSAGE_MAP()
 
 
-// CChangeAdminPwd ÏûÏ¢´¦Àí³ÌĞò
+// CChangeAdminPwd æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 void CChangeAdminPwd::OnBnClickedBtnNewpwdok()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	UpdateData(TRUE);
 	Config config;
 	if (m_strNewPwd==m_strSurePwd)
 	{
-		config.SetAdminLoginPwd(m_strSurePwd);  //°ÑĞÂÃÜÂëĞ´ÈëÅäÖÃÎÄ¼şÖĞ
+		config.SetAdminLoginPwd(m_strSurePwd);  //æŠŠæ–°å¯†ç å†™å…¥é…ç½®æ–‡ä»¶ä¸­
 		//iniFile.SetProfileString(_T("admin"),_T("adminPwd"),m_strNewPwd);
 		OnOK();
 	}
 	else
 	{
-		AfxMessageBox(_T("Á½´ÎÃÜÂëÊäÈë²»Ò»ÖÂ£¬Çë²éÖ¤ºóÔÙÌá½»£¡"));
-	}	
+		AfxMessageBox(_T("ä¸¤æ¬¡å¯†ç è¾“å…¥ä¸ä¸€è‡´ï¼Œè¯·æŸ¥è¯åå†æäº¤ï¼"));
+	}
 }
 
 void CChangeAdminPwd::OnBnClickedBtnNewpwdcancel()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	OnCancel();
 }

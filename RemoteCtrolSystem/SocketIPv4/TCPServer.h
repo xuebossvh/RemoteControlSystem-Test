@@ -1,19 +1,19 @@
 /**************************************************************************
 **             Guangzhou ZHIYUAN electronics Co.,LTD
-**             
 **
-**                   http://www.embedtools.com  
+**
+**                   http://www.embedtools.com
 **-------------File Info---------------------------------------------------
 **File Name:   TCPServer.h
 **Latest modified Data:
 **Latest Version:
-**Description:  
+**Description:
 **
 **-------------------------------------------------------------------------
-**Create by:   
+**Create by:
 **Create date:  2013/04/18   17:17
 **Version:
-**Description: 
+**Description:
 **
 **
 **-------------------------------------------------------------------------
@@ -53,7 +53,7 @@ public:
 	    @brief: Close a connection
 	    @Return: void
 	 */
-	void Stop() throw (TCPException);  
+	void Stop() throw (TCPException);
 	/**
 	    @brief: Wait for the connection in a single thread
 	    @Parameter: int seconds

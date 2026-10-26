@@ -1,93 +1,58 @@
 #include "StdAfx.h"
 #include "SendImageThread.h"
-#include "WndClassList.h"
-
-#include "../SocketIPv4/trace.h"
 #include "../Message/SetupMsg.h"
-
-SendImageThread::SendImageThread(void)
-{
-	Init();
+#include <memory>
+SendImageThread::SendImageThread() : m_Frame(10), m_stop(false), m_connection(NULL) { m_ScreenShooter.Init(15, 15); }
+SendImageThread::~SendImageThread() { Stop(); ClearImages(); }
+void SendImageThread::Stop() {
+    m_stop = true;
+    if (m_connection) m_connection->disconnect();
+    WaitForEnd();
 }
-
-SendImageThread::~SendImageThread(void)
-{
+void SendImageThread::ClearImages() {
+    while (!m_SendQueue.empty()) { delete m_SendQueue.front(); m_SendQueue.pop(); }
 }
-
-bool SendImageThread::SetFrame( int frame )
-{
-	m_Frame = frame;
-	return false;
+void SendImageThread::SetConnection(TCPConnection* connection) { m_connection = connection; }
+bool SendImageThread::SetFrame(int frame) {
+    if (frame < 1 || frame > 30) return false;
+    m_Frame = frame; return true;
 }
-
-void SendImageThread::Run()
-{
-	BOOL isNeedEdn = FALSE;
-	while (isNeedEdn == FALSE)
-	{
-		
-		m_ScreenShooter.ShotScreenImage(&m_SendQueue);
-		//若服务端屏幕分辨率改变，则发送消息客户端
-		if(m_ScreenShooter.IsPixelChange())
-		{
-			SetupMsg* systemMetrics = new SetupMsg;
-			systemMetrics->PacketMsg(RCS_SETUP_MSG_PIXEL,GetSystemMetrics(SM_CXSCREEN),GetSystemMetrics(SM_CYSCREEN));
-			m_connection->send(*systemMetrics);
-			delete systemMetrics;
-		}
-		//图片队列不为空，则从队列中取出图片发送
-		//_trace(L"frame %d\n",m_Frame);
-		while (!m_SendQueue.empty())
-		{
-			ByteArrayMsg* curMessage = m_SendQueue.front();
-			m_SendQueue.pop();
-			//_trace(L"Send imag Thread::%d\n",GetThreadID());
-			//_trace(L"Send size : %d\n",curMessage->GetSize());
-			if (m_connection->IsConnected())
-			{
-				int bytes = m_connection->send(*curMessage);
-				delete curMessage;
-				if (bytes< 0)  //说明链接出错或者链接已断开
-				{
-					m_connection->disconnect();
-					WndClassList::m_connectDlg->DeleteItemByConnection(m_connection);
-					WndClassList::m_watcher->Stop();
-					isNeedEdn = TRUE;
-					break;
-				}
-			}
-			else
-			{
-				delete curMessage;
-				isNeedEdn = TRUE;
-				break;
-			}
-			
-			//connection.send("helloworld", 10);
-		}
-		Sleep(1000 / m_Frame);
-	}
-	//_trace(L"SendImageThread is end\n");
+bool SendImageThread::SetImageQuality(int quality) {
+    if (quality < 1 || quality > 100) return false;
+    std::lock_guard<std::mutex> lock(m_captureMutex);
+    return m_ScreenShooter.SetQuality(quality);
 }
-
-bool SendImageThread::Init()
-{
-	m_ScreenShooter.Init(15,15);
-	m_Frame = 10;
-	return SetFrame(m_Frame);
+void SendImageThread::SetTileNumber(int horizontal, int vertical) {
+    if (horizontal < 1 || vertical < 1 || horizontal > 32 || vertical > 32) return;
+    std::lock_guard<std::mutex> lock(m_captureMutex);
+    m_ScreenShooter.Init(horizontal, vertical);
 }
-
-void SendImageThread::SetConnection( TCPConnection* _connection )
-{
-	m_connection = _connection;
-}
-
-bool SendImageThread::SetImageQuality( int quality )
-{
-	return m_ScreenShooter.SetQuality(quality);
-}
-
-void SendImageThread::SetTileNumber(int Horz,int Vert )
-{
-	m_ScreenShooter.Init(Horz,Vert);
+void SendImageThread::Run() {
+    try {
+        while (!m_stop && m_connection && m_connection->IsConnected()) {
+            const DWORD frameStart = GetTickCount();
+            bool changed = false;
+            int width = 0, height = 0;
+            {
+                std::lock_guard<std::mutex> lock(m_captureMutex);
+                if (!m_ScreenShooter.ShotScreenImage(&m_SendQueue)) throw TCPException("Screen capture failed");
+                changed = m_ScreenShooter.IsPixelChange();
+                width = m_ScreenShooter.GetScreenWidth(); height = m_ScreenShooter.GetScreenHeight();
+            }
+            if (changed) {
+                SetupMsg dimensions;
+                dimensions.PacketMsg(RCS_SETUP_MSG_PIXEL, width, height);
+                if (m_connection->send(dimensions) <= 0) break;
+            }
+            while (!m_SendQueue.empty() && !m_stop && m_connection->IsConnected()) {
+                std::unique_ptr<ByteArrayMsg> message(m_SendQueue.front()); m_SendQueue.pop();
+                if (m_connection->send(*message) <= 0) break;
+            }
+            ClearImages();
+            const DWORD interval = 1000 / m_Frame.load();
+            while (!m_stop && m_connection->IsConnected() && GetTickCount() - frameStart < interval) Sleep(5);
+        }
+    } catch (...) {}
+    ClearImages();
+    if (m_connection) m_connection->disconnect();
 }

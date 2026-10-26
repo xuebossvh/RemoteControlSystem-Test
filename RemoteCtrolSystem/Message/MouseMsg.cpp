@@ -53,13 +53,13 @@ bool MouseMsg::PacketMsg( int x,int y,int status )
 	size_t newSize = sizeof(type) + sizeof(x) + sizeof(y) + sizeof(status);
 
 
-	//�����Ϣ���ݽṹ��ο�ͷ�ļ��е�ע��
-	//������Ϣ���ݽṹ������Ҫ��������ݿ�����һ���ֽ�����m_buffer��
+	//鼠标消息数据结构请参考头文件中的注释
+	//根据消息数据结构，将需要打包的数据拷贝到一个字节数组m_buffer中
 	if (m_size < newSize)
 	{
 		if (m_buffer != NULL)
 		{
-			delete m_buffer;
+			delete[] m_buffer;
 		}
 
 		m_buffer = new char[newSize];

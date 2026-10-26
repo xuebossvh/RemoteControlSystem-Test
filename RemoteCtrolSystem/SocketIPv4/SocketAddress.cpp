@@ -14,8 +14,8 @@ TCPSocketAddress::TCPSocketAddress(const string & ip, Port _port, bool doLookup)
 	else
 	{
 		// Try to convert ip-string to binary ip.
-		address.S_un.S_addr = inet_addr(ip.c_str());   //ÕâÀï×ª»»ºóµÄÊÇÍøÂç×Ö½ÚË³Ğò¶øÒÑ
-		                           
+		address.S_un.S_addr = inet_addr(ip.c_str());   //è¿™é‡Œè½¬æ¢åçš„æ˜¯ç½‘ç»œå­—èŠ‚é¡ºåºè€Œå·²
+
 		if(address.S_un.S_addr == -1)
 		{
 			// IP is name or not correct... let's see if lookup() can find something :)
@@ -27,7 +27,7 @@ TCPSocketAddress::TCPSocketAddress(const string & ip, Port _port, bool doLookup)
 			m_sreIpAddresses.push_back(address);
 		}
 	}
-	//Ö÷»ú×Ö½ÚË³Ğò×ª³ÉÍøÂç×Ö½ÚË³Ğò
+	//ä¸»æœºå­—èŠ‚é¡ºåºè½¬æˆç½‘ç»œå­—èŠ‚é¡ºåº
 	m_usPort = htons(_port);
 }
 
@@ -35,7 +35,7 @@ TCPSocketAddress::TCPSocketAddress(const string & ip, Port _port, bool doLookup)
 TCPSocketAddress::TCPSocketAddress(const sockaddr_in & address) throw()
 {
 	m_sreIpAddresses.push_back(address.sin_addr);
-	//sin_portÀïµÄ¶Ë¿ÚÒÑ¾­ÊÇÍøÂç×Ö½ÚË³ĞòµÄÁË
+	//sin_porté‡Œçš„ç«¯å£å·²ç»æ˜¯ç½‘ç»œå­—èŠ‚é¡ºåºçš„äº†
 	m_usPort = address.sin_port;
 }
 
@@ -168,7 +168,7 @@ string TCPSocketAddress::GetIPString(size_t index) const throw (TCPException)
 	return ip;
 }
 
-//·µ»ØÖ÷»úË³ĞòµÄ¶Ë¿ÚºÅ
+//è¿”å›ä¸»æœºé¡ºåºçš„ç«¯å£å·
 TCPSocketAddress::Port TCPSocketAddress::GetPort() const throw()
 {
 	return ntohs(m_usPort);

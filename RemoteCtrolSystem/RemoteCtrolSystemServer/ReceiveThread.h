@@ -18,5 +18,5 @@ protected:
 private:
 	std::queue<ByteArrayMsg*>	*m_pSendQueue;
 	TCPConnection *m_pConnection;
-	
+
 };

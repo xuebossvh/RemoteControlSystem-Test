@@ -2,25 +2,25 @@
 #include "resource.h"
 #include "afxwin.h"
 
-// CEnterDlg ¶Ô»°¿ò
+// CEnterDlg å¯¹è¯æ¡†
 
 class CEnterDlg : public CDialog
 {
 	DECLARE_DYNAMIC(CEnterDlg)
 
 public:
-	CEnterDlg(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CEnterDlg(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CEnterDlg();
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_ENTERDLG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedBtnOk();
-	CEdit m_enterPwd;  
+	CEdit m_enterPwd;
 	afx_msg void OnBnClickedBtnCancel();
 };

@@ -1,4 +1,4 @@
-// TabConnectionDlg.cpp : ÊµÏÖÎÄ¼ş
+// TabConnectionDlg.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -6,7 +6,7 @@
 #include "RemoteCtrolSystemServer.h"
 
 
-// TabConnectionDlg ¶Ô»°¿ò
+// TabConnectionDlg å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(TabConnectionDlg, CDialog)
 
@@ -28,139 +28,133 @@ void TabConnectionDlg::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(TabConnectionDlg, CDialog)
+	ON_MESSAGE(WM_APP + 10, &TabConnectionDlg::OnConnectionsChanged)
 	ON_BN_CLICKED(IDC_BTN_BROKEN, &TabConnectionDlg::OnBnClickedBtnBroken)
 	ON_BN_CLICKED(IDC_BT_OPERATOR, &TabConnectionDlg::OnBnClickedBtOperator)
 END_MESSAGE_MAP()
 
 
-// TabConnectionDlg ÏûÏ¢´¦Àí³ÌĞò
+// TabConnectionDlg æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 BOOL TabConnectionDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// TODO:  ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯
+	// TODO:  åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–
 
 	m_listConnection.SetExtendedStyle(m_listConnection.GetExtendedStyle()| LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES );
 	LVCOLUMN lvcol;
 	lvcol.mask = LVCF_TEXT | LVCF_FMT | LVCF_SUBITEM | LVCF_WIDTH;
 	lvcol.fmt = LVCFMT_CENTER;
-	lvcol.pszText = L"µÇÂ¼Ãû";
-	lvcol.iSubItem = 1;  //Óë±íÁĞÏà¹ØµÄ×Ó±íÏîË÷ÒıºÅ
+	lvcol.pszText = L"ç™»å½•å";
+	lvcol.iSubItem = 1;  //ä¸è¡¨åˆ—ç›¸å…³çš„å­è¡¨é¡¹ç´¢å¼•å·
 	lvcol.cx = 120;
 
 	m_listConnection.InsertColumn(0,&lvcol);
-	lvcol.pszText = L"IPµØÖ·";
+	lvcol.pszText = L"IPåœ°å€";
 	m_listConnection.InsertColumn(1,&lvcol);
 	lvcol.cx = 70;
-	lvcol.pszText = L"È¨ÏŞ";
+	lvcol.pszText = L"æƒé™";
 	m_listConnection.InsertColumn(2,&lvcol);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// Òì³£: OCX ÊôĞÔÒ³Ó¦·µ»Ø FALSE
+	// å¼‚å¸¸: OCX å±æ€§é¡µåº”è¿”å› FALSE
 }
 
-void TabConnectionDlg::AddConnection( ConnectionData data )
+void TabConnectionDlg::AddConnection(ConnectionData data) { TryAddConnection(data); }
+
+bool TabConnectionDlg::TryAddConnection(ConnectionData data)
 {
-	m_ConnectionData.push_back(data);
+    {
+        std::lock_guard<std::mutex> lock(m_connectionsMutex);
+        for (const auto& existing : m_ConnectionData)
+            if (existing.username == data.username) return false;
+        m_ConnectionData.push_back(data);
+    }
+    UpdateList();
+    return true;
 }
 
 void TabConnectionDlg::UpdateList()
 {
-	m_listConnection.DeleteAllItems();
-	std::vector<ConnectionData>::iterator iter;
-	for (iter = m_ConnectionData.begin();iter!=m_ConnectionData.end();iter++)
-	{
-		int nIndex = m_listConnection.GetItemCount();
-		LV_ITEM lvItem;
-		lvItem.mask = LVIF_TEXT ; 
-		lvItem.iItem = nIndex;     //ĞĞÊı
-		lvItem.iSubItem = 0;
-		lvItem.pszText = _T("");
-		//ÔÚ×îºóÒ»ĞĞ²åÈë¼ÇÂ¼Öµ.
-		m_listConnection.InsertItem(&lvItem); 
-		m_listConnection.SetItemText(nIndex,0,iter->username);
-		//²åÈëÆäËüÁĞ
-		m_listConnection.SetItemText(nIndex,1,iter->ip);
-		if (iter->status == 0)
-		{
-			m_listConnection.SetItemText(nIndex,2,_T("¹Û¿´"));
-		}
-		else
-		{
-			m_listConnection.SetItemText(nIndex,2,_T("¿ØÖÆ"));
-		}
-	}
+    if (GetSafeHwnd()) PostMessage(WM_APP + 10);
+}
+
+LRESULT TabConnectionDlg::OnConnectionsChanged(WPARAM, LPARAM)
+{
+    std::vector<ConnectionData> snapshot;
+    {
+        std::lock_guard<std::mutex> lock(m_connectionsMutex);
+        snapshot = m_ConnectionData;
+    }
+    m_listConnection.DeleteAllItems();
+    for (const auto& data : snapshot) {
+        int index = m_listConnection.InsertItem(m_listConnection.GetItemCount(), data.username);
+        m_listConnection.SetItemText(index, 1, data.ip);
+        m_listConnection.SetItemText(index, 2, data.status == 1 ? L"Control" : L"View");
+        m_listConnection.SetItemData(index, reinterpret_cast<DWORD_PTR>(data.connection));
+    }
+    return 0;
 }
 
 BOOL TabConnectionDlg::IsUserLogined(CString name)
 {
-	std::vector<ConnectionData>::iterator iter;
-	for (iter = m_ConnectionData.begin();iter!=m_ConnectionData.end();iter++)
-	{
-		if(iter->username == name)
-		{
-			return TRUE;
-		}
-	}
-	return FALSE;
+    std::lock_guard<std::mutex> lock(m_connectionsMutex);
+    for (const auto& data : m_ConnectionData)
+        if (data.username == name) return TRUE;
+    return FALSE;
+}
+
+int TabConnectionDlg::GetConnectionPower(TCPConnection* connection)
+{
+    std::lock_guard<std::mutex> lock(m_connectionsMutex);
+    for (const auto& data : m_ConnectionData)
+        if (data.connection == connection) return data.status;
+    return -1;
 }
 
 void TabConnectionDlg::OnBnClickedBtnBroken()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
-	POSITION pos = m_listConnection.GetFirstSelectedItemPosition();
-	if (NULL == pos)
-	{
-		TRACE(_T("No item were selected!\n"));
-		AfxMessageBox(_T("ÇëÑ¡ÔñÒª¶Ï¿ªÁ¬½ÓµÄĞĞ£¡"));
-	}
-	else
-	{
-
-		int nItem = m_listConnection.GetNextSelectedItem(pos);
-		m_ConnectionData[nItem].connection->disconnect();
-		std::vector<ConnectionData>::iterator iter = m_ConnectionData.begin();
-		m_ConnectionData.erase(iter+nItem);
-		this->UpdateList();
-	}
+    POSITION position = m_listConnection.GetFirstSelectedItemPosition();
+    if (!position) return;
+    int index = m_listConnection.GetNextSelectedItem(position);
+    auto connection = reinterpret_cast<TCPConnection*>(m_listConnection.GetItemData(index));
+    {
+        std::lock_guard<std::mutex> lock(m_connectionsMutex);
+        for (const auto& data : m_ConnectionData)
+            if (data.connection == connection) { connection->disconnect(); break; }
+    }
 }
 
-void TabConnectionDlg::DeleteItemByConnection( TCPConnection *connection )
+void TabConnectionDlg::DeleteItemByConnection(TCPConnection* connection)
 {
-	std::vector<ConnectionData>::iterator iter;
-	for (iter = m_ConnectionData.begin();iter!=m_ConnectionData.end();iter++)
-	{
-		if(iter->connection == connection)
-		{
-			m_ConnectionData.erase(iter);
-			this->UpdateList();
-			return ;
-		}
-	}
-	
+    {
+        std::lock_guard<std::mutex> lock(m_connectionsMutex);
+        for (auto it = m_ConnectionData.begin(); it != m_ConnectionData.end(); ++it)
+            if (it->connection == connection) { m_ConnectionData.erase(it); break; }
+    }
+    UpdateList();
 }
 
 void TabConnectionDlg::LoginOutAllUser()
 {
-	std::vector<ConnectionData>::iterator iter;
-	for (iter = m_ConnectionData.begin();iter!=m_ConnectionData.end();iter++)
-	{
-		iter->connection->disconnect();
-	}
-	m_ConnectionData.clear();
-	this->UpdateList();
+    {
+        std::lock_guard<std::mutex> lock(m_connectionsMutex);
+        for (const auto& data : m_ConnectionData) data.connection->disconnect();
+        m_ConnectionData.clear();
+    }
+    UpdateList();
 }
 
 void TabConnectionDlg::OnBnClickedBtOperator()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	COperationDlg operation;
 	POSITION pos = m_listConnection.GetFirstSelectedItemPosition();
 	if (NULL == pos)
 	{
 		/*TRACE(_T("No item were selected!\n"));
-		AfxMessageBox(_T("ÇëÑ¡ÔñÒª¶Ï¿ªÁ¬½ÓµÄĞĞ£¡"));*/
+		AfxMessageBox(_T("è¯·é€‰æ‹©è¦æ–­å¼€è¿æ¥çš„è¡Œï¼"));*/
 		operation.DoModal();
 	}
 	else
@@ -180,5 +174,5 @@ void TabConnectionDlg::OnBnClickedBtOperator()
 		operation.SetNameAndType(CString(name),0);
 		operation.DoModal();
 	}
-	
+
 }

@@ -3,22 +3,22 @@
 #include "userfile.h"
 
 
-// CAddUserDlg ¶Ô»°¿ò
+// CAddUserDlg å¯¹è¯æ¡†
 
 class CAddUserDlg : public CDialog
 {
 	DECLARE_DYNAMIC(CAddUserDlg)
 
 public:
-	CAddUserDlg(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CAddUserDlg(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CAddUserDlg();
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum {ADD,EDIT};
 	enum { IDD = IDD_ADD_USER };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -28,24 +28,24 @@ public:
 	afx_msg void OnBnClickedBtnCancel();
 
 	/**
-	 * @Brief SetUserData ÉèÖÃÓÃ»§Êı¾İ£¬Ö÷ÒªÓÃÓÚ±à¼­×´Ì¬Ê±£¬´«ÈëÊı¾İµ½½çÃæ
-	 * @Parameter UserData user  ÓÃ»§Êı¾İ
-	 * @Returns void 
-	 * @Remark  
+	 * @Brief SetUserData è®¾ç½®ç”¨æˆ·æ•°æ®ï¼Œä¸»è¦ç”¨äºç¼–è¾‘çŠ¶æ€æ—¶ï¼Œä¼ å…¥æ•°æ®åˆ°ç•Œé¢
+	 * @Parameter UserData user  ç”¨æˆ·æ•°æ®
+	 * @Returns void
+	 * @Remark
 	 **/
 	void SetUserData(UserData user);
 
 	/**
-	 * @Brief SetStats  ÉèÖÃ½çÃæËù´¦µÄ×´Ì¬
-	 * @Parameter int stats ADD±íÊ¾Ìí¼Ó×´Ì¬¡¢EDIT±íÊ¾±à¼­×´Ì¬
+	 * @Brief SetStats  è®¾ç½®ç•Œé¢æ‰€å¤„çš„çŠ¶æ€
+	 * @Parameter int stats ADDè¡¨ç¤ºæ·»åŠ çŠ¶æ€ã€EDITè¡¨ç¤ºç¼–è¾‘çŠ¶æ€
 	 * @Returns void
-	 * @Remark  ÕâÊÇÓÉÓÚÌí¼ÓºÍ±à¼­Ê¹ÓÃµÄÊÇÍ¬Ò»¸ö½çÃæ
+	 * @Remark  è¿™æ˜¯ç”±äºæ·»åŠ å’Œç¼–è¾‘ä½¿ç”¨çš„æ˜¯åŒä¸€ä¸ªç•Œé¢
 	 **/
 	void SetStats(int stats);
 private:
-	
-	UserData m_user;  //ÓÃ»§Êı¾İ
-	int m_stats; //×´Ì¬
+
+	UserData m_user;  //ç”¨æˆ·æ•°æ®
+	int m_stats; //çŠ¶æ€
 
 
 };

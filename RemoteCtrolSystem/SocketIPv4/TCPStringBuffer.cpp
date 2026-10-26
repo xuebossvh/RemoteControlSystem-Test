@@ -27,7 +27,7 @@ void TCPStringBuffer::Prepare() throw()
 
 void TCPStringBuffer::Update(size_t) throw()
 {
-    //°Ñ»º´æptrToBufferµÄÄÚÈÝ¸üÐÂµ½bufferÖÐ¡£
+    //æŠŠç¼“å­˜ptrToBufferçš„å†…å®¹æ›´æ–°åˆ°bufferä¸­ã€‚
     m_strBuffer = m_pPtrToBuffer;
     delete[] m_pPtrToBuffer;
     m_pPtrToBuffer = NULL;
@@ -55,4 +55,3 @@ TCPStringBuffer::operator string&() throw()
 {
     return m_strBuffer;
 }
-

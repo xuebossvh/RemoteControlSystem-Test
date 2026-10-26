@@ -2,7 +2,7 @@
 **             Guangzhou ZHIYUAN electronics Co.,LTD
 **
 **
-**                   http://www.electronics.com 
+**                   http://www.electronics.com
 **-------------File Info---------------------------------------------------
 **File Name:UserMsg.h
 **Latest modified Data:2013-4-7  11:11:15
@@ -25,12 +25,12 @@
 #ifndef __USERMSG_H__
 #define __USERMSG_H__
 #include "bytearraymsg.h"
-/*SetupMsgÊÇÉèÖÃÏûÏ¢µÄÀà£¬ÆäÖĞm_buffer´¢´æÏûÏ¢µÄÊµ¼ÊÊı¾İ
-  Êı¾İÅÅÁĞ·½Ê½ÈçÏÂ£º
-  ÀàĞÍ		±äÁ¿Ãû			×Ö½ÚÊı
+/*SetupMsgæ˜¯è®¾ç½®æ¶ˆæ¯çš„ç±»ï¼Œå…¶ä¸­m_bufferå‚¨å­˜æ¶ˆæ¯çš„å®é™…æ•°æ®
+  æ•°æ®æ’åˆ—æ–¹å¼å¦‚ä¸‹ï¼š
+  ç±»å‹		å˜é‡å			å­—èŠ‚æ•°
   __int8	Type			(1bits)
   char*		uesrname		(20bits)
-  char*		password			(20bits) 
+  char*		password			(20bits)
 */
 class UserMsg :
 	public ByteArrayMsg
@@ -40,19 +40,19 @@ public:
 	~UserMsg(void);
 
 	/**
-	   @brief:·µ»ØÓÃ»§Ãû£¬ÇëÈ·¶¨´«ÈëµÄpUsernameÖ¸ÏòµÄÄÚ´æ¿é´óĞ¡´óÓÚ20bits
+	   @brief:è¿”å›ç”¨æˆ·åï¼Œè¯·ç¡®å®šä¼ å…¥çš„pUsernameæŒ‡å‘çš„å†…å­˜å—å¤§å°å¤§äº20bits
 	   @Parameter:char * pUsername
 	   @Return:bool
 	*/
 	bool  GetUsername(char* pUsername);
 	/**
-	   @brief:·µ»ØÃÜÂë£¬ÇëÈ·¶¨´«ÈëµÄpPasswordÖ¸ÏòµÄÄÚ´æ¿é´óĞ¡´óÓÚ20bits
+	   @brief:è¿”å›å¯†ç ï¼Œè¯·ç¡®å®šä¼ å…¥çš„pPasswordæŒ‡å‘çš„å†…å­˜å—å¤§å°å¤§äº20bits
 	   @Parameter:char * pPassword
 	   @Return:bool
 	*/
 	bool  GetPassword(char* pPassword);
 	/**
-	   @brief:´ò°üÏûÏ¢
+	   @brief:æ‰“åŒ…æ¶ˆæ¯
 	   @Parameter:char * Username
 	   @Parameter:char * Password
 	   @Return:bool
@@ -60,4 +60,3 @@ public:
 	bool  PacketMsg(char* Username,char* Password);
 };
 #endif
-

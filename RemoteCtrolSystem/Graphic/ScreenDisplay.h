@@ -2,7 +2,7 @@
 **             Guangzhou ZHIYUAN electronics Co.,LTD
 **
 **
-**                   http://www.electronics.com 
+**                   http://www.electronics.com
 **-------------File Info---------------------------------------------------
 **File Name:ScreenDisplay.h
 **Latest modified Data:2013-4-3  9:39:09
@@ -22,141 +22,63 @@
 **Version:
 **Description:
 **************************************************************************/
-#ifndef __SCREENDISPLAY_H__
-#define __SCREENDISPLAY_H__
+// Modernized image implementation: UTF-8, C++14, Windows GDI/GDI+.
+#pragma once
+#include "../Message/ImageMsg.h"
+#include "GdiImage.h"
 
-#ifndef NULL
-#define NULL 0 
-#endif
-
-#include "..\Message\ImageMsg.h"
-#include "..\CxImage\ximage.h"
-//#include <windows.h>
-class ScreenDisplay
-{
+// Shared, window-independent geometry for both drawing and input. A single
+// scale is applied to both axes; integer raster dimensions may differ by <1 px.
+class ScreenViewGeometry {
 public:
-	ScreenDisplay(void);
-	~ScreenDisplay(void);
-
-	/**
-	   @brief:初始化显示类，需要传入显示窗口的句柄，以及显示画布的像素大小
-	   @Parameter:HWND hDisplayWin
-	   @Parameter:int width
-	   @Parameter:int height
-	   @Return:bool
-	*/
-	bool Initialize(HWND hDisplayWin,int WinWidth,int WinHeight,int ServerWidth,int ServerHeight);
-	/**
-	   @brief:设置显示窗口大小
-	   @Parameter:int width
-	   @Parameter:int height
-	   @Return:bool
-	*/
-	bool SetSize(int width,int height);
-	/**
-	   @brief:拷贝缓存，绘制图像
-	   @Return:void
-	*/
-	void Display();
-	/**
-	   @brief:接收图像消息并解压，会知道缓存中
-	   @Parameter:ByteArrayMsg * imageMsg
-	   @Return:void
-	*/
-	void RecvImageMsg(ByteArrayMsg* imageMsg);
-	/**
-	   @brief:返回显示缓存宽度
-	   @Return:int
-	*/
-	int  GetDisplayWidth();
-	/**
-	   @brief:返回显示缓存高度
-	   @Return:int
-	*/
-	int  GetDisplayHeight();
-	/**
-	   @brief:返回远程桌面宽度
-	   @Return:int
-	*/
-	int  GetSeverWidth();
-	/**
-	   @brief:返回远程桌面高度
-	   @Return:int
-	*/
-	int	 GetServerHeight();
-	/**
-	   @brief:返回显示窗口宽度（显示窗口大小和显示分辨率不同）
-	   @Return:int
-	*/
-	int  GetWinWidth();
-	/**
-	   @brief:返回显示窗口高度
-	   @Return:int
-	*/
-	int  GetWinHeigth();
-	/**
-	   @brief:当远程桌面改变分辨率时，需要调用此函数通知显示类
-	   @Parameter:int ServerWidth
-	   @Parameter:int ServerHeight
-	   @Return:void
-	*/
-	void SetServerSize(int ServerWidth,int ServerHeight);
-	/**
-	   @brief:返回当前远程桌面图像的HBitmap
-	   @Return:HBITMAP
-	*/
-	CxImage  GetDisplayImage();
-	/**
-	   @brief:放大远程桌面图像
-	   @Return:bool
-	*/
-	bool ScaleUp();
-	/**
-	   @brief:缩小远程桌面图像
-	   @Return:bool
-	*/
-	bool ScaleDown();
-	/**
-	   @brief:将远程桌面图像缩放到本地分辨率大小
-	   @Return:void
-	*/
-	void Scale2LocalSize();
-	/**
-	   @brief:将显示窗口图像清空（在放大和缩小显示的时候用到）
-	   @Return:bool
-	*/
-	bool	ReflashDC();
-private:	
-	/**
-	   @brief:配置显示窗口
-	   @Parameter:HWND hDisplayWin
-	   @Return:bool
-	*/
-	bool SetDevice(HWND hDisplayWin);
-	/**
-	   @brief:按远程桌面和当前显示分辨率比例缩放当前需要绘制的图像块的矩形位置
-	   @Parameter:RECT srcRect
-	   @Return:RECT
-	*/
-	RECT	ScaleRect(RECT srcRect);
-	HWND	m_hClientWnd;
-	HDC		m_hClientDC;
-	HDC		m_hMemDC;
-	HBITMAP m_hBitmap;
-	HGDIOBJ m_hOldBmp;
-	CxImage	m_FrameBuffer;
-
-	//显示窗口的大小
-	int		m_WinWidth;
-	int		m_WinHeight;
-	//远程桌面的分辨率
-	int		m_ServerWidth;
-	int		m_ServerHeight;
-	//当前要显示的分辨率
-	int		m_DisplayWidth;
-	int		m_DisplayHeight;
-	
+    bool SetSourceSize(int width, int height);
+    bool SetViewportSize(int width, int height);
+    void Fit();
+    bool Zoom(double factor);
+    RECT GetDisplayRect() const { return displayRect_; }
+    bool MapWindowPointToServer(int x, int y, int& serverX, int& serverY) const;
+private:
+    void Recalculate();
+    int sourceWidth_ = 0, sourceHeight_ = 0;
+    int viewportWidth_ = 0, viewportHeight_ = 0;
+    double zoom_ = 1.0;
+    RECT displayRect_ = {};
 };
 
-#endif
-
+// Used on the UI thread; owns a persistent full-size image and a GDI back buffer.
+class ScreenDisplay {
+public:
+    ScreenDisplay() = default;
+    ~ScreenDisplay();
+    ScreenDisplay(const ScreenDisplay&) = delete;
+    ScreenDisplay& operator=(const ScreenDisplay&) = delete;
+    bool Initialize(HWND window, int windowWidth, int windowHeight, int serverWidth, int serverHeight);
+    bool SetSize(int width, int height);
+    void Display();
+    void RecvImageMsg(ByteArrayMsg* message); // Consumes/deletes message on every path.
+    int GetDisplayWidth() const { const RECT r = view_.GetDisplayRect(); return r.right - r.left; }
+    int GetDisplayHeight() const { const RECT r = view_.GetDisplayRect(); return r.bottom - r.top; }
+    RECT GetDisplayRect() const { return view_.GetDisplayRect(); }
+    // x/y are client coordinates of the display static. Black bars are rejected.
+    bool MapWindowPointToServer(int x, int y, int& serverX, int& serverY) const;
+    int GetSeverWidth() { return serverWidth_; }
+    int GetServerHeight() { return serverHeight_; }
+    int GetWinWidth() { return windowWidth_; }
+    int GetWinHeigth() { return windowHeight_; }
+    void SetServerSize(int width, int height);
+    GdiImage GetDisplayImage() { return frame_; }
+    bool ScaleUp();
+    bool ScaleDown();
+    void Scale2LocalSize();
+    bool ReflashDC();
+private:
+    void ReleaseDevice();
+    HWND window_ = nullptr;
+    HDC memoryDC_ = nullptr;
+    HBITMAP bitmap_ = nullptr;
+    HGDIOBJ originalBitmap_ = nullptr;
+    GdiImage frame_;
+    int windowWidth_ = 0, windowHeight_ = 0;
+    int serverWidth_ = 0, serverHeight_ = 0;
+    ScreenViewGeometry view_;
+};

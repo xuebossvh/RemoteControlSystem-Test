@@ -12,6 +12,7 @@
   class TCPBuffer
   {
       friend class TCPSocket;
+      friend class TCPConnection;
   public:
       virtual ~TCPBuffer() throw() {}
 
@@ -34,13 +35,13 @@
     */
     virtual size_t Size() const throw() = 0;
     /**
-       @brief:Used by recv() and recvfrom() to prepare 
+       @brief:Used by recv() and recvfrom() to prepare
               buffer before putting data into buffer.
        @Return:void
     */
     virtual void Prepare() throw() = 0;
     /**
-       @brief:Called by recv() and recvfrom() when 
+       @brief:Called by recv() and recvfrom() when
               data is transfered.
        @Parameter:size_t bytes
        @Return:void

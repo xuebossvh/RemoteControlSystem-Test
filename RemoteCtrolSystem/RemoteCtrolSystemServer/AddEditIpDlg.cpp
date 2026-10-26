@@ -1,4 +1,4 @@
-// AddEditIpDlg.cpp : ÊµÏÖÎÄ¼ş
+// AddEditIpDlg.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -9,7 +9,7 @@
 #include <strsafe.h>
 
 
-// CAddEditIpDlg ¶Ô»°¿ò
+// CAddEditIpDlg å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CAddEditIpDlg, CDialog)
 
@@ -19,7 +19,7 @@ CAddEditIpDlg::CAddEditIpDlg(CWnd* pParent /*=NULL*/)
 {
 
 	lstrcpy(m_rule.start,_T(""));
-	lstrcpy(m_rule.end,_T(""));	
+	lstrcpy(m_rule.end,_T(""));
 	m_rule.power = 0;
 	m_stats = ADD;
 }
@@ -41,7 +41,7 @@ BEGIN_MESSAGE_MAP(CAddEditIpDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// CAddEditIpDlg ÏûÏ¢´¦Àí³ÌĞò
+// CAddEditIpDlg æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 
 
@@ -49,35 +49,35 @@ BOOL CAddEditIpDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// TODO:  ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯
+	// TODO:  åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–
 	/*((CButton *)GetDlgItem(IDC_RD_REJECT))->SetCheck(TRUE);
 	SetDlgItemText(IDC_ET_NAME,m_user.name);
 	SetDlgItemText(IDC_ET_PWD,m_user.pwd);*/
 
 	m_ipStart.SetWindowText(m_rule.start);
 	m_ipEnd.SetWindowText(m_rule.end);
-	if (m_rule.power == 0)  //¹æÔò±íÊ¾½ûÖ¹
+	if (m_rule.power == 0)  //è§„åˆ™è¡¨ç¤ºç¦æ­¢
 	{
 		((CButton *)GetDlgItem(IDC_RD_REJECT))->SetCheck(TRUE);
 	}
-	else if (m_rule.power == 1)  //¹æÔò±íÊ¾ÔÊĞí
+	else if (m_rule.power == 1)  //è§„åˆ™è¡¨ç¤ºå…è®¸
 	{
 		((CButton *)GetDlgItem(IDC_RD_ALLOW))->SetCheck(TRUE);
 	}
 
-	if (m_stats == EDIT)  //Èô½çÃæ´¦ÓÚ±à¼­×´Ì¬
+	if (m_stats == EDIT)  //è‹¥ç•Œé¢å¤„äºç¼–è¾‘çŠ¶æ€
 	{
 		m_ipStart.EnableWindow(FALSE);
 		m_ipEnd.EnableWindow (FALSE);
 	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// Òì³£: OCX ÊôĞÔÒ³Ó¦·µ»Ø FALSE
+	// å¼‚å¸¸: OCX å±æ€§é¡µåº”è¿”å› FALSE
 }
 
 void CAddEditIpDlg::OnBnClickedBtnOk()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë	
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	BYTE f0,f1,f2,f3;
 	m_ipStart.GetAddress(f0,f1,f2,f3);
 	//CString ipAddrFirst ;
@@ -86,7 +86,7 @@ void CAddEditIpDlg::OnBnClickedBtnOk()
 
 	StringCbPrintf(m_rule.start,16*sizeof(TCHAR),_T("%d.%d.%d.%d"),f0,f1,f2,f3);
 	m_ipEnd.GetAddress(f0,f1,f2,f3);
-	if(f0 ==0 && f1 ==0 && f2 ==0 &&f3 ==0) //ÈôÖÕÖ¹IP¿Ø¼şÄÚÈİÎª¿Õ£¬±íÊ¾Ö»Õë¶Ô¾ßÌåÄ³Ò»IPµØÖ·
+	if(f0 ==0 && f1 ==0 && f2 ==0 &&f3 ==0) //è‹¥ç»ˆæ­¢IPæ§ä»¶å†…å®¹ä¸ºç©ºï¼Œè¡¨ç¤ºåªé’ˆå¯¹å…·ä½“æŸä¸€IPåœ°å€
 	{
 		lstrcpy(m_rule.end,m_rule.start);
 	}
@@ -94,30 +94,30 @@ void CAddEditIpDlg::OnBnClickedBtnOk()
 	{
 		StringCbPrintf(m_rule.end,16*sizeof(TCHAR),_T("%d.%d.%d.%d"),f0,f1,f2,f3);
 	}
-	
+
 	CIpRuleFile ipFile;
 	if(ipFile.CompareIpAddress(m_rule.start,m_rule.end)>0)
 	{
-		MessageBox(_T("ÖÕÖ¹IPµØÖ·£¬²»ÄÜĞ¡ÓÚÆğÊ¼IPµØÖ·£¡"));
+		MessageBox(_T("ç»ˆæ­¢IPåœ°å€ï¼Œä¸èƒ½å°äºèµ·å§‹IPåœ°å€ï¼"));
 		return ;
 	}
 	if (BST_CHECKED==((CButton *)GetDlgItem(IDC_RD_REJECT))->GetCheck())
 	{
 		m_rule.power = 0;
-		TRACE("ÊÇ¾Ü¾øÈ¨ÏŞÀ²\n");
+		TRACE("æ˜¯æ‹’ç»æƒé™å•¦\n");
 	}
 	else
 	{
 		m_rule.power = 1;
-		TRACE("ÔÊĞíÔ¶³Ì¿ØÖÆÅ¶\n");
+		TRACE("å…è®¸è¿œç¨‹æ§åˆ¶å“¦\n");
 	}
-	
-	
-	if (m_stats == ADD)  //ÈôÎªÌí¼Ó×´Ì¬
+
+
+	if (m_stats == ADD)  //è‹¥ä¸ºæ·»åŠ çŠ¶æ€
 	{
 		ipFile.Add(m_rule);
 	}
-	else  //ÈôÎª±à¼­×´Ì¬
+	else  //è‹¥ä¸ºç¼–è¾‘çŠ¶æ€
 	{
 		ipFile.Update(m_rule);
 	}
@@ -133,4 +133,3 @@ void CAddEditIpDlg::SetRule(IpRule rule )
 {
 	m_rule = rule;
 }
-

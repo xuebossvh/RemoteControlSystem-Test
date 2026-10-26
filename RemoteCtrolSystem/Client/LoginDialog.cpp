@@ -1,4 +1,4 @@
-// LoginDialog.cpp : ÊµÏÖÎÄ¼þ
+// LoginDialog.cpp : å®žçŽ°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -8,7 +8,7 @@
 #include "ClientMain.h"
 #include "..\SocketIPv4\TCPClient.h"
 
-// CLoginDialog ¶Ô»°¿ò
+// CLoginDialog å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CLoginDialog, CDialog)
 
@@ -38,7 +38,7 @@ BEGIN_MESSAGE_MAP(CLoginDialog, CDialog)
 END_MESSAGE_MAP()
 
 
-// CLoginDialog ÏûÏ¢´¦Àí³ÌÐò
+// CLoginDialog æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 void CLoginDialog::OnBnClickedButtonLogin()
 {
@@ -75,7 +75,7 @@ void CLoginDialog::OnBnClickedButtonLogin()
 	}
 	if (m_szPassword.IsEmpty())
 	{
-		MessageBox(_T("ÃÜÂë²»ÄÜÎª¿Õ"));
+		MessageBox(_T("å¯†ç ä¸èƒ½ä¸ºç©º"));
 		IsPassWordEmpty = true;
 		return ;
 	}
@@ -85,7 +85,7 @@ void CLoginDialog::OnBnClickedButtonLogin()
 	}
 	if (m_szUserName.IsEmpty())
 	{
-		MessageBox(_T("ÓÃ»§Ãû²»ÄÜÎª¿Õ£¡"));
+		MessageBox(_T("ç”¨æˆ·åä¸èƒ½ä¸ºç©ºï¼"));
 		IsUserNameEmpty  = true;
 		return ;
 	}
@@ -94,28 +94,37 @@ void CLoginDialog::OnBnClickedButtonLogin()
 		IsUserNameEmpty = false;
 	}
 
-	UserMsg* accountMsg = new UserMsg;
+	if (m_szUserName.GetLength() > 19 || m_szPassword.GetLength() > 19) {
+        MessageBox(L"Use an ASCII username and password of 1 to 19 characters."); return;
+    }
+    for (int i = 0; i < m_szUserName.GetLength(); ++i)
+        if (m_szUserName[i] < 33 || m_szUserName[i] > 126) { MessageBox(L"Use an ASCII username."); return; }
+    for (int i = 0; i < m_szPassword.GetLength(); ++i)
+        if (m_szPassword[i] < 32 || m_szPassword[i] > 126) { MessageBox(L"Use an ASCII password."); return; }
+    UserMsg* accountMsg = new UserMsg;
 	USES_CONVERSION;
 	accountMsg->PacketMsg(W2A(m_szUserName.GetBuffer()),W2A(m_szPassword.GetBuffer()));
-	
-	int loginResult = ((CClientMain*)GetParent())->InitTcpClien(*m_pHost,accountMsg);
+
+	int loginResult;
+    try { loginResult = ((CClientMain*)GetParent())->InitTcpClien(*m_pHost,accountMsg); }
+    catch (...) { MessageBox(L"Connection failed."); return; }
 	if (loginResult == 0 || loginResult == 1)
 	{
 		IsAccountTrue = true;
 	}
 	else if (loginResult == -1)
 	{
-		MessageBox(_T("ÓÃ»§Ãû»òÃÜÂë´íÎó£¡"));
+		MessageBox(_T("ç”¨æˆ·åæˆ–å¯†ç é”™è¯¯ï¼"));
 		IsAccountTrue = false;
 	}
 	else if(loginResult == FORBIDDENIP)
 	{
-		MessageBox(_T("ip±»½ûÓÃ"));
+		MessageBox(_T("ipè¢«ç¦ç”¨"));
 		IsAccountTrue = false;
 	}
 	else
 	{
-		MessageBox(_T("Á¬½Ó´íÎó£¬ÇëÈ·ÈÏ·þÎñ¶ËÊÇ·ñ¿ªÆô£¬ÒÔ¼°ÄúµÄÍøÂç×´¿ö£¡"));
+		MessageBox(_T("è¿žæŽ¥é”™è¯¯ï¼Œè¯·ç¡®è®¤æœåŠ¡ç«¯æ˜¯å¦å¼€å¯ï¼Œä»¥åŠæ‚¨çš„ç½‘ç»œçŠ¶å†µï¼"));
 		IsAccountTrue = false;
 	}
 	if ((!IsUserNameEmpty)&& (!IsPassWordEmpty)&&(!IsbHostEmpty)&&IsAccountTrue)
@@ -131,14 +140,20 @@ void CLoginDialog::OnBnClickedButtonLogin()
 
 void CLoginDialog::OnCbnSelchangeServerCombo()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æŽ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	int nIndex = m_cmbServerList.GetCurSel();
 	CString strCBText;
-	CString strAdd = CString("...Ìí¼Ó...");
+	CString strAdd = CString(L"...æ·»åŠ ...");
 	m_cmbServerList.GetLBText( nIndex, strCBText);
 	if (strCBText == strAdd)
 	{
-		m_cmbServerList.SetCurSel(m_dlgAddIP.DoModal());
+		if (m_dlgAddIP.DoModal() == IDOK) {
+            m_cmbServerList.ResetContent();
+            m_cmbServerList.AddString(L"...æ·»åŠ ...");
+            m_HostListConfig->ReadHostList(m_vtHostList);
+            for (const auto& host : m_vtHostList) m_cmbServerList.AddString(CString(host.name));
+            m_cmbServerList.SetCurSel(m_cmbServerList.GetCount()-1);
+        }
 		//m_dlgAddIP.DoModal();
 	}
 
@@ -146,13 +161,13 @@ void CLoginDialog::OnCbnSelchangeServerCombo()
 
 void CLoginDialog::OnBnClickedButtonExit()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æŽ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	EndDialog(IDC_BUTTON_EXIT);
 }
 
 void CLoginDialog::OnOK()
 {
-	// TODO: ÔÚ´ËÌí¼Ó×¨ÓÃ´úÂëºÍ/»òµ÷ÓÃ»ùÀà
+	// TODO: åœ¨æ­¤æ·»åŠ ä¸“ç”¨ä»£ç å’Œ/æˆ–è°ƒç”¨åŸºç±»
 	OnBnClickedButtonLogin();
 	//CDialog::OnOK();
 }
@@ -177,8 +192,9 @@ BOOL CLoginDialog::OnInitDialog()
 		m_cmbServerList.AddString((LPCTSTR)name);
 	}
 
+	m_cmbServerList.SetCurSel(m_cmbServerList.GetCount() > 1 ? 1 : 0);
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// Òì³£: OCX ÊôÐÔÒ³Ó¦·µ»Ø FALSE
+	// å¼‚å¸¸: OCX å±žæ€§é¡µåº”è¿”å›ž FALSE
 }
 
 CString CLoginDialog::GetUserName()

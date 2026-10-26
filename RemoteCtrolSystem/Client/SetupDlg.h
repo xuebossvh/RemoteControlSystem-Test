@@ -3,7 +3,7 @@
 #include "afxwin.h"
 
 
-// CSetupDlg ¶Ô»°¿ò
+// CSetupDlg å¯¹è¯æ¡†
 class CClientMain;
 
 class CSetupDlg : public CDialog
@@ -11,145 +11,145 @@ class CSetupDlg : public CDialog
 	DECLARE_DYNAMIC(CSetupDlg)
 
 public:
-	CSetupDlg(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CSetupDlg(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CSetupDlg();
 
 
 	/**
-	   @brief:·µ»ØÍ¼ÏñÖÊÁ¿£¬·µ»ØµÄÊÇÒ»¸ö±íÊ¾°Ù·Ö±ÈµÄ1~100µÄÕûÊı
+	   @brief:è¿”å›å›¾åƒè´¨é‡ï¼Œè¿”å›çš„æ˜¯ä¸€ä¸ªè¡¨ç¤ºç™¾åˆ†æ¯”çš„1~100çš„æ•´æ•°
 	   @Return:int
 	*/
 	int		GetImageQuality();
 	/**
-	   @brief:·µ»ØÖ¡ÂÊ
+	   @brief:è¿”å›å¸§ç‡
 	   @Return:int
 	*/
 	int		GetFrame();
 	/**
-	   @brief:ÉèÖÃÖ¡ÂÊ£¬Í¬Ê±¸ù¾İÖ¡ÂÊÍ¬²½ÉèÖÃ´°¿ÚµÄ¸÷¸ö¿Ø¼ş
+	   @brief:è®¾ç½®å¸§ç‡ï¼ŒåŒæ—¶æ ¹æ®å¸§ç‡åŒæ­¥è®¾ç½®çª—å£çš„å„ä¸ªæ§ä»¶
 	   @Parameter:int Frame
 	   @Return:bool
 	*/
 	/**
-	   @brief:ÅĞ¶ÏÊÇ·ñÓĞ´°¿Ú´ò¿ª
+	   @brief:åˆ¤æ–­æ˜¯å¦æœ‰çª—å£æ‰“å¼€
 	   @Return:BOOL
 	*/
 	BOOL	IsExit();
 		/**
-	   @brief:ÉèÖÃÍ¼ÏñÖÊÁ¿£¬Í¬Ê±¸ù¾İÍ¼ÏñÖÊÁ¿Í¬²½ÉèÖÃ´°¿ÚµÄ¸÷¸ö¿Ø¼ş
+	   @brief:è®¾ç½®å›¾åƒè´¨é‡ï¼ŒåŒæ—¶æ ¹æ®å›¾åƒè´¨é‡åŒæ­¥è®¾ç½®çª—å£çš„å„ä¸ªæ§ä»¶
 	   @Parameter:int ImageQuality
 	   @Return:bool
 	*/
 	/**
-	   @brief:·µ»ØºáÏò·Ö¿éÊı
+	   @brief:è¿”å›æ¨ªå‘åˆ†å—æ•°
 	   @Return:int
 	*/
 	int		GetHorzTile();
 	/**
-	   @brief:·µ»Ø×İÏò·Ö¿éÊı
+	   @brief:è¿”å›çºµå‘åˆ†å—æ•°
 	   @Return:int
 	*/
 	int		GetVertTile();
 	/**
-	   @brief:ÉèÖÃÍ¼ÏñÖÊÁ¿
+	   @brief:è®¾ç½®å›¾åƒè´¨é‡
 	   @Parameter:int ImageQuality
 	   @Return:bool
 	*/
 	bool	SetImageQuality(int ImageQuality);
 	/**
-	   @brief:ÉèÖÃÖ¡ÂÊ
+	   @brief:è®¾ç½®å¸§ç‡
 	   @Parameter:int Frame
 	   @Return:bool
 	*/
 	bool	SetFrame(int Frame);
 	/**
-	   @brief:ÉèÖÃ´¹Ö±·Ö¿ì¿éÊı
+	   @brief:è®¾ç½®å‚ç›´åˆ†å¿«å—æ•°
 	   @Parameter:int nVertTile
 	   @Return:bool
 	*/
 	bool	SetVertTile(int nVertTile);
 	/**
-	   @brief:ÉèÖÃË®Æ½·Ö¿é¿éÊı
+	   @brief:è®¾ç½®æ°´å¹³åˆ†å—å—æ•°
 	   @Parameter:int nHorzTile
 	   @Return:bool
 	*/
 	bool	SetHorzTile(int nHorzTile);
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_DIALOG_SETUP };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 protected:
-	
+
 	VOID		 SetExit(BOOL	IsExist);
 private:
 	virtual BOOL OnInitDialog();
 	/**
-	   @brief:È·¶¨°´Å¥
+	   @brief:ç¡®å®šæŒ‰é’®
 	   @Return:void
 	*/
 	afx_msg void OnBnClickedButtonSetupOk();
 	/**
-	   @brief:Ó¦ÓÃ°´Å¥
+	   @brief:åº”ç”¨æŒ‰é’®
 	   @Return:void
 	*/
 	afx_msg void OnBnClickedButtonSetupApply();
 	/**
-	   @brief:È¡Ïû°´Å¥
+	   @brief:å–æ¶ˆæŒ‰é’®
 	   @Return:void
 	*/
 	afx_msg void OnBnClickedButtonSetupCancel();
 	/**
-	   @brief:Í¼ÏñÖÊÁ¿¼õÉÙ°´Å¥
+	   @brief:å›¾åƒè´¨é‡å‡å°‘æŒ‰é’®
 	   @Return:void
 	*/
 	afx_msg void OnBnClickedButtonImgSub();
 	/**
-	   @brief:Í¼ÏñÖÊÁ¿Ôö¼Ó°´Å¥
+	   @brief:å›¾åƒè´¨é‡å¢åŠ æŒ‰é’®
 	   @Return:void
 	*/
 	afx_msg void OnBnClickedButtonImgAdd();
 	/**
-	   @brief:Ö¡ÂÊ¼õÉÙ°´Å¥
+	   @brief:å¸§ç‡å‡å°‘æŒ‰é’®
 	   @Return:void
 	*/
 	afx_msg void OnBnClickedButtonFrameSub();
 	/**
-	   @brief:Ö¡ÂÊÔö¼Ó°´Å¥
+	   @brief:å¸§ç‡å¢åŠ æŒ‰é’®
 	   @Return:void
 	*/
 	afx_msg void OnBnClickedButtonFrameAdd();
 	/**
-	   @brief:´¹Ö±·Ö¿é¿éÊı¼õÉÙ°´Å¥
+	   @brief:å‚ç›´åˆ†å—å—æ•°å‡å°‘æŒ‰é’®
 	   @Return:void
 	*/
 	afx_msg void OnBnClickedVertTileDown();
 	/**
-	   @brief:´¹Ö±·Ö¿é¿éÊıÔö¼Ó°´Å¥
+	   @brief:å‚ç›´åˆ†å—å—æ•°å¢åŠ æŒ‰é’®
 	   @Return:void
 	*/
 	afx_msg void OnBnClickedButtonVertTileUp();
 	/**
-	   @brief:Ë®Æ½·Ö¿é¿éÊı¼õÉÙ°´Å¥
+	   @brief:æ°´å¹³åˆ†å—å—æ•°å‡å°‘æŒ‰é’®
 	   @Return:void
 	*/
 	afx_msg void OnBnClickedButtonHorzTileDown();
 	/**
-	   @brief:Ë®Æ½·Ö¿é¿éÊıÔö¼Ó°´Å¥
+	   @brief:æ°´å¹³åˆ†å—å—æ•°å¢åŠ æŒ‰é’®
 	   @Return:void
 	*/
 	afx_msg void OnBnClickedButtonHorzTileUp();
 	/**
-	   @brief:Ö¡ÂÊµ÷Õû½ø¶ÈÌõ
+	   @brief:å¸§ç‡è°ƒæ•´è¿›åº¦æ¡
 	   @Parameter:NMHDR * pNMHDR
 	   @Parameter:LRESULT * pResult
 	   @Return:void
 	*/
 	afx_msg void OnNMReleasedcaptureSlider2(NMHDR *pNMHDR, LRESULT *pResult);
 	/**
-	   @brief:Í¼ÏñÖÊÁ¿µ÷Õû½ø¶ÈÌõ
+	   @brief:å›¾åƒè´¨é‡è°ƒæ•´è¿›åº¦æ¡
 	   @Parameter:NMHDR * pNMHDR
 	   @Parameter:LRESULT * pResult
 	   @Return:void
@@ -157,44 +157,44 @@ private:
 	afx_msg void OnNMReleasedcaptureSlider1(NMHDR *pNMHDR, LRESULT *pResult);
 
 	/**
-	   @brief:Í¼ÏñÖÊÁ¿µ÷Õû±à¼­¿ò
+	   @brief:å›¾åƒè´¨é‡è°ƒæ•´ç¼–è¾‘æ¡†
 	   @Return:void
 	*/
 	afx_msg void OnEnChangeEditImageQuality();
 	/**
-	   @brief:Ö¡ÂÊµ÷Õû±à¼­¿ò
+	   @brief:å¸§ç‡è°ƒæ•´ç¼–è¾‘æ¡†
 	   @Return:void
 	*/
 	afx_msg void OnEnChangeEditFrame();
 	/**
-	   @brief:´¹Ö±·Ö¿é½ø¶ÈÌõ
+	   @brief:å‚ç›´åˆ†å—è¿›åº¦æ¡
 	   @Parameter:NMHDR * pNMHDR
 	   @Parameter:LRESULT * pResult
 	   @Return:void
 	*/
 	afx_msg void OnNMReleasedcaptureSliderVertTile(NMHDR *pNMHDR, LRESULT *pResult);
 	/**
-	   @brief:Ë®Æ½·Ö¿é½ø¶ÈÌõ
+	   @brief:æ°´å¹³åˆ†å—è¿›åº¦æ¡
 	   @Parameter:NMHDR * pNMHDR
 	   @Parameter:LRESULT * pResult
 	   @Return:void
 	*/
 	afx_msg void OnNMReleasedcaptureSliderHorzTile(NMHDR *pNMHDR, LRESULT *pResult);
 	/**
-	   @brief:´¹Ö±·Ö¿é±à¼­¿ò
+	   @brief:å‚ç›´åˆ†å—ç¼–è¾‘æ¡†
 	   @Return:void
 	*/
 	afx_msg void OnEnChangeEditVertTile();
 	/**
-	   @brief:Ë®Æ½·Ö¿é±à¼­¿ò
+	   @brief:æ°´å¹³åˆ†å—ç¼–è¾‘æ¡†
 	   @Return:void
 	*/
 	afx_msg void OnEnChangeEditHoczTile();
 	afx_msg void OnStnClickedStaticFrame();
 	afx_msg int	 OnCreate(LPCREATESTRUCT lpCreateStruct);
-	afx_msg void OnDestroy();	
+	afx_msg void OnDestroy();
 	afx_msg void OnStnClickedStaticImageQuality();
-	
+
 	BOOL		m_bIsExist;
 	int			m_nImageQuality;
 	int			m_nFrame;

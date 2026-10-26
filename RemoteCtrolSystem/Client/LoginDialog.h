@@ -5,55 +5,55 @@
 #include "..\Message\UserMsg.h"
 #include <vector>
 
-// CLoginDialog ¶Ô»°¿ò
+// CLoginDialog å¯¹è¯æ¡†
 
 class CLoginDialog : public CDialog
 {
 	DECLARE_DYNAMIC(CLoginDialog)
 
 public:
-	CLoginDialog(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CLoginDialog(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CLoginDialog();
 
 	void	Init(HostListConfig* pHostListConfig,Host* pHost);
 	/**
-	   @brief:·µ»ØÓÃ»§Ãû
+	   @brief:è¿”å›ç”¨æˆ·å
 	   @Return:CString
 	*/
 	CString GetUserName();
 	/**
-	   @brief:·µ»ØÃÜÂë
+	   @brief:è¿”å›å¯†ç 
 	   @Return:CString
 	*/
 	CString	GetPassword();
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_LOGIN_DIALOG };
 
 	CAddIpDlg	m_dlgAddIP;
 	CComboBox	m_cmbServerList;
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 private:
 	CEdit		m_tbPassword;
 	CEdit		m_tbUserName;
-	CString		m_szUserName; 
-	CString		m_szPassword; 
-	
+	CString		m_szUserName;
+	CString		m_szPassword;
+
 	/**
-	   @brief:µÇÂ¼°´Å¥
+	   @brief:ç™»å½•æŒ‰é’®
 	   @Return:void
 	*/
 	afx_msg void OnBnClickedButtonLogin();
 	/**
-	   @brief:Ñ¡ÔñÔ¶³ÌÖ÷»úÏÂÀ­ÁĞ±íÊ±
+	   @brief:é€‰æ‹©è¿œç¨‹ä¸»æœºä¸‹æ‹‰åˆ—è¡¨æ—¶
 	   @Return:void
 	*/
 	afx_msg void OnCbnSelchangeServerCombo();
 	/**
-	   @brief:ÍË³ö°´Å¥
+	   @brief:é€€å‡ºæŒ‰é’®
 	   @Return:void
 	*/
 	afx_msg void OnBnClickedButtonExit();

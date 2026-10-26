@@ -13,7 +13,7 @@ void TCPServer::Start(TCPSocketAddress::Port port /*= 0*/, int queue /*= 5*/ ) t
 {
 	//_trace(L"TCPServer::start\n");
 	m_socket.Open(TCPSocket::TCP);
-	m_socket.Bind(TCPSocketAddress(TCPSocketAddress::ANY_IP,port,false));		
+	m_socket.Bind(TCPSocketAddress(TCPSocketAddress::ANY_IP,port,false));
 	m_socket.Listen(queue);
 }
 

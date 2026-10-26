@@ -1,19 +1,19 @@
 /**************************************************************************
 **             Guangzhou ZHIYUAN electronics Co.,LTD
-**             
 **
-**                   http://www.embedtools.com  
+**
+**                   http://www.embedtools.com
 **-------------File Info---------------------------------------------------
 **File Name:   FileSystemWatcher.h
 **Latest modified Data:
 **Latest Version:
-**Description:  
+**Description:
 **
 **-------------------------------------------------------------------------
-**Create by:   ÎºØ·
+**Create by:   é­èƒ¤
 **Create date:  2013/05/03   8:32
 **Version:
-**Description:  ¶ÔÄ³Ò»¸öÎÄ¼ş¼Ğ½øĞĞ¼à¿ØµÄÏß³Ì£¬°üÀ¨¼à¿Ø¸ÃÎÄ¼ş¼ĞÏÂµÄ×ÓÎÄ¼ş¼ĞÄÚÈİ
+**Description:  å¯¹æŸä¸€ä¸ªæ–‡ä»¶å¤¹è¿›è¡Œç›‘æ§çš„çº¿ç¨‹ï¼ŒåŒ…æ‹¬ç›‘æ§è¯¥æ–‡ä»¶å¤¹ä¸‹çš„å­æ–‡ä»¶å¤¹å†…å®¹
 **
 **
 **-------------------------------------------------------------------------
@@ -38,42 +38,42 @@ class FileSystemWatcher : public Thread
 public:
 	enum ACTION{ADDED=1, REMOVED=2, MODIFIED=3, RENAMED=4 };
 	FileSystemWatcher(char name[20],char ip[20],char path[20] , char dir[MAX_PATH]);
-	~FileSystemWatcher(void);	
+	~FileSystemWatcher(void);
 
 protected:
-	void Run(); //Ïß³Ìº¯Êı
-	
+	void Run(); //çº¿ç¨‹å‡½æ•°
+
 private:
 	/**
-	 * @Brief GetTime »ñÈ¡µ±Ç°Ê±¼ä
-	 * @Parameter char time[] ±£´æÊ±¼äµÄ×Ö·ûÊı×é
+	 * @Brief GetTime è·å–å½“å‰æ—¶é—´
+	 * @Parameter char time[] ä¿å­˜æ—¶é—´çš„å­—ç¬¦æ•°ç»„
 	 * @Returns void
-	 * @Remark  Ö¸¶ÔÎÄ¼ş½øĞĞ²Ù×÷µÄÊ±¼ä
+	 * @Remark  æŒ‡å¯¹æ–‡ä»¶è¿›è¡Œæ“ä½œçš„æ—¶é—´
 	 **/
-	void GetTime( char time[]); 
+	void GetTime( char time[]);
 
 	/**
-	 * @Brief DealFunc ¶ÔÏà¶ÔÓë¼àÊÓÎÄ¼ş¼ĞµÄÂ·¾¶½øĞĞ´¦Àí£¬×ª»»³É¾ø¶ÔÂ·¾¶
-	 * @Parameter DWORD action ²Ù×÷¶¯×÷
-	 * @Parameter char * name1 ÎÄ¼ş»òÎÄ¼ş¼ĞµÄÏà¶ÔÂ·¾¶
-	 * @Parameter char * name2 ÎÄ¼ş»òÎÄ¼şµÄÏà¶ÔÂ·¾¶£¬ÖØÃûÃû¶¯×÷ĞèÒªÕâ¸ö²ÎÊı
+	 * @Brief DealFunc å¯¹ç›¸å¯¹ä¸ç›‘è§†æ–‡ä»¶å¤¹çš„è·¯å¾„è¿›è¡Œå¤„ç†ï¼Œè½¬æ¢æˆç»å¯¹è·¯å¾„
+	 * @Parameter DWORD action æ“ä½œåŠ¨ä½œ
+	 * @Parameter char * name1 æ–‡ä»¶æˆ–æ–‡ä»¶å¤¹çš„ç›¸å¯¹è·¯å¾„
+	 * @Parameter char * name2 æ–‡ä»¶æˆ–æ–‡ä»¶çš„ç›¸å¯¹è·¯å¾„ï¼Œé‡åååŠ¨ä½œéœ€è¦è¿™ä¸ªå‚æ•°
 	 * @Returns void
-	 * @Remark  
+	 * @Remark
 	 **/
 	void DealFunc(DWORD action,char *name1,char* name2);
 
 	/**
-	 * @Brief WriteToLog °Ñ±¾´Î¶ÔÎÄ¼ş¼à¿ØµÄ½á¹ûĞ´ÈëÈÕÖ¾ÎÄ¼ş
-	 * @Parameter int action ¶ÔÎÄ¼ş²Ù×÷µÄ¶¯×÷£¬ÓĞ´´½¨¡¢ĞŞ¸Ä¡¢É¾³ı¡¢ÖØÃüÃûËÄÖÖ
-	 * @Parameter char file1[MAX_PATH] ±»²Ù×÷µÄÎÄ¼ş»òÎÄ¼ş¼Ğ
-	 * @Parameter char file2[MAX_PATH] ÖØÃüÃûÉæ¼°µÄĞÂµÄÎÄ¼ş»òÎÄ¼ş¼Ğ
+	 * @Brief WriteToLog æŠŠæœ¬æ¬¡å¯¹æ–‡ä»¶ç›‘æ§çš„ç»“æœå†™å…¥æ—¥å¿—æ–‡ä»¶
+	 * @Parameter int action å¯¹æ–‡ä»¶æ“ä½œçš„åŠ¨ä½œï¼Œæœ‰åˆ›å»ºã€ä¿®æ”¹ã€åˆ é™¤ã€é‡å‘½åå››ç§
+	 * @Parameter char file1[MAX_PATH] è¢«æ“ä½œçš„æ–‡ä»¶æˆ–æ–‡ä»¶å¤¹
+	 * @Parameter char file2[MAX_PATH] é‡å‘½åæ¶‰åŠçš„æ–°çš„æ–‡ä»¶æˆ–æ–‡ä»¶å¤¹
 	 * @Returns void
-	 * @Remark  
+	 * @Remark
 	 **/
 	void WriteToLog(int action,char file1[MAX_PATH],char file2[MAX_PATH] );
 
-	char WatchedDir[MAX_PATH];//¼àÊÓµÄÎÄ¼ş¼Ğ
+	char WatchedDir[MAX_PATH];//ç›‘è§†çš„æ–‡ä»¶å¤¹
 	char m_szName[20],m_szIp[20],m_szPath[MAX_PATH];
-	HANDLE hDir;  
+	HANDLE hDir;
 };
 #endif//__FILESYSTEMWATCHER_H__

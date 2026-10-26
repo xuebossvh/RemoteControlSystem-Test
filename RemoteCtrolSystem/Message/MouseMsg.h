@@ -2,18 +2,18 @@
 **             Guangzhou ZHIYUAN electronics Co.,LTD
 **
 **
-**                   http://www.electronics.com 
+**                   http://www.electronics.com
 **-------------File Info---------------------------------------------------
 **File Name:MouseMsg.h
 **Latest modified Data:2013-4-7  9:35:40
 **Latest Version:v1.0
-**Description:Êó±êÏûÏ¢Àà
+**Description:é¼ æ ‡æ¶ˆæ¯ç±»
 **
 **-------------------------------------------------------------------------
 **Create by:XuWunJun
 **Create date:2013-4-7  9:35:40
 **Version:v1.0
-**Description:Êó±êÏûÏ¢Àà
+**Description:é¼ æ ‡æ¶ˆæ¯ç±»
 **
 **
 **-------------------------------------------------------------------------
@@ -22,20 +22,20 @@
 **Version:
 **Description:
 **************************************************************************/
-/*MouseMsgÊÇÊó±êÏûÏ¢µÄÀà£¬ÆäÖĞm_buffer´¢´æÏûÏ¢µÄÊµ¼ÊÊı¾İ
-  Êı¾İÅÅÁĞ·½Ê½ÈçÏÂ£º
-  ÀàĞÍ		±äÁ¿Ãû			×Ö½ÚÊı
+/*MouseMsgæ˜¯é¼ æ ‡æ¶ˆæ¯çš„ç±»ï¼Œå…¶ä¸­m_bufferå‚¨å­˜æ¶ˆæ¯çš„å®é™…æ•°æ®
+  æ•°æ®æ’åˆ—æ–¹å¼å¦‚ä¸‹ï¼š
+  ç±»å‹		å˜é‡å			å­—èŠ‚æ•°
   __int8	MsgType			(1bits)
   int		x				(4bits)
   int		y				(4bits)
-  int		status			(4bits) 
+  int		status			(4bits)
 
-  statusµÄÀàĞÍÓĞ£º
+  statusçš„ç±»å‹æœ‰ï¼š
   #define RCS_MOUSE_LEFT_UP			0xFFFF
   #define RCS_MOUSE_LEFT_DOWN		0xFFFE
   #define RCS_MOUSE_RIGHT_UP		0xFFFD
   #define RCS_MOUSE_RIGHT_DOWN		0XFFFC
-  ³ıÒÔÉÏËÄ¸öÏûÏ¢Ö®Íâ£¬Êó±êÖĞ¼ü¹öÂÖÉÏÏÂÒÆ¶¯ÒÔstatusµÄÊıÖµ±íÊ¾
+  é™¤ä»¥ä¸Šå››ä¸ªæ¶ˆæ¯ä¹‹å¤–ï¼Œé¼ æ ‡ä¸­é”®æ»šè½®ä¸Šä¸‹ç§»åŠ¨ä»¥statusçš„æ•°å€¼è¡¨ç¤º
 */
 #ifndef __MOUSEMSG_H__
 #define __MOUSEMSG_H__
@@ -61,29 +61,28 @@ public:
 	~MouseMsg(void);
 
 	/**
-	   @brief:·µ»ØÊó±ê×ø±êµÄxÖµ£¬Èç¹ûm_buffer == NULL·µ»Ø-1
+	   @brief:è¿”å›é¼ æ ‡åæ ‡çš„xå€¼ï¼Œå¦‚æœm_buffer == NULLè¿”å›-1
 	   @Return:int
 	*/
 	int   GetMouseX();
 	/**
-	   @brief:·µ»ØÊó±ê×ø±êµÄyÖµ£¬Èç¹ûm_buffer == NULL·µ»Ø-1
+	   @brief:è¿”å›é¼ æ ‡åæ ‡çš„yå€¼ï¼Œå¦‚æœm_buffer == NULLè¿”å›-1
 	   @Return:int
 	*/
 	int   GetMouseY();
 	/**
-	   @brief:·µ»ØÊó±êµÄ×´Ì¬£¬¾ßÌåÉè¶¨Çë²Î¿¼Àà×¢ÊÍ£¬Èç¹ûm_buffer == NULL·µ»Ø0
+	   @brief:è¿”å›é¼ æ ‡çš„çŠ¶æ€ï¼Œå…·ä½“è®¾å®šè¯·å‚è€ƒç±»æ³¨é‡Šï¼Œå¦‚æœm_buffer == NULLè¿”å›0
 	   @Return:int
 	*/
 	int   GetMouseStatus();
 	/**
-	   @brief:´ò°üÏûÏ¢
+	   @brief:æ‰“åŒ…æ¶ˆæ¯
 	   @Parameter:int x
 	   @Parameter:int y
-	   @Parameter:int status//statusÈç¹ûÊÇ¹öÂÖ»¬¶¯ÇëÖ±½Ó´«»¬¶¯µÄÊıÖµ£¬
-	                         Èç¹ûÊÇÊó±ê°´¼ü±»°´ÏÂ£¬ÇëÊ¹ÓÃÔ¤¶¨ÒåµÄºêRCS_MOUSE_XXX_XXX
+	   @Parameter:int status//statuså¦‚æœæ˜¯æ»šè½®æ»‘åŠ¨è¯·ç›´æ¥ä¼ æ»‘åŠ¨çš„æ•°å€¼ï¼Œ
+	                         å¦‚æœæ˜¯é¼ æ ‡æŒ‰é”®è¢«æŒ‰ä¸‹ï¼Œè¯·ä½¿ç”¨é¢„å®šä¹‰çš„å®RCS_MOUSE_XXX_XXX
 	   @Return:bool
 	*/
 	bool  PacketMsg(int x,int y,int status);
 };
 #endif
-

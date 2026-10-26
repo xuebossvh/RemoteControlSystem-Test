@@ -7,53 +7,53 @@
 #define SL_UNDOCK 1
 #define SL_DOCK_WINDOW 2
 #define SL_DOCK_SCREEN 3
-// CServerListDlg ¶Ô»°¿ò
+// CServerListDlg å¯¹è¯æ¡†
 
 class CServerListDlg : public CDialog
 {
 	DECLARE_DYNAMIC(CServerListDlg)
 
 public:
-	CServerListDlg(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CServerListDlg(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CServerListDlg();
 
 	/**
-	   @brief:·µ»ØÔ¶³ÌÁĞ±íµÄ×´Ì¬£¬0Òş²Ø£¬1²»Í£¿¿£¬2Í£¿¿´°¿Ú±ßÔµÍ£¿¿£¬3Í£¿¿ÆÁÄ»±ßÔµ
+	   @brief:è¿”å›è¿œç¨‹åˆ—è¡¨çš„çŠ¶æ€ï¼Œ0éšè—ï¼Œ1ä¸åœé ï¼Œ2åœé çª—å£è¾¹ç¼˜åœé ï¼Œ3åœé å±å¹•è¾¹ç¼˜
 	   @Return:int
 	*/
 	int GetStatus();
 	/**
-	   @brief:ÉèÖÃÔ¶³ÌÁĞ±í×´Ì¬£¬0Òş²Ø£¬1²»Í£¿¿£¬2Í£¿¿´°¿Ú±ßÔµÍ£¿¿£¬3Í£¿¿ÆÁÄ»±ßÔµ
+	   @brief:è®¾ç½®è¿œç¨‹åˆ—è¡¨çŠ¶æ€ï¼Œ0éšè—ï¼Œ1ä¸åœé ï¼Œ2åœé çª—å£è¾¹ç¼˜åœé ï¼Œ3åœé å±å¹•è¾¹ç¼˜
 	   @Parameter:int status
 	   @Return:bool
 	*/
 	bool SetStatus(int status);
 	bool Init(HostListConfig* hostListConfig);
 	/**
-	   @brief:½«±£´æÓĞÖ÷»úĞÅÏ¢µÄHostListConfig´«¸øÔ¶³ÌÁĞ±í´°¿Ú
+	   @brief:å°†ä¿å­˜æœ‰ä¸»æœºä¿¡æ¯çš„HostListConfigä¼ ç»™è¿œç¨‹åˆ—è¡¨çª—å£
 	   @Parameter:HostListConfig * hostListConfig
 	   @Return:void
 	*/
 	void SetHostList(HostListConfig* hostListConfig);
 	/**
-	   @brief:½«Ô¶³ÌÁĞ±íÍ£¿¿Ö÷´°¿ÚÓÒ²à
+	   @brief:å°†è¿œç¨‹åˆ—è¡¨åœé ä¸»çª—å£å³ä¾§
 	   @Return:void
 	*/
 	void DockWindow();
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_DIALOG_SERVER_LIST };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 //	virtual BOOL OnInitDialog();
 	CToolBar	m_toolbar;
 	//CListBox	m_lstServer;
-	int			m_Status;//serverListµÄ×´Ì¬£¬ÏÔÊ¾/Òş²Ø/Í£¿¿ÆÁÄ»±ßÔµ
+	int			m_Status;//serverListçš„çŠ¶æ€ï¼Œæ˜¾ç¤º/éšè—/åœé å±å¹•è¾¹ç¼˜
 	std::vector<Host> m_vtHostList;
 	HostListConfig* m_HostListConfig;
 	DECLARE_MESSAGE_MAP()
 public:
-	afx_msg void OnSize(UINT nType, int cx, int cy);	
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnExitSizeMove();
 	afx_msg void OnBtnDelete();
 	virtual BOOL OnInitDialog();

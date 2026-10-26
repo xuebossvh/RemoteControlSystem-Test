@@ -1,8 +1,10 @@
-// Client.cpp : ¶¨ÒåÓ¦ÓÃ³ÌÐòµÄÀàÐÐÎª¡£
+// Client.cpp : å®šä¹‰åº”ç”¨ç¨‹åºçš„ç±»è¡Œä¸ºã€‚
 //
 
 #include "stdafx.h"
+#include "../Common/RuntimePaths.h"
 #include "Client.h"
+#include "CaptureExclusion.h"
 #include "ClientDlg.h"
 #include "ClientMain.h"
 #include "ServerListDlg.h"
@@ -19,32 +21,45 @@ BEGIN_MESSAGE_MAP(CClientApp, CWinApp)
 END_MESSAGE_MAP()
 
 
-// CClientApp ¹¹Ôì
+// CClientApp æž„é€ 
 
 CClientApp::CClientApp()
 {
-	// TODO: ÔÚ´Ë´¦Ìí¼Ó¹¹Ôì´úÂë£¬
-	// ½«ËùÓÐÖØÒªµÄ³õÊ¼»¯·ÅÖÃÔÚ InitInstance ÖÐ
+	m_lastTime = 0;
+	m_oldMousePos = CPoint(-1, -1);
+	// TODO: åœ¨æ­¤å¤„æ·»åŠ æž„é€ ä»£ç ï¼Œ
+	// å°†æ‰€æœ‰é‡è¦çš„åˆå§‹åŒ–æ”¾ç½®åœ¨ InitInstance ä¸­
 	m_lastTime = GetTickCount();
 }
 
 
-// Î¨Ò»µÄÒ»¸ö CClientApp ¶ÔÏó
+// å”¯ä¸€çš„ä¸€ä¸ª CClientApp å¯¹è±¡
 
 CClientApp theApp;
 
 
-// CClientApp ³õÊ¼»¯
+// CClientApp åˆå§‹åŒ–
 
 BOOL CClientApp::InitInstance()
 {
-	// Èç¹ûÒ»¸öÔËÐÐÔÚ Windows XP ÉÏµÄÓ¦ÓÃ³ÌÐòÇåµ¥Ö¸¶¨Òª
-	// Ê¹ÓÃ ComCtl32.dll °æ±¾ 6 »ò¸ü¸ß°æ±¾À´ÆôÓÃ¿ÉÊÓ»¯·½Ê½£¬
-	//ÔòÐèÒª InitCommonControlsEx()¡£·ñÔò£¬½«ÎÞ·¨´´½¨´°¿Ú¡£
+	if (!InitializeApplicationDpi()) {
+		MessageBoxW(NULL, L"Cannot initialize desktop pixel coordinates.", L"Remote Control Client", MB_OK | MB_ICONERROR);
+		return FALSE;
+	}
+	CaptureExclusion::InitializeForCurrentThread();
+	CaptureExclusion::ShowPendingFailure();
+	if (!InitializeRuntimeDirectory(L"Client-data")) {
+		AfxMessageBox(L"Cannot create or open the application data directory.");
+		return FALSE;
+	}
+
+	// å¦‚æžœä¸€ä¸ªè¿è¡Œåœ¨ Windows XP ä¸Šçš„åº”ç”¨ç¨‹åºæ¸…å•æŒ‡å®šè¦
+	// ä½¿ç”¨ ComCtl32.dll ç‰ˆæœ¬ 6 æˆ–æ›´é«˜ç‰ˆæœ¬æ¥å¯ç”¨å¯è§†åŒ–æ–¹å¼ï¼Œ
+	//åˆ™éœ€è¦ InitCommonControlsEx()ã€‚å¦åˆ™ï¼Œå°†æ— æ³•åˆ›å»ºçª—å£ã€‚
 	INITCOMMONCONTROLSEX InitCtrls;
 	InitCtrls.dwSize = sizeof(InitCtrls);
-	// ½«ËüÉèÖÃÎª°üÀ¨ËùÓÐÒªÔÚÓ¦ÓÃ³ÌÐòÖÐÊ¹ÓÃµÄ
-	// ¹«¹²¿Ø¼þÀà¡£
+	// å°†å®ƒè®¾ç½®ä¸ºåŒ…æ‹¬æ‰€æœ‰è¦åœ¨åº”ç”¨ç¨‹åºä¸­ä½¿ç”¨çš„
+	// å…¬å…±æŽ§ä»¶ç±»ã€‚
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
 	InitCommonControlsEx(&InitCtrls);
 
@@ -52,14 +67,14 @@ BOOL CClientApp::InitInstance()
 
 	AfxEnableControlContainer();
 
-	// ±ê×¼³õÊ¼»¯
-	// Èç¹ûÎ´Ê¹ÓÃÕâÐ©¹¦ÄÜ²¢Ï£Íû¼õÐ¡
-	// ×îÖÕ¿ÉÖ´ÐÐÎÄ¼þµÄ´óÐ¡£¬ÔòÓ¦ÒÆ³ýÏÂÁÐ
-	// ²»ÐèÒªµÄÌØ¶¨³õÊ¼»¯Àý³Ì
-	// ¸ü¸ÄÓÃÓÚ´æ´¢ÉèÖÃµÄ×¢²á±íÏî
-	// TODO: Ó¦ÊÊµ±ÐÞ¸Ä¸Ã×Ö·û´®£¬
-	// ÀýÈçÐÞ¸ÄÎª¹«Ë¾»ò×éÖ¯Ãû
-	SetRegistryKey(_T("Ó¦ÓÃ³ÌÐòÏòµ¼Éú³ÉµÄ±¾µØÓ¦ÓÃ³ÌÐò"));
+	// æ ‡å‡†åˆå§‹åŒ–
+	// å¦‚æžœæœªä½¿ç”¨è¿™äº›åŠŸèƒ½å¹¶å¸Œæœ›å‡å°
+	// æœ€ç»ˆå¯æ‰§è¡Œæ–‡ä»¶çš„å¤§å°ï¼Œåˆ™åº”ç§»é™¤ä¸‹åˆ—
+	// ä¸éœ€è¦çš„ç‰¹å®šåˆå§‹åŒ–ä¾‹ç¨‹
+	// æ›´æ”¹ç”¨äºŽå­˜å‚¨è®¾ç½®çš„æ³¨å†Œè¡¨é¡¹
+	// TODO: åº”é€‚å½“ä¿®æ”¹è¯¥å­—ç¬¦ä¸²ï¼Œ
+	// ä¾‹å¦‚ä¿®æ”¹ä¸ºå…¬å¸æˆ–ç»„ç»‡å
+	SetRegistryKey(_T("åº”ç”¨ç¨‹åºå‘å¯¼ç”Ÿæˆçš„æœ¬åœ°åº”ç”¨ç¨‹åº"));
 
 
 	CClientMain dlg;
@@ -68,31 +83,32 @@ BOOL CClientApp::InitInstance()
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)
 	{
-		// TODO: ÔÚ´Ë·ÅÖÃ´¦ÀíºÎÊ±ÓÃ
-		//  ¡°È·¶¨¡±À´¹Ø±Õ¶Ô»°¿òµÄ´úÂë
+		// TODO: åœ¨æ­¤æ”¾ç½®å¤„ç†ä½•æ—¶ç”¨
+		//  â€œç¡®å®šâ€æ¥å…³é—­å¯¹è¯æ¡†çš„ä»£ç 
 	}
 	else if (nResponse == IDCANCEL)
 	{
-		// TODO: ÔÚ´Ë·ÅÖÃ´¦ÀíºÎÊ±ÓÃ
-		//  ¡°È¡Ïû¡±À´¹Ø±Õ¶Ô»°¿òµÄ´úÂë
+		// TODO: åœ¨æ­¤æ”¾ç½®å¤„ç†ä½•æ—¶ç”¨
+		//  â€œå–æ¶ˆâ€æ¥å…³é—­å¯¹è¯æ¡†çš„ä»£ç 
 	}
 
 
-	// ÓÉÓÚ¶Ô»°¿òÒÑ¹Ø±Õ£¬ËùÒÔ½«·µ»Ø FALSE ÒÔ±ãÍË³öÓ¦ÓÃ³ÌÐò£¬
-	//  ¶ø²»ÊÇÆô¶¯Ó¦ÓÃ³ÌÐòµÄÏûÏ¢±Ã¡£
+	// ç”±äºŽå¯¹è¯æ¡†å·²å…³é—­ï¼Œæ‰€ä»¥å°†è¿”å›ž FALSE ä»¥ä¾¿é€€å‡ºåº”ç”¨ç¨‹åºï¼Œ
+	//  è€Œä¸æ˜¯å¯åŠ¨åº”ç”¨ç¨‹åºçš„æ¶ˆæ¯æ³µã€‚
 	return FALSE;
 }
 
 //BOOL CClientApp::PreTranslateMessage(MSG* pMsg)
 //{
-//	// TODO: ÔÚ´ËÌí¼Ó×¨ÓÃ´úÂëºÍ/»òµ÷ÓÃ»ùÀà
+//	// TODO: åœ¨æ­¤æ·»åŠ ä¸“ç”¨ä»£ç å’Œ/æˆ–è°ƒç”¨åŸºç±»
 //
 //	return CWinApp::PreTranslateMessage(pMsg);
 //}
 
 BOOL CClientApp::OnIdle(LONG lCount)
 {
-	// TODO: ÔÚ´ËÌí¼Ó×¨ÓÃ´úÂëºÍ/»òµ÷ÓÃ»ùÀà
+	CaptureExclusion::ShowPendingFailure(m_pMainWnd ? m_pMainWnd->GetSafeHwnd() : NULL);
+	// TODO: åœ¨æ­¤æ·»åŠ ä¸“ç”¨ä»£ç å’Œ/æˆ–è°ƒç”¨åŸºç±»
 
 
 	return CWinApp::OnIdle(lCount);
@@ -100,8 +116,9 @@ BOOL CClientApp::OnIdle(LONG lCount)
 
 BOOL CClientApp::PreTranslateMessage(MSG* pMsg)
 {
-	// TODO: ÔÚ´ËÌí¼Ó×¨ÓÃ´úÂëºÍ/»òµ÷ÓÃ»ùÀà
-	//static float sLastTime = GetTickCount(); 
+	if (CaptureExclusion::ProcessThreadMessage(*pMsg)) return TRUE;
+	// TODO: åœ¨æ­¤æ·»åŠ ä¸“ç”¨ä»£ç å’Œ/æˆ–è°ƒç”¨åŸºç±»
+	//static float sLastTime = GetTickCount();
 
 	if(WM_MOUSEMOVE == pMsg->message)
 	{
@@ -111,12 +128,12 @@ BOOL CClientApp::PreTranslateMessage(MSG* pMsg)
 			CPoint mousePoint;
 			GetCursorPos(&mousePoint);
 			if (m_oldMousePos != mousePoint)
-			{		
+			{
 				((CClientMain*)m_pMainWnd)->SendMouseMsg(mousePoint.x,mousePoint.y,0);
 			}
 			m_oldMousePos = mousePoint;
 			m_lastTime = curTime;
-		}		
+		}
 	}
 	if(pMsg->message >= WM_LBUTTONDOWN && pMsg->message <= WM_MBUTTONDBLCLK )
 	{
@@ -134,7 +151,7 @@ BOOL CClientApp::PreTranslateMessage(MSG* pMsg)
 
 	if (WM_KEYDOWN==pMsg->message||WM_SYSKEYDOWN == pMsg->message)
 	{
-		if( GetKeyState(VK_CONTROL) < 0 && 
+		if( GetKeyState(VK_CONTROL) < 0 &&
 			GetKeyState(VK_SHIFT) < 0 &&
 			GetKeyState(VK_RETURN) < 0)
 		{
@@ -149,7 +166,7 @@ BOOL CClientApp::PreTranslateMessage(MSG* pMsg)
 
 			return true;
 		}
-	
+
 		((CClientMain*)m_pMainWnd)->SendKeyboardMsg(pMsg->wParam,RCS_KEY_DOWN);
 		if (((CClientMain*)m_pMainWnd)->IsFullScreen())
 		{
@@ -165,10 +182,16 @@ BOOL CClientApp::PreTranslateMessage(MSG* pMsg)
 		}
 	}
 
-	//float  fCurTime = GetTickCount(); 
+	//float  fCurTime = GetTickCount();
 	//if (fCurTime - sLastTime > 100)
 	//{
 	//	((CClientMain*)m_pMainWnd)->DealMessage();
 	//}
 	return CWinApp::PreTranslateMessage(pMsg);
+}
+
+int CClientApp::ExitInstance()
+{
+	CaptureExclusion::ShutdownForCurrentThread();
+	return CWinApp::ExitInstance();
 }

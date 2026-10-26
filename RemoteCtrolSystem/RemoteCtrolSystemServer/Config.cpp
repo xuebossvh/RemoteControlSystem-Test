@@ -4,6 +4,11 @@
 Config::Config(void)
 {
 	m_DataFile.SetFileName(_T("RemoteConfig.ini"));
+	if (GetFileAttributes(_T("RemoteConfig.ini")) == INVALID_FILE_ATTRIBUTES) {
+        SetIsAllowControl(TRUE); SetIsAutoRun(FALSE); SetIsShowInTask(FALSE);
+        SetIsEncryptFile(TRUE); SetIsUsePwdProtection(TRUE);
+        SetAdminLoginPwd(_T("111")); SetConnectPort(8900);
+    }
 }
 
 Config::~Config(void)

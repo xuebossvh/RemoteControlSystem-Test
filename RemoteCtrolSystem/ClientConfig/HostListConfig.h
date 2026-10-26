@@ -2,18 +2,18 @@
 **             Guangzhou ZHIYUAN electronics Co.,LTD
 **
 **
-**                   http://www.electronics.com 
+**                   http://www.electronics.com
 **-------------File Info---------------------------------------------------
 **File Name:HostListConfig.h
 **Latest modified Data:2013-4-17  11:09:53
 **Latest Version:v1.0
-**Description:¹ÜÀíÅäÖÃÎÄ¼şÖĞµÄÔ¶³ÌÁĞ±íÅäÖÃĞÅÏ¢
+**Description:ç®¡ç†é…ç½®æ–‡ä»¶ä¸­çš„è¿œç¨‹åˆ—è¡¨é…ç½®ä¿¡æ¯
 **
 **-------------------------------------------------------------------------
 **Create by:XuWunJun
 **Create date:2013-4-17  11:09:53
 **Version:v1.0
-**Description:¹ÜÀíÅäÖÃÎÄ¼şÖĞµÄÔ¶³ÌÁĞ±íÅäÖÃĞÅÏ¢
+**Description:ç®¡ç†é…ç½®æ–‡ä»¶ä¸­çš„è¿œç¨‹åˆ—è¡¨é…ç½®ä¿¡æ¯
 **
 **
 **-------------------------------------------------------------------------
@@ -30,7 +30,7 @@
 
 
 /************************************************************************/
-/*        Ô¶³ÌÁĞ±íÖĞ£¬±íÊ¾Ô¶³ÌÖ÷»úÃû×Ö£¬ipÒÔ¼°Á¬½Ó¶Ë¿ÚµÄÊı¾İ½á¹¹        */
+/*        è¿œç¨‹åˆ—è¡¨ä¸­ï¼Œè¡¨ç¤ºè¿œç¨‹ä¸»æœºåå­—ï¼Œipä»¥åŠè¿æ¥ç«¯å£çš„æ•°æ®ç»“æ„        */
 /************************************************************************/
 struct  Host
 {
@@ -45,25 +45,25 @@ public:
 	~HostListConfig(void);
 
 	/**
-	   @brief:³õÊ¼»¯HostListConfig
+	   @brief:åˆå§‹åŒ–HostListConfig
 	   @Parameter:char * FilePath
 	   @Return:bool
 	*/
 	bool Init(char* FilePath);
 	/**
-	   @brief:¶ÁÈ¡ÅäÖÃÎÄ¼şÖĞµÄÖ÷»úĞÅÏ¢£¬²¢°ÑÖ÷»úĞÅÏ¢±£´æµ½vtHostListÖĞ
+	   @brief:è¯»å–é…ç½®æ–‡ä»¶ä¸­çš„ä¸»æœºä¿¡æ¯ï¼Œå¹¶æŠŠä¸»æœºä¿¡æ¯ä¿å­˜åˆ°vtHostListä¸­
 	   @Parameter:std::vector<Host> & vtHostList
 	   @Return:void
 	*/
 	void ReadHostList(std::vector<Host>& vtHostList);
 	/**
-	   @brief:Ìí¼ÓÖ÷»úĞÅÏ¢µ½ÅäÖÃÎÄ¼şÖĞ
+	   @brief:æ·»åŠ ä¸»æœºä¿¡æ¯åˆ°é…ç½®æ–‡ä»¶ä¸­
 	   @Parameter:Host host
 	   @Return:void
 	*/
 	void AddHost(Host host);
 	/**
-	   @brief:ÔÚÅäÖÃÎÄ¼şÖĞÉ¾³ıname£¨Ö÷»úÃû£©¶ÔÓ¦µÄÖ÷»úĞÅÏ¢
+	   @brief:åœ¨é…ç½®æ–‡ä»¶ä¸­åˆ é™¤nameï¼ˆä¸»æœºåï¼‰å¯¹åº”çš„ä¸»æœºä¿¡æ¯
 	   @Parameter:char * name
 	   @Return:void
 	*/

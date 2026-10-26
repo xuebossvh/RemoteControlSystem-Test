@@ -1,4 +1,4 @@
-// TabAboutDlg.cpp : ÊµÏÖÎÄ¼ş
+// TabAboutDlg.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -6,7 +6,7 @@
 #include "TabAboutDlg.h"
 
 
-// TabAboutDlg ¶Ô»°¿ò
+// TabAboutDlg å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(TabAboutDlg, CDialog)
 
@@ -30,4 +30,4 @@ BEGIN_MESSAGE_MAP(TabAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// TabAboutDlg ÏûÏ¢´¦Àí³ÌĞò
+// TabAboutDlg æ¶ˆæ¯å¤„ç†ç¨‹åº

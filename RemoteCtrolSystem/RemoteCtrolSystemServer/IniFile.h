@@ -1,19 +1,19 @@
 /**************************************************************************
 **             Guangzhou ZHIYUAN electronics Co.,LTD
-**             
 **
-**                   http://www.embedtools.com  
+**
+**                   http://www.embedtools.com
 **-------------File Info---------------------------------------------------
 **File Name:   IniFile.h
 **Latest modified Data:
 **Latest Version:
-**Description:  
+**Description:
 **
 **-------------------------------------------------------------------------
-**Create by:  ÎºØ·
+**Create by:  é­èƒ¤
 **Create date:  2013/04/07   9:47
 **Version:  1.0
-**Description: 
+**Description:
 **
 **
 **-------------------------------------------------------------------------
@@ -40,10 +40,10 @@ public:
 
 public:
 	/**
-	 * @Brief SetFileName  ÉèÖÃÅäÖÃÎÄ¼şËùÔÚµÄÂ·¾¶
-	 * @Parameter LPCTSTR szFileName Â·¾¶
+	 * @Brief SetFileName  è®¾ç½®é…ç½®æ–‡ä»¶æ‰€åœ¨çš„è·¯å¾„
+	 * @Parameter LPCTSTR szFileName è·¯å¾„
 	 * @Returns void
-	 * @Remark  
+	 * @Remark
 	 **/
 	void SetFileName(LPCTSTR szFileName);
 	LPCTSTR GetFileName();
@@ -51,11 +51,11 @@ public:
 public:
 
 	//************************************
-	// Method:    SetProfileInt Ìí¼ÓÕûĞÍµÄÊôĞÔÖµ
-	// Parameter: LPCTSTR lpszSectionName  ¶ÎÃû
-	// Parameter: LPCTSTR lpszKeyName ¹Ø¼ü×ÖÃû
-	// Parameter: int nKeyValue  Öµ
-	// Returns:   BOOL  ÊÇ·ñ³É¹¦
+	// Method:    SetProfileInt æ·»åŠ æ•´å‹çš„å±æ€§å€¼
+	// Parameter: LPCTSTR lpszSectionName  æ®µå
+	// Parameter: LPCTSTR lpszKeyName å…³é”®å­—å
+	// Parameter: int nKeyValue  å€¼
+	// Returns:   BOOL  æ˜¯å¦æˆåŠŸ
 	//************************************
 	BOOL SetProfileInt(LPCTSTR lpszSectionName,LPCTSTR lpszKeyName,int nKeyValue);
 
@@ -67,55 +67,55 @@ public:
 	// Returns:   BOOL
 	//************************************
 	BOOL SetProfileString(LPCTSTR lpszSectionName,LPCTSTR lpszKeyName,LPCTSTR lpszKeyVal);
-	
+
 	/**
-	 * @Brief GetProfileSectionNames »ñÈ¡iniÅäÖÃÎÄ¼şÖĞµÄËùÓĞ¶ÎÃû
-	 * @Parameter CStringArray & strArray  ±£´æËùÓĞµÄ¶ÎÃû
+	 * @Brief GetProfileSectionNames è·å–inié…ç½®æ–‡ä»¶ä¸­çš„æ‰€æœ‰æ®µå
+	 * @Parameter CStringArray & strArray  ä¿å­˜æ‰€æœ‰çš„æ®µå
 	 * @Returns DWORD
-	 * @Remark  
+	 * @Remark
 	 **/
 	DWORD GetProfileSectionNames(CStringArray& strArray);
 
 	/**
-	 * @Brief GetProfileInt  »ñÈ¡ÅäÖÃÎÄ¼şÖĞµÄÒ»¸öintĞÍµÄÏî
-	 * @Parameter LPCTSTR lpszSectionName  Ö¸¶¨µÄ¶ÎÃû
-	 * @Parameter LPCTSTR lpszKeyName  Ö¸¶¨µÄ¹Ø¼ü×ÖÃû
-	 * @Returns int  ·µ»ØÕûĞÍµÄÏî£¬ÈôÅäÖÃÎÄ¼şÖĞÃ»ÓĞ£¬Ôò·µ»Ø0
-	 * @Remark  
+	 * @Brief GetProfileInt  è·å–é…ç½®æ–‡ä»¶ä¸­çš„ä¸€ä¸ªintå‹çš„é¡¹
+	 * @Parameter LPCTSTR lpszSectionName  æŒ‡å®šçš„æ®µå
+	 * @Parameter LPCTSTR lpszKeyName  æŒ‡å®šçš„å…³é”®å­—å
+	 * @Returns int  è¿”å›æ•´å‹çš„é¡¹ï¼Œè‹¥é…ç½®æ–‡ä»¶ä¸­æ²¡æœ‰ï¼Œåˆ™è¿”å›0
+	 * @Remark
 	 **/
 	int GetProfileInt(LPCTSTR lpszSectionName,LPCTSTR lpszKeyName);
 
 	/**
-	 * @Brief GetProfileString »ñÈ¡ÅäÖÃÎÄ¼şÖĞµÄÒ»¸östringĞÍµÄÏî
-	 * @Parameter LPCTSTR lpszSectionName  Ö¸¶¨µÄ¶ÎÃû
-	 * @Parameter LPCTSTR lpszKeyName Ö¸¶¨µÄ¹Ø¼ü×ÖÃû
-	 * @Parameter CString & szKeyValue  ±£´æstringµÄÏî
-	 * @Returns DWORD 
-	 * @Remark  
+	 * @Brief GetProfileString è·å–é…ç½®æ–‡ä»¶ä¸­çš„ä¸€ä¸ªstringå‹çš„é¡¹
+	 * @Parameter LPCTSTR lpszSectionName  æŒ‡å®šçš„æ®µå
+	 * @Parameter LPCTSTR lpszKeyName æŒ‡å®šçš„å…³é”®å­—å
+	 * @Parameter CString & szKeyValue  ä¿å­˜stringçš„é¡¹
+	 * @Returns DWORD
+	 * @Remark
 	 **/
 	DWORD GetProfileString(LPCTSTR lpszSectionName,LPCTSTR lpszKeyName ,CString& szKeyValue);
 
 	/**
-	 * @Brief DeleteSection  É¾³ıÖ¸¶¨µÄ¶Î
-	 * @Parameter LPCTSTR lpszSectionName  ÒªÉ¾³ıµÄ¶ÎÃû
-	 * @Returns BOOL  ·µ»ØÊÇ·ñÉ¾³ı³É¹¦
-	 * @Remark  
+	 * @Brief DeleteSection  åˆ é™¤æŒ‡å®šçš„æ®µ
+	 * @Parameter LPCTSTR lpszSectionName  è¦åˆ é™¤çš„æ®µå
+	 * @Returns BOOL  è¿”å›æ˜¯å¦åˆ é™¤æˆåŠŸ
+	 * @Remark
 	 **/
 	BOOL DeleteSection(LPCTSTR lpszSectionName);
 
 	/**
-	 * @Brief DeleteKey É¾³ıÖ¸¶¨µÄÏî
-	 * @Parameter LPCTSTR lpszSectionName  Ö¸¶¨µÄ¶ÎÃû
-	 * @Parameter LPCTSTR lpszKeyName Ö¸¶¨µÄÏîµÄ¼üÖµ
+	 * @Brief DeleteKey åˆ é™¤æŒ‡å®šçš„é¡¹
+	 * @Parameter LPCTSTR lpszSectionName  æŒ‡å®šçš„æ®µå
+	 * @Parameter LPCTSTR lpszKeyName æŒ‡å®šçš„é¡¹çš„é”®å€¼
 	 * @Returns BOOL
-	 * @Remark  
+	 * @Remark
 	 **/
 	BOOL DeleteKey(LPCTSTR lpszSectionName,LPCTSTR lpszKeyName);
 
 private:
-	CString m_szFileName;  // .//Config.ini,Èç¹û¸ÃÎÄ¼ş²»´æÔÚ£¬ÔòexeµÚÒ»´ÎÊÔÍ¼WriteÊ±½«´´½¨¸ÃÎÄ¼ş
-	UINT m_unMaxSection;  //×î¶àÖ§³ÖµÄsectionÊı£¨256£©
-	UINT m_unSetionNameMaxSize; //sectionÃû³Æ³¤¶È£¬ÕâÀïÉèÎª32£¨Null-terminated)
+	CString m_szFileName;  // .//Config.ini,å¦‚æœè¯¥æ–‡ä»¶ä¸å­˜åœ¨ï¼Œåˆ™exeç¬¬ä¸€æ¬¡è¯•å›¾Writeæ—¶å°†åˆ›å»ºè¯¥æ–‡ä»¶
+	UINT m_unMaxSection;  //æœ€å¤šæ”¯æŒçš„sectionæ•°ï¼ˆ256ï¼‰
+	UINT m_unSetionNameMaxSize; //sectionåç§°é•¿åº¦ï¼Œè¿™é‡Œè®¾ä¸º32ï¼ˆNull-terminated)
 
 	void Init();
 };

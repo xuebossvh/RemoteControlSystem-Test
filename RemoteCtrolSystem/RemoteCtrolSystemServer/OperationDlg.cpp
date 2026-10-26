@@ -1,4 +1,4 @@
-// OperationDlg.cpp : ÊµÏÖÎÄ¼ş
+// OperationDlg.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -7,7 +7,7 @@
 #include "UserFile.h"
 
 
-// COperationDlg ¶Ô»°¿ò
+// COperationDlg å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(COperationDlg, CDialog)
 
@@ -38,13 +38,13 @@ BEGIN_MESSAGE_MAP(COperationDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// COperationDlg ÏûÏ¢´¦Àí³ÌĞò
+// COperationDlg æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 BOOL COperationDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// TODO:  ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯
+	// TODO:  åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–
 
 	CUserFile userfile;
 	std::vector<UserData> users = userfile.GetAllUsers();
@@ -53,7 +53,7 @@ BOOL COperationDlg::OnInitDialog()
 	{
 		m_cbNames.AddString(CString(iter->name));
 	}
-	
+
 	if (m_strName == _T(""))
 	{
 		m_cbNames.SetCurSel(0);
@@ -64,29 +64,29 @@ BOOL COperationDlg::OnInitDialog()
 		m_cbNames.SetCurSel(nIndex);
 	}
 	m_cbTypes.SetCurSel(m_iType);
-	
+
 
 	m_list.SetExtendedStyle(m_list.GetExtendedStyle()| LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES );
 	LVCOLUMN lvcol;
 	lvcol.mask = LVCF_TEXT | LVCF_FMT | LVCF_SUBITEM | LVCF_WIDTH;
 	lvcol.fmt = LVCFMT_LEFT;
-	lvcol.pszText = L"²Ù×÷ÓÃ»§";
-	lvcol.iSubItem = 1;  //Óë±íÁĞÏà¹ØµÄ×Ó±íÏîË÷ÒıºÅ
+	lvcol.pszText = L"æ“ä½œç”¨æˆ·";
+	lvcol.iSubItem = 1;  //ä¸è¡¨åˆ—ç›¸å…³çš„å­è¡¨é¡¹ç´¢å¼•å·
 	lvcol.cx = 70;
 
 	m_list.InsertColumn(0,&lvcol);
-	lvcol.pszText = L"²Ù×÷ÀàĞÍ";
+	lvcol.pszText = L"æ“ä½œç±»å‹";
 	m_list.InsertColumn(1,&lvcol);
-	lvcol.pszText = L"Ê±¼ä";
+	lvcol.pszText = L"æ—¶é—´";
 	lvcol.cx=120;
 	m_list.InsertColumn(2,&lvcol);
-	lvcol.pszText = L"²Ù×÷¶ÔÏó";
+	lvcol.pszText = L"æ“ä½œå¯¹è±¡";
 	lvcol.cx = 380;
 	m_list.InsertColumn(3,&lvcol);
 
 	UpdateList();
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// Òì³£: OCX ÊôĞÔÒ³Ó¦·µ»Ø FALSE
+	// å¼‚å¸¸: OCX å±æ€§é¡µåº”è¿”å› FALSE
 }
 
 void COperationDlg::SetNameAndType(CString name, int type)
@@ -106,13 +106,13 @@ void COperationDlg::UpdateList()
 		int nIndex =0;
 			/* m_list.GetItemCount();*/
 		LV_ITEM lvItem;
-		lvItem.mask = LVIF_TEXT ; 
-		lvItem.iItem = nIndex;     //ĞĞÊı
+		lvItem.mask = LVIF_TEXT ;
+		lvItem.iItem = nIndex;     //è¡Œæ•°
 		lvItem.iSubItem = 0;
-		lvItem.pszText = iter->name.GetBuffer();   //µÚÒ»ÁĞ
-		//²åÈëĞĞ
-		m_list.InsertItem(&lvItem); 
-		//²åÈëÆäËüÁĞ
+		lvItem.pszText = iter->name.GetBuffer();   //ç¬¬ä¸€åˆ—
+		//æ’å…¥è¡Œ
+		m_list.InsertItem(&lvItem);
+		//æ’å…¥å…¶å®ƒåˆ—
 		m_list.SetItemText(nIndex,1,iter->action);
 		m_list.SetItemText(nIndex,2,iter->time);
 		m_list.SetItemText(nIndex,3,iter->path);
@@ -121,7 +121,7 @@ void COperationDlg::UpdateList()
 
 void COperationDlg::OnBnClickedBtnClearlog()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	m_operation.ClearLogFile();
 	m_operation.GetOperationNotes();
 	UpdateList();
@@ -129,11 +129,11 @@ void COperationDlg::OnBnClickedBtnClearlog()
 
 void COperationDlg::OnCbnSelchangeCbUser()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
-	m_cbNames.GetLBText(m_cbNames.GetCurSel(),m_strName);	
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
+	m_cbNames.GetLBText(m_cbNames.GetCurSel(),m_strName);
 	m_iType = m_cbTypes.GetCurSel();
 
-	if (m_strName == _T("Ñ¡Ôñ²éÑ¯ÓÃ»§"))
+	if (m_strName == _T("é€‰æ‹©æŸ¥è¯¢ç”¨æˆ·"))
 	{
 		m_strName =_T("");
 	}
@@ -142,11 +142,11 @@ void COperationDlg::OnCbnSelchangeCbUser()
 
 void COperationDlg::OnCbnSelchangeCbType()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
-	m_cbNames.GetLBText(m_cbNames.GetCurSel(),m_strName);	
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
+	m_cbNames.GetLBText(m_cbNames.GetCurSel(),m_strName);
 	m_iType = m_cbTypes.GetCurSel();
 
-	if (m_strName == _T("Ñ¡Ôñ²éÑ¯ÓÃ»§"))
+	if (m_strName == _T("é€‰æ‹©æŸ¥è¯¢ç”¨æˆ·"))
 	{
 		m_strName =_T("");
 	}
@@ -155,7 +155,7 @@ void COperationDlg::OnCbnSelchangeCbType()
 
 void COperationDlg::OnBnClickedBtnFlash()
 {
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼şÍ¨Öª´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ æ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 	m_operation.GetOperationNotes();
 	UpdateList();
 }

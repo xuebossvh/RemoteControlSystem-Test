@@ -4,32 +4,32 @@
 #include "afxwin.h"
 #include "OperationNotes.h"
 
-// COperationDlg ¶Ô»°¿ò
+// COperationDlg å¯¹è¯æ¡†
 
 class COperationDlg : public CDialog
 {
 	DECLARE_DYNAMIC(COperationDlg)
 
 public:
-	COperationDlg(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	COperationDlg(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~COperationDlg();
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_OPERATION };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	DECLARE_MESSAGE_MAP()
 public:
 	virtual BOOL OnInitDialog();
 	CListCtrl m_list;
 	/**
-	 * @Brief SetNameAndType  ÉèÖÃÒª²éÑ¯µÄ¼ÇÂ¼µÄÓÃ»§ÃûºÍ¼ÇÂ¼ÀàĞÍ
-	 * @Parameter CString name  ÓÃ»§Ãû
-	 * @Parameter int type ¼ÇÂ¼ÀàĞÍ
+	 * @Brief SetNameAndType  è®¾ç½®è¦æŸ¥è¯¢çš„è®°å½•çš„ç”¨æˆ·åå’Œè®°å½•ç±»å‹
+	 * @Parameter CString name  ç”¨æˆ·å
+	 * @Parameter int type è®°å½•ç±»å‹
 	 * @Returns void
-	 * @Remark  
+	 * @Remark
 	 **/
 	void SetNameAndType(CString name, int type);
 
@@ -39,9 +39,9 @@ private:
 	OperationNotes m_operation;
 
 	/**
-	 * @Brief UpdateList  ¸üĞÂ²Ù¼ÇÂ¼ÁĞ±í
+	 * @Brief UpdateList  æ›´æ–°æ“è®°å½•åˆ—è¡¨
 	 * @Returns void
-	 * @Remark  
+	 * @Remark
 	 **/
 	void UpdateList();
 public:

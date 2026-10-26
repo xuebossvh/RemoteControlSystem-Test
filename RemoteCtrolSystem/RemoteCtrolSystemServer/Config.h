@@ -7,31 +7,31 @@ public:
 	Config(void);
 	~Config(void);
 
-	//ÊÇ·ñÔÊĞíÔ¶³Ì¿ØÖÆÏà¹ØÅäÖÃ
+	//æ˜¯å¦å…è®¸è¿œç¨‹æ§åˆ¶ç›¸å…³é…ç½®
 	BOOL GetIsAllowControl();
 	void SetIsAllowControl(BOOL isAllowControl);
 
-	//ÊÇ·ñ¿ª»ú×Ô¶¯ÔËĞĞÏà¹ØÅäÖÃ
+	//æ˜¯å¦å¼€æœºè‡ªåŠ¨è¿è¡Œç›¸å…³é…ç½®
 	BOOL GetIsAutoRun();
 	void SetIsAutoRun(BOOL isAutoRun);
 
-	//×îĞ¡»¯µ½ÍĞÅÌ
+	//æœ€å°åŒ–åˆ°æ‰˜ç›˜
 	BOOL GetIsShowInTask();
 	void SetIsShowInTask(BOOL isShowInTask);
 
-	//¼ÓÃÜÎÄ¼ş
+	//åŠ å¯†æ–‡ä»¶
 	BOOL GetIsEncryptFile();
 	void SetIsEncryptFile(BOOL isEncryptFile);
 
-	//Á¬½Ó¶Ë¿Ú
+	//è¿æ¥ç«¯å£
 	int GetConnectPort();
 	void SetConnectPort(int port);
 
-	//µÇÂ¼ÃÜÂë
+	//ç™»å½•å¯†ç 
 	CString GetAdminLoginPwd();
 	void SetAdminLoginPwd(CString pwd);
 
-	//ÊÇ·ñÊ¹ÓÃÃÜÂë±£»¤·şÎñÆ÷¶Ë²Ù×÷
+	//æ˜¯å¦ä½¿ç”¨å¯†ç ä¿æŠ¤æœåŠ¡å™¨ç«¯æ“ä½œ
 	BOOL GetIsUsePwdProtection();
 	void SetIsUsePwdProtection(BOOL isUsePwdProtection);
 

@@ -2,7 +2,7 @@
 **             Guangzhou ZHIYUAN electronics Co.,LTD
 **
 **
-**                   http://www.embedtools.com  
+**                   http://www.embedtools.com
 **-------------File Info---------------------------------------------------
 **File Name:
 **Latest modified Data:

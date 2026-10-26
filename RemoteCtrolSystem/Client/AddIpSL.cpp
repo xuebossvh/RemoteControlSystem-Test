@@ -1,4 +1,4 @@
-// AddIpSL.cpp : й╣ожнд╪Ч
+// AddIpSL.cpp : Е╝·Г▌╟Ф√┤Д╩╤
 //
 
 #include "stdafx.h"
@@ -6,7 +6,7 @@
 #include "AddIpSL.h"
 
 
-// CAddIpSL ╤т╩╟©Р
+// CAddIpSL Е╞╧Х╞²Ф║├
 
 IMPLEMENT_DYNAMIC(CAddIpSL, CDialog)
 
@@ -30,4 +30,4 @@ BEGIN_MESSAGE_MAP(CAddIpSL, CDialog)
 END_MESSAGE_MAP()
 
 
-// CAddIpSL оШо╒╢╕юМЁлпР
+// CAddIpSL Ф╤┬Ф│╞Е╓└Г░├Г╗▀Е╨▐

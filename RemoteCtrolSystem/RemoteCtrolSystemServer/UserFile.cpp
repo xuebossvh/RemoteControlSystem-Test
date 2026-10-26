@@ -1,185 +1,105 @@
 #include "StdAfx.h"
 #include "UserFile.h"
 #include "Config.h"
-#include "AES.h"
+#include <wincrypt.h>
+#include <vector>
+#include <cstring>
 
-CUserFile::CUserFile(void)
-{
-	this->m_pszFilePath = _T("user");
-	InitFile();
-	GetDataFromFile();
-}
+// New data uses the current Windows user's DPAPI key. Legacy .crypt data is
+// never rewritten: its historical key-size bug makes automatic migration unsafe.
+CUserFile::CUserFile() : m_pszFilePath(_T("user")) { GetDataFromFile(); }
+CUserFile::~CUserFile() {}
+BOOL CUserFile::InitFile() { return TRUE; }
 
-CUserFile::~CUserFile(void)
-{
-}
-
-BOOL CUserFile::InitFile(void)
-{
-	Config config;
-	CString temp;
-	if (config.GetIsEncryptFile())
-	{
-		temp = m_pszFilePath+_T(".crypt");
-	}
-	else
-	{
-		temp = m_pszFilePath+_T(".plain");
-	}
-	if(m_file.Open(temp,CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite))
-	{
-		m_file.Close();
-		return TRUE;
-	}
-	m_file.Close();
-	return FALSE;
-}
-
-
-//************************************
-// Method:    GetDataFromFile  
-// Returns:   void
-//************************************
 void CUserFile::GetDataFromFile()
 {
-	m_DataInFile.clear();
-	Config config;
-	BOOL isEncrypt = config.GetIsEncryptFile();
-	if (isEncrypt)
-	{
-		AES aes;
-		char* key = "RemoteCtrolSystem";
-		aes.set_key((u1byte*)key,256);
-		aes.decrypt(m_pszFilePath);
-	}
-	if (m_file.Open(m_pszFilePath+_T(".plain"),CFile::modeRead))
-	{
-		UserData temp;
-		m_file.Seek(0,CFile::begin);
-		int filelength = m_file.GetLength();
-		int n = filelength/sizeof(UserData);
-		for (int i = 0;i<n;i++)
-		{
-			m_file.Read(&temp,sizeof(UserData));
-			m_DataInFile.push_back(temp);
-		}
-	}
-	m_file.Close();
-	if (isEncrypt)
-	{
-		DeleteFile(m_pszFilePath+_T(".plain"));
-	}	
+    m_DataInFile.clear();
+    CString path = m_pszFilePath + _T(".dpapi");
+    bool encrypted = GetFileAttributes(path) != INVALID_FILE_ATTRIBUTES;
+    if (!encrypted) path = m_pszFilePath + _T(".plain");
+    CFile file;
+    if (!file.Open(path, CFile::modeRead | CFile::shareDenyWrite)) return;
+    ULONGLONG size = file.GetLength();
+    if (!size || size > 1024 * 1024) { file.Close(); return; }
+    std::vector<BYTE> bytes(static_cast<size_t>(size));
+    UINT read = file.Read(bytes.data(), static_cast<UINT>(size));
+    file.Close();
+    if (read != size) return;
+    DATA_BLOB clear = {};
+    if (encrypted) {
+        DATA_BLOB input = {static_cast<DWORD>(bytes.size()), bytes.data()};
+        if (!CryptUnprotectData(&input, NULL, NULL, NULL, NULL, CRYPTPROTECT_UI_FORBIDDEN, &clear)) return;
+        bytes.assign(clear.pbData, clear.pbData + clear.cbData);
+        LocalFree(clear.pbData);
+    }
+    if (bytes.size() % sizeof(UserData)) return;
+    for (size_t offset = 0; offset < bytes.size(); offset += sizeof(UserData)) {
+        UserData user = {};
+        memcpy(&user, bytes.data() + offset, sizeof(user));
+        user.name[19] = user.pwd[19] = 0;
+        if ((user.power == 0 || user.power == 1) && user.name[0] && user.pwd[0])
+            m_DataInFile.push_back(user);
+    }
 }
 
 void CUserFile::SetDataToFile()
 {
-	Config config;
-	BOOL isEncrypt = config.GetIsEncryptFile();
-	if (isEncrypt)
-	{
-		AES aes;
-		char* key = "RemoteCtrolSystem";
-		aes.set_key((u1byte*)key,256);
-		aes.decrypt(m_pszFilePath);
-	}
-	if (m_file.Open(m_pszFilePath+_T(".plain"),CFile::modeCreate | CFile::modeWrite))
-	{
-		std::vector<UserData>::iterator theIter;
-		for (theIter = m_DataInFile.begin();theIter!=m_DataInFile.end();theIter ++)
-		{
-			m_file.Write(&(*theIter),sizeof(UserData));
-		}
-	}	
-	m_file.Close();
-	if (isEncrypt)
-	{
-		AES aes;
-		char* key = "RemoteCtrolSystem";
-		aes.set_key((u1byte*)key,256);
-		aes.encrypt(m_pszFilePath);
-		DeleteFile(m_pszFilePath+_T(".plain"));
-	}
+    Config config;
+    bool encrypted = config.GetIsEncryptFile() != FALSE;
+    CString path = m_pszFilePath + (encrypted ? _T(".dpapi") : _T(".plain"));
+    DWORD size = static_cast<DWORD>(m_DataInFile.size() * sizeof(UserData));
+    BYTE empty = 0;
+    BYTE* data = size ? reinterpret_cast<BYTE*>(m_DataInFile.data()) : &empty;
+    DATA_BLOB protectedData = {};
+    if (encrypted) {
+        DATA_BLOB input = {size, data};
+        if (!CryptProtectData(&input, L"RemoteControlSystem accounts", NULL, NULL, NULL,
+                              CRYPTPROTECT_UI_FORBIDDEN, &protectedData))
+            AfxThrowFileException(CFileException::accessDenied);
+        data = protectedData.pbData; size = protectedData.cbData;
+    }
+    CString tempPath = path + _T(".tmp");
+    CFile file;
+    try {
+        if (!file.Open(tempPath, CFile::modeCreate | CFile::modeWrite | CFile::shareExclusive))
+            AfxThrowFileException(CFileException::accessDenied);
+        if (size) file.Write(data, size);
+        file.Close();
+    } catch (...) {
+        if (protectedData.pbData) LocalFree(protectedData.pbData);
+        throw;
+    }
+    if (protectedData.pbData) LocalFree(protectedData.pbData);
+    if (!MoveFileEx(tempPath, path, MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH))
+        AfxThrowFileException(CFileException::accessDenied);
+    DeleteFile(m_pszFilePath + (encrypted ? _T(".plain") : _T(".dpapi")));
 }
 
-BOOL CUserFile::Add( UserData &user )
+BOOL CUserFile::Add(UserData& user)
 {
-	Config config;
-	AES aes;
-	char* key = "RemoteCtrolSystem";
-	aes.set_key((u1byte*)key,256);
-	BOOL isEncrypt = config.GetIsEncryptFile();
-	if (isEncrypt)
-	{	
-		aes.decrypt(m_pszFilePath);
-	}
-	if (m_file.Open(m_pszFilePath+_T(".plain"),CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite))
-	{
-		int fileLength = m_file.GetLength();
-		int endSeek =(fileLength/sizeof(UserData)) *sizeof(UserData);
-		m_file.Seek(endSeek,CFile::begin);
-		//m_file.SeekToEnd();
-		m_DataInFile.push_back(user);
-		m_file.Write(&user,sizeof(UserData));	
-	} 
-	else
-	{		
-		return FALSE;
-	}	
-	m_file.Close();
-	if (isEncrypt)
-	{
-		aes.encrypt(m_pszFilePath);
-		DeleteFile(m_pszFilePath+_T(".plain"));
-	}
-	return TRUE;
+    if (!user.name[0] || !user.pwd[0] || (user.power != 0 && user.power != 1)) return FALSE;
+    for (const auto& existing : m_DataInFile)
+        if (lstrcmp(existing.name, user.name) == 0) return FALSE;
+    user.name[19] = user.pwd[19] = 0;
+    m_DataInFile.push_back(user); SetDataToFile(); return TRUE;
 }
-
-BOOL CUserFile::Delete( UserData &user )
+BOOL CUserFile::Delete(UserData& user)
 {
-	std::vector<UserData>::iterator theIter;
-	for (theIter = m_DataInFile.begin();theIter!=m_DataInFile.end();theIter ++)
-	{
-		//if ((lstrcmp(theIter->name ,user.name) == 0)/* && (lstrcmp(theIter->pwd,user.pwd) == 0*/))
-		if (lstrcmp(theIter->name ,user.name) == 0)
-		{
-			m_DataInFile.erase(theIter);
-			break;
-		}
-	}
-	SetDataToFile();
-	return TRUE;
+    for (auto it = m_DataInFile.begin(); it != m_DataInFile.end(); ++it)
+        if (lstrcmp(it->name, user.name) == 0) { m_DataInFile.erase(it); SetDataToFile(); return TRUE; }
+    return FALSE;
 }
-
-BOOL CUserFile::Update( UserData &user )
+BOOL CUserFile::Update(UserData& user)
 {
-	std::vector<UserData>::iterator theIter;
-	for (theIter = m_DataInFile.begin();theIter!=m_DataInFile.end();theIter ++)
-	{
-		//if ((lstrcmp(theIter->name ,user.name) == 0) && (lstrcmp(theIter->pwd,user.pwd) == 0))
-		if (lstrcmp(theIter->name ,user.name) == 0)
-		{
-			theIter->power = user.power;
-			break;
-		}
-	}
-	SetDataToFile();
-	return TRUE;
+    if (user.power != 0 && user.power != 1) return FALSE;
+    for (auto& existing : m_DataInFile)
+        if (lstrcmp(existing.name, user.name) == 0) { existing.power = user.power; SetDataToFile(); return TRUE; }
+    return FALSE;
 }
-
-int CUserFile::GetUserPower( const TCHAR* name,const TCHAR* pwd )
+int CUserFile::GetUserPower(const TCHAR* name, const TCHAR* password)
 {
-	std::vector<UserData>::iterator theIter;
-	for (theIter = m_DataInFile.begin();theIter!=m_DataInFile.end();theIter ++)
-	{
-		if ((lstrcmp(theIter->name ,name) == 0) && (lstrcmp(theIter->pwd,pwd) == 0))
-		{
-			return theIter->power;
-		}
-	}
-	return -1;
+    for (const auto& user : m_DataInFile)
+        if (lstrcmp(user.name, name) == 0 && lstrcmp(user.pwd, password) == 0) return user.power;
+    return -1;
 }
-
-std::vector<UserData> CUserFile::GetAllUsers()
-{
-	return m_DataInFile;
-}
+std::vector<UserData> CUserFile::GetAllUsers() { return m_DataInFile; }

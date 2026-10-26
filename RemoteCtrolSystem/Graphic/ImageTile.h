@@ -2,7 +2,7 @@
 **             Guangzhou ZHIYUAN electronics Co.,LTD
 **
 **
-**                   http://www.electronics.com 
+**                   http://www.electronics.com
 **-------------File Info---------------------------------------------------
 **File Name:ImageTile.h
 **Latest modified Data:2013-4-3  14:01:22
@@ -22,57 +22,26 @@
 **Version:
 **Description:
 **************************************************************************/
-#ifndef __IMAGETILE_H__
-#define __IMAGETILE_H__
-#include <Windows.h>
-class ImageTile
-{
+// Modernized image implementation: UTF-8, C++14, Windows GDI/GDI+.
+#pragma once
+#include "GdiImage.h"
+#include <vector>
+
+// A top-down, tightly packed BGR tile. Unlike GdiImage, its rows have no padding.
+class ImageTile {
 public:
-	ImageTile(void);
-	~ImageTile(void);
-    /**
-       @brief:交换两个图像分块数据，这个交换将会交换图像分块用于存放图像数据的指针，以及图像分块的矩形位置数据
-       @Parameter:ImageTile & tile1
-       @Parameter:ImageTile & tile2
-       @Return:friend void
-    */
-    friend void SwapImageTile(ImageTile& tile1,ImageTile& tile2);
-	/**
-	   @brief:图像分块函数，用于bmp数据图像的分割，注：bmp图像的排列方式从左下角开始，上下颠倒。
-	   @Parameter:char * pScreenImage
-	   @Parameter:RECT screenRect
-	   @Parameter:RECT tileRect
-	   @Return:bool
-	*/
-	bool	SetImageTileReverse(char* pScreenImage,RECT screenRect,RECT tileRect);
-	/**
-	   @brief:图像分块函数，传入的源数据图像数据按正常方式排列（从上到下，从左到右）
-	   @Parameter:char * pScreenImage
-	   @Parameter:RECT screenRect
-	   @Parameter:RECT tileRect
-	   @Return:bool
-	*/
-	bool	SetImageTile(char* pScreenImage,RECT screenRect,RECT tileRect);
-	/**
-	   @brief:获取图像数据buffer的指针
-	   @Parameter:char * dstBuff
-	   @Return:bool
-	*/
-	bool	ImageBits(char* dstBuff) const;
-	/**
-	   @brief:返回buffer指针
-	   @Return:char*
-	*/
-	char*	GetBitsPtr();
-	/**
-	   @brief:返回图像分块的矩形
-	   @Return:RECT
-	*/
-	RECT	Rect();
+    bool CopyFrom(const GdiImage& image, RECT rect);
+    bool SetImageTile(char* pixels, RECT screen, RECT tile);
+    bool SetImageTileReverse(char* pixels, RECT screen, RECT tile);
+    bool ImageBits(char* destination) const;
+    char* GetBitsPtr() { return pixels_.empty() ? nullptr : reinterpret_cast<char*>(pixels_.data()); }
+    const char* GetBitsPtr() const { return pixels_.empty() ? nullptr : reinterpret_cast<const char*>(pixels_.data()); }
+    RECT Rect() const { return rect_; }
+    std::size_t Size() const { return pixels_.size(); }
+    bool Matches(const ImageTile& other) const;
+    friend void SwapImageTile(ImageTile& first, ImageTile& second);
 private:
-	RECT	m_Rect;
-	char*	m_pImageBits;
+    bool Copy(const BYTE* pixels, int width, int height, std::size_t stride, RECT rect, bool topDown);
+    RECT rect_ = {};
+    std::vector<BYTE> pixels_;
 };
-
-#endif
-

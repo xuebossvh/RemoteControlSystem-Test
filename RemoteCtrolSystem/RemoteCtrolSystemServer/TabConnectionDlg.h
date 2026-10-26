@@ -1,19 +1,19 @@
 /**************************************************************************
 **             Guangzhou ZHIYUAN electronics Co.,LTD
-**             
 **
-**                   http://www.embedtools.com  
+**
+**                   http://www.embedtools.com
 **-------------File Info---------------------------------------------------
 **File Name:   TabConnectionDlg.h
 **Latest modified Data:
 **Latest Version:
-**Description:  
+**Description:
 **
 **-------------------------------------------------------------------------
-**Create by:   
+**Create by:
 **Create date:  2013/05/03   9:19
 **Version:
-**Description: 
+**Description:
 **
 **
 **-------------------------------------------------------------------------
@@ -39,6 +39,7 @@
 
 #include <iostream>
 #include <vector>
+#include <mutex>
 
 class ConnectionData{
 public:
@@ -49,21 +50,21 @@ public:
 	TCPConnection* connection;
 };
 
-// TabConnectionDlg ∂‘ª∞øÚ
+// TabConnectionDlg ÂØπËØùÊ°Ü
 
 class TabConnectionDlg : public CDialog
 {
 	DECLARE_DYNAMIC(TabConnectionDlg)
 
 public:
-	TabConnectionDlg(CWnd* pParent = NULL);   // ±Í◊ºππ‘Ï∫Ø ˝
+	TabConnectionDlg(CWnd* pParent = NULL);   // Ê†áÂáÜÊûÑÈÄ†ÂáΩÊï∞
 	virtual ~TabConnectionDlg();
 
-// ∂‘ª∞øÚ ˝æ›
+// ÂØπËØùÊ°ÜÊï∞ÊçÆ
 	enum { IDD = IDD_TAB_CONNECTION };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ÷ß≥÷
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV ÊîØÊåÅ
 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -72,12 +73,16 @@ public:
 
 	void UpdateList();
 	void AddConnection(ConnectionData data);
+	bool TryAddConnection(ConnectionData data);
+	int GetConnectionPower(TCPConnection* connection);
+	afx_msg LRESULT OnConnectionsChanged(WPARAM, LPARAM);
 	BOOL IsUserLogined(CString name);
 	void DeleteItemByConnection(TCPConnection *connection);
 	void LoginOutAllUser();
 
 private:
 	std::vector<ConnectionData> m_ConnectionData;
+	std::mutex m_connectionsMutex;
 	//COperationDlg m_operatDlg;
 public:
 	afx_msg void OnBnClickedBtnBroken();

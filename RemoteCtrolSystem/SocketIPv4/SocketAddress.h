@@ -26,7 +26,7 @@ public:
     // Can be used when no IP-address should be specified
     static const string ANY_IP;
 
-    /** 
+    /**
 	  * Construct address from ip-address or name.
       * If @e lookup == @e true and @e ip is like "xxx.xxx.xxx.xxx",
       * a DNS-lookup is made.
@@ -39,10 +39,10 @@ public:
       *
       * @exception Exception An exception is thrown when the lookup fails.
       */
-    explicit TCPSocketAddress(const string& ip = ANY_IP, 
+    explicit TCPSocketAddress(const string& ip = ANY_IP,
 		Port port = 0, bool lookup = false) throw (TCPException);
 
-	/**  
+	/**
 	  * Construct an address from a classic sockaddr_in.
       * @b No lookup is made.
       *
@@ -50,7 +50,7 @@ public:
       */
     TCPSocketAddress(const sockaddr_in& address) throw();
 
-	/**   
+	/**
 	  * Cast the Address into sockaddr_in.
       * The first found IP is used to create the sockaddr_in.
       *
@@ -60,14 +60,14 @@ public:
       */
     operator sockaddr_in() const throw (TCPException);
 
-    /** 
+    /**
 	  * Assignment of sockaddr_in
       *
       * @param address Address that should be copied.
       */
     void operator=(const sockaddr_in& address) throw();
 
-    /** 
+    /**
 	  * Make a DNS-Lookup.
       * You must have set a valid IP-Address before calling.
       * The first valid IP-address is used for lookup.
@@ -76,37 +76,37 @@ public:
       */
     void Lookup() throw (TCPException);
 
-    /** 
+    /**
 	 *  Returns the full name of the address.
      */
     const string& GetName() const throw();
 
-    /** 
-	 *  Returns the number of found name-aliases(.±√˚£©
+    /**
+	 *  Returns the number of found name-aliases(.Âà´ÂêçÔºâ
      */
     int GetNumAliases() const throw();
 
-    /** 
+    /**
 	  * Returns the alias name at index (alias[index]).
       *
       * @param index Index of the requested alias name.
       *
-      * @exception Exception An exception is thrown when 
+      * @exception Exception An exception is thrown when
 	  *    the index if out of valid range (0 - number of aliases)
       */
     const string& GetAliasName(size_t index) const throw (TCPException);
 
-    /** 
+    /**
 	 * Returns the number of ip-addresses.
      */
     int GetNumIPs() const throw();
 
-    /** 
+    /**
 	  * Returns the ip-address at index as text. "xxx.xxx.xxx.xxx"
       *
       * @param index Index of the requested ip-address.
       *
-      * @exception Exception An exception is thrown when the index 
+      * @exception Exception An exception is thrown when the index
 	  *     if out of valid range (0 - number of ip-addresses)
       */
     string GetIPString(size_t index = 0) const throw (TCPException);
@@ -116,8 +116,8 @@ public:
     Port GetPort() const throw();
 
 private:
-    
-    /** 
+
+    /**
 	  * Make a gethostbyname() lookup.
       *
       * @param ip IP or name.

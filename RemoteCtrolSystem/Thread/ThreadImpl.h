@@ -2,7 +2,7 @@
 **             Guangzhou ZHIYUAN electronics Co.,LTD
 **
 **
-**                   http://www.embedtools.com  
+**                   http://www.embedtools.com
 **-------------File Info---------------------------------------------------
 **File Name:
 **Latest modified Data:
@@ -31,7 +31,9 @@
 #ifndef __THREADIMPL_H__
 #define __THREADIMPL_H__
 
+#ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
+#endif
 #include <process.h>
 #include <windows.h>
 
@@ -67,7 +69,7 @@ public:
 	};
 
 public:
-	typedef int (* THREAD_FUNCTION)(Thread *pParam);
+	typedef unsigned int (__stdcall * THREAD_FUNCTION)(void* pParam);
     typedef unsigned int (WINAPI* THREADPROC)(void *pParam);
 
 public:
@@ -101,7 +103,7 @@ public:
 	*/
 	static void TerminateThread(const ThreadStruct &ts);
 	/**
-	   @brief:Is the thread still running 
+	   @brief:Is the thread still running
 	   @Parameter:const ThreadStruct & ts
 	   @Return:bool
 	*/

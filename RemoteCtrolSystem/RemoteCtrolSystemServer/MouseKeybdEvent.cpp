@@ -11,20 +11,20 @@ MouseKeybdEvent::~MouseKeybdEvent(void)
 
 
 /**
- * @Brief ²úÉúÒ»¸ö°´¼üÏûÏ¢
- * @Parameter int ¼üµÄĞéÄâÂë
- * @Parameter BOOL Ö¸¶¨ÊÇ·ñÊÇÀ©Õ¹¼ü
+ * @Brief äº§ç”Ÿä¸€ä¸ªæŒ‰é”®æ¶ˆæ¯
+ * @Parameter int é”®çš„è™šæ‹Ÿç 
+ * @Parameter BOOL æŒ‡å®šæ˜¯å¦æ˜¯æ‰©å±•é”®
  * @Returns void
- * @Remark  
+ * @Remark
  **/
 void MouseKeybdEvent::GenerateKey( int vk, BOOL bExtended )
 {
 	KEYBDINPUT kb = {0};
 	INPUT input = {0};
 	/* Generate a "key down" */
-	if (bExtended) 
-	{ 
-		kb.dwFlags  = KEYEVENTF_EXTENDEDKEY; 
+	if (bExtended)
+	{
+		kb.dwFlags  = KEYEVENTF_EXTENDEDKEY;
 	}
 	kb.wVk = vk;
 	input.type = INPUT_KEYBOARD;
@@ -196,9 +196,9 @@ void MouseKeybdEvent::KeyDown( int vk,BOOL bExtended )
 	KEYBDINPUT kb = {0};
 	INPUT input = {0};
 	/* Generate a "key down" */
-	if (bExtended) 
-	{ 
-		kb.dwFlags  = KEYEVENTF_EXTENDEDKEY; 
+	if (bExtended)
+	{
+		kb.dwFlags  = KEYEVENTF_EXTENDEDKEY;
 	}
 	kb.wVk = vk;
 	input.type = INPUT_KEYBOARD;
@@ -211,9 +211,9 @@ void MouseKeybdEvent::KeyUp( int vk ,BOOL bExtended )
 	KEYBDINPUT kb = {0};
 	INPUT input = {0};
 	/* Generate a "key down" */
-	if (bExtended) 
-	{ 
-		kb.dwFlags  = KEYEVENTF_EXTENDEDKEY; 
+	if (bExtended)
+	{
+		kb.dwFlags  = KEYEVENTF_EXTENDEDKEY;
 	}
 	kb.wVk = vk;
 	kb.dwFlags = KEYEVENTF_KEYUP;

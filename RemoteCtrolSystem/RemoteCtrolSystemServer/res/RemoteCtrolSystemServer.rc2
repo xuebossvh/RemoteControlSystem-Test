@@ -1,13 +1,13 @@
-//
-// RemoteCtrolSystemServer.RC2 - Microsoft Visual C++ ²»»áÖ±½Ó±à¼­µÄ×ÊÔ´
+ï»¿//
+// RemoteCtrolSystemServer.RC2 - Microsoft Visual C++ ä¸ä¼šç›´æ¥ç¼–è¾‘çš„èµ„æº
 //
 
 #ifdef APSTUDIO_INVOKED
-#error ´ËÎÄ¼ş²»ÄÜÓÃ Microsoft Visual C++ ±à¼­
+#error æ­¤æ–‡ä»¶ä¸èƒ½ç”¨ Microsoft Visual C++ ç¼–è¾‘
 #endif //APSTUDIO_INVOKED
 
 
 /////////////////////////////////////////////////////////////////////////////
-// ÔÚ´Ë´¦Ìí¼ÓÊÖ¶¯±à¼­µÄ×ÊÔ´...
+// åœ¨æ­¤å¤„æ·»åŠ æ‰‹åŠ¨ç¼–è¾‘çš„èµ„æº...
 
 /////////////////////////////////////////////////////////////////////////////

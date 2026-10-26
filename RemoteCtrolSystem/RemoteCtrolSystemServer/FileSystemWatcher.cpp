@@ -21,7 +21,7 @@ FileSystemWatcher::~FileSystemWatcher(void)
 void FileSystemWatcher::Run()
 {
 	USES_CONVERSION;
-	this->hDir = CreateFile(  //µ÷ÓÃDirectoryChangeW½øĞĞ¼àÊÓÇ°£¬±ØĞëµÃÓĞÏàÓ¦µÄÎÄ¼ş¾ä±ú
+	this->hDir = CreateFile(  //è°ƒç”¨DirectoryChangeWè¿›è¡Œç›‘è§†å‰ï¼Œå¿…é¡»å¾—æœ‰ç›¸åº”çš„æ–‡ä»¶å¥æŸ„
 		A2T(WatchedDir),
 		FILE_LIST_DIRECTORY,
 		FILE_SHARE_READ | FILE_SHARE_WRITE|FILE_SHARE_DELETE,
@@ -38,7 +38,7 @@ void FileSystemWatcher::Run()
 	DWORD BytesReturned;
 	while (true)
 	{
-		if (ReadDirectoryChangesW(hDir,pNotify,sizeof(buf),true,  //½øĞĞ¼à¿Ø
+		if (ReadDirectoryChangesW(hDir,pNotify,sizeof(buf),true,  //è¿›è¡Œç›‘æ§
 			FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME |
 			FILE_NOTIFY_CHANGE_ATTRIBUTES| FILE_NOTIFY_CHANGE_SIZE|
 			FILE_NOTIFY_CHANGE_LAST_WRITE| FILE_NOTIFY_CHANGE_LAST_ACCESS|
@@ -51,7 +51,7 @@ void FileSystemWatcher::Run()
 			memset( tmp, 0, sizeof(tmp) );
 			WideCharToMultiByte( CP_ACP,0,pNotify->FileName,pNotify->FileNameLength/2,tmp,99,NULL,NULL );
 			strcpy( str1, tmp );
-			
+
 			if (0!=pNotify->NextEntryOffset)
 			{
 				PFILE_NOTIFY_INFORMATION p = (PFILE_NOTIFY_INFORMATION)((char*)pNotify+pNotify->NextEntryOffset);
@@ -73,9 +73,9 @@ void FileSystemWatcher::DealFunc( DWORD action,char *name1,char* name2 )
 {
 	char str1[MAX_PATH], str2[MAX_PATH] = "";
 	strcpy(str1,WatchedDir);
-	strcat(str1,name1);	
-	
-	if (action == FILE_ACTION_RENAMED_OLD_NAME ) //ÖØÃüÃû
+	strcat(str1,name1);
+
+	if (action == FILE_ACTION_RENAMED_OLD_NAME ) //é‡å‘½å
 	{
 		strcpy(str2,WatchedDir);
 		strcat(str2,name2);
@@ -98,16 +98,16 @@ void FileSystemWatcher::WriteToLog(int action,char file1[MAX_PATH],char file2[MA
 	switch(action)
 	{
 	case ADDED:
-		strcpy_s(szAction,"[´´½¨]");
+		strcpy_s(szAction,"[åˆ›å»º]");
 		break;
 	case REMOVED:
-		strcpy_s(szAction,"[É¾³ı]");
+		strcpy_s(szAction,"[åˆ é™¤]");
 		break;
 	case MODIFIED:
-		strcpy_s(szAction,"[ĞŞ¸Ä]");
+		strcpy_s(szAction,"[ä¿®æ”¹]");
 		break;
 	case RENAMED:
-		strcpy_s(szAction,"[ÖØÃüÃû]");
+		strcpy_s(szAction,"[é‡å‘½å]");
 		break;
 	}
 	char time[20];

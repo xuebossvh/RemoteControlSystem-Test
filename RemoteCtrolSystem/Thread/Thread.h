@@ -2,7 +2,7 @@
 **             Guangzhou ZHIYUAN electronics Co.,LTD
 **
 **
-**                   http://www.embedtools.com  
+**                   http://www.embedtools.com
 **-------------File Info---------------------------------------------------
 **File Name:
 **Latest modified Data:
@@ -79,11 +79,12 @@ protected:
 
 	virtual void OnException(const TCPException * pAex)
     {
-        throw pAex;
+        (void)pAex; // Never throw a pointer to an expired worker exception.
     }
 	virtual void OnLeaking() throw () {}
-	static int Thread_Function(Thread *pThread)
+	static unsigned int __stdcall Thread_Function(void* parameter)
 	{
+        Thread* pThread = static_cast<Thread*>(parameter);
 		try
 		{
 			pThread->Run();
@@ -106,7 +107,9 @@ public:
 		return ThreadImpl::Sleep(iMilliseconds);
 	}
 	virtual void Start(size_t cbStackSize = DEFAULT_STACK_SIZE){
-		bool bRes = ThreadImpl::CreateThread(m_ts, 
+        if (IsAlive()) throw ThreadCreateException("Thread already running");
+        ThreadImpl::DestroyThread(m_ts);
+		bool bRes = ThreadImpl::CreateThread(m_ts,
 			Thread_Function,
 			cbStackSize,
 			static_cast<Thread *>(this));
@@ -114,20 +117,13 @@ public:
 			throw ThreadCreateException("Calling CreateThread failed.");
 		}
 	}
-	virtual bool WaitForEnd(int iTimeout = WAIT_INFINITE) {
-
-		if(!ThreadImpl::IsAlive(m_ts)) {
-			return true;
-		}
-
-		if(!ThreadImpl::WaitForThreadEnd(m_ts, iTimeout)) {
-			return false;
-		}
-
-		ThreadImpl::DestroyThread(m_ts);
-
-		return true;
-	}
+    virtual bool WaitForEnd(int iTimeout = WAIT_INFINITE) {
+        if (!m_ts.hThread) return true;
+        if (GetCurrentThreadId() == m_ts.dwThreadId) return false;
+        if (!ThreadImpl::WaitForThreadEnd(m_ts, iTimeout)) return false;
+        ThreadImpl::DestroyThread(m_ts);
+        return true;
+    }
 	DWORD GetThreadID() const{
 		return ThreadImpl::GetThreadId(m_ts);
 	}

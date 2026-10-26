@@ -4,41 +4,41 @@
 #include "afxwin.h"
 #include "afxcmn.h"
 
-// CAddIpDlg ¶Ô»°¿ò
+// CAddIpDlg å¯¹è¯æ¡†
 
 class CAddIpDlg : public CDialog
 {
 	DECLARE_DYNAMIC(CAddIpDlg)
 
 public:
-	CAddIpDlg(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CAddIpDlg(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CAddIpDlg();
 
 	/**
-	   @brief:½«´æÓĞÖ÷»úĞÅÏ¢µÄHostListConfigÖ¸Õë´«¸øAddIpDlg
+	   @brief:å°†å­˜æœ‰ä¸»æœºä¿¡æ¯çš„HostListConfigæŒ‡é’ˆä¼ ç»™AddIpDlg
 	   @Parameter:HostListConfig * hostListConfig
 	   @Return:void
 	*/
 	void SetHostList(HostListConfig* hostListConfig);
 	/**
-	   @brief:·µ»Øµ±Ç°Ìí¼ÓµÄĞÂµÄÖ÷»úĞÅÏ¢µÄÖ÷»úÃû
+	   @brief:è¿”å›å½“å‰æ·»åŠ çš„æ–°çš„ä¸»æœºä¿¡æ¯çš„ä¸»æœºå
 	   @Return:CString
 	*/
 	CString GetAddName();
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_ADD_IP_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	HostListConfig* m_HostListConfig;
 	CString m_szHostName;
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedOk();
-	
+
 private:
 	CIPAddressCtrl	m_HostIP;
 	CEdit m_tbHostName;
 	CEdit m_tbPort;
-};  
+};

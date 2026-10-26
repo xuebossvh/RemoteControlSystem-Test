@@ -82,12 +82,12 @@ namespace
 	rotl(((u4byte)isb_tab[byte(bi[(n + 1) & 3],3)]), 24) ^ *(k + n)
 #endif
 	void gen_tabs(void)
-	{   
+	{
 		u4byte  i, t;
     u1byte  p, q;
-    // log and power tables for GF(2**8) finite field with 
+    // log and power tables for GF(2**8) finite field with
     // 0x011b as modular polynomial - the simplest prmitive
-    // root is 0x03, used here to generate the tables      
+    // root is 0x03, used here to generate the tables
     for(i = 0,p = 1; i < 256; ++i)
     {
         pow_tab[i] = (u1byte)p; log_tab[p] = (u1byte)i;
@@ -100,7 +100,7 @@ namespace
         p = (p << 1) ^ (p & 0x80 ? 0x1b : 0);
     }
     for(i = 0; i < 256; ++i)
-    {  
+    {
         p = (i ? pow_tab[255 - log_tab[i]] : 0); q = p;
         q = (q >> 7) | (q << 1); p ^= q;
         q = (q >> 7) | (q << 1); p ^= q;
@@ -111,8 +111,8 @@ namespace
     for(i = 0; i < 256; ++i)
     {
         p = sbx_tab[i];
-#ifdef  LARGE_TABLES       
-		
+#ifdef  LARGE_TABLES
+
         t = p; fl_tab[0][i] = t;
         fl_tab[1][i] = rotl(t,  8);
         fl_tab[2][i] = rotl(t, 16);
@@ -122,14 +122,14 @@ namespace
             ((u4byte)p <<  8) |
             ((u4byte)p << 16) |
             ((u4byte)ff_mult(3, p) << 24);
-		
+
         ft_tab[0][i] = t;
         ft_tab[1][i] = rotl(t,  8);
         ft_tab[2][i] = rotl(t, 16);
         ft_tab[3][i] = rotl(t, 24);
         p = isb_tab[i];
-#ifdef  LARGE_TABLES       
-		
+#ifdef  LARGE_TABLES
+
         t = p; il_tab[0][i] = t;
         il_tab[1][i] = rotl(t,  8);
         il_tab[2][i] = rotl(t, 16);
@@ -139,7 +139,7 @@ namespace
             ((u4byte)ff_mult( 9, p) <<  8) |
             ((u4byte)ff_mult(13, p) << 16) |
             ((u4byte)ff_mult(11, p) << 24);
-		
+
         it_tab[0][i] = t;
         it_tab[1][i] = rotl(t,  8);
         it_tab[2][i] = rotl(t, 16);
@@ -164,7 +164,7 @@ namespace
 {
     return "rijndael";
 }*/
-// initialise the key schedule from the user supplied key  
+// initialise the key schedule from the user supplied key
 #define loop4(i)                                    \
 {   t = ls_box(rotr(t,  8)) ^ rco_tab[i];           \
     t ^= e_key[4 * i];     e_key[4 * i + 4] = t;    \
@@ -195,7 +195,7 @@ namespace
 }
 
 void AES::set_key(const u1byte in_key[], const u4byte key_len)
-{   
+{
 	u4byte  i, t, u, v, w;
 	if(!tab_gen)
 		gen_tabs();
@@ -206,17 +206,17 @@ void AES::set_key(const u1byte in_key[], const u4byte key_len)
 	e_key[3] = u4byte_in(in_key + 12);
 	switch(k_len)
 	{
-	case 4: 
+	case 4:
 		t = e_key[3];
 		for(i = 0; i < 10; ++i)
 			loop4(i);
 		break;
-	case 6: 
+	case 6:
 		e_key[4] = u4byte_in(in_key + 16); t = e_key[5] = u4byte_in(in_key + 20);
 		for(i = 0; i < 8; ++i)
 			loop6(i);
 		break;
-	case 8: 
+	case 8:
 		e_key[4] = u4byte_in(in_key + 16); e_key[5] = u4byte_in(in_key + 20);
 		e_key[6] = u4byte_in(in_key + 24); t = e_key[7] = u4byte_in(in_key + 28);
 		for(i = 0; i < 7; ++i)
@@ -231,7 +231,7 @@ void AES::set_key(const u1byte in_key[], const u4byte key_len)
 	}
 	return;
 }
-// encrypt a block of text 
+// encrypt a block of text
 #define f_nround(bo, bi, k) \
     f_rn(bo, bi, 0, k);     \
     f_rn(bo, bi, 1, k);     \
@@ -246,7 +246,7 @@ void AES::set_key(const u1byte in_key[], const u4byte key_len)
 	f_rl(bo, bi, 3, k)
 
 void AES::encrypt(const u1byte in_blk[16], u1byte out_blk[16])
-{   
+{
 	u4byte  b0[4], b1[4], *kp;
 	b0[0] = u4byte_in(in_blk    ) ^ e_key[0]; b0[1] = u4byte_in(in_blk +  4) ^ e_key[1];
 	b0[2] = u4byte_in(in_blk + 8) ^ e_key[2]; b0[3] = u4byte_in(in_blk + 12) ^ e_key[3];
@@ -281,47 +281,47 @@ void AES::encrypt( CString fileName)
 	long length=ftell(ff);
 	fseek(ff,0,SEEK_SET);
 
-	long N=length/16;//Ã¿16×Ö½ÚÒ»×é
+	long N=length/16;//æ¯16å­—èŠ‚ä¸€ç»„
 	int d=length%16;
-	if(d) //×÷ÓÃÊÇµ±Ã÷ÎÄ³¤¶È²»ÊÇ128bitÕûÊý±¶Ê±µ÷ÕûNÖµ
+	if(d) //ä½œç”¨æ˜¯å½“æ˜Žæ–‡é•¿åº¦ä¸æ˜¯128bitæ•´æ•°å€æ—¶è°ƒæ•´Nå€¼
 	{
 		length=length+16-length%16;
 		N=N+1;
 	}
-	unsigned char *inBuff=new u1byte[length+1];	
+	unsigned char *inBuff=new u1byte[length+1];
 	fread(inBuff,1,length-16+d,ff);
 	fclose(ff);
 
-	if(d) //Èç¹ûÃ÷ÎÄ³¤¶È²»ÊÇ128bitµÄ±¶ÊýÓÃ¿Õ¸ñ²¹ÆëÊ£ÓàµÄÎ»
+	if(d) //å¦‚æžœæ˜Žæ–‡é•¿åº¦ä¸æ˜¯128bitçš„å€æ•°ç”¨ç©ºæ ¼è¡¥é½å‰©ä½™çš„ä½
 	{
 		for(int i=0;i<16-d;i++)
 		{
 			inBuff[length-16+d+i]=' ';
 		}
 	}
-	u1byte *ouBuff;//ÓÃÓÚÖ¸Ïò¼ÓÃÜºóµÄÃÜÎÄ
+	u1byte *ouBuff;//ç”¨äºŽæŒ‡å‘åŠ å¯†åŽçš„å¯†æ–‡
 	ouBuff=new u1byte[length];
 	u1byte *keyBuff=new u1byte[256];
-	//GetDlgItemText(IDC_EDIT2,(char*)keyBuff,256);//´ÓÎÄ±¾¿òÖÐÈ¡µÃÃÜÔ¿,½«ÃÜÔ¿¿½±´µ½keyBuffÖ¸ÏòµÄÄÚ´æ
-	//set_key(keyBuff,256);//ÉèÖÃÃÜÔ¿
-	for(int j=0;j<N;j++)//Ñ­»·¼ÓÃÜN´Î£¬Ã¿´Î128bit
+	//GetDlgItemText(IDC_EDIT2,(char*)keyBuff,256);//ä»Žæ–‡æœ¬æ¡†ä¸­å–å¾—å¯†é’¥,å°†å¯†é’¥æ‹·è´åˆ°keyBuffæŒ‡å‘çš„å†…å­˜
+	//set_key(keyBuff,256);//è®¾ç½®å¯†é’¥
+	for(int j=0;j<N;j++)//å¾ªçŽ¯åŠ å¯†Næ¬¡ï¼Œæ¯æ¬¡128bit
 	{
 		encrypt(inBuff,ouBuff);
 		inBuff+=16;
 		ouBuff+=16;
 	}
 	delete[]keyBuff;
-	inBuff=inBuff-16*N;//Ã÷ÎÄÖ¸Õë»Øµ½Ã÷ÎÄÍ·
+	inBuff=inBuff-16*N;//æ˜Žæ–‡æŒ‡é’ˆå›žåˆ°æ˜Žæ–‡å¤´
 	delete[]inBuff;
-	ouBuff=ouBuff-16*N;//ÃÜÎÄÖ¸Õë»Øµ½ÃÜÎÄÍ·
+	ouBuff=ouBuff-16*N;//å¯†æ–‡æŒ‡é’ˆå›žåˆ°å¯†æ–‡å¤´
 	fp=fopen(T2A(outFileName),"wb");
-	fwrite(ouBuff,1,length,fp);//Êä³öÃÜÎÄ
+	fwrite(ouBuff,1,length,fp);//è¾“å‡ºå¯†æ–‡
 	delete[]ouBuff;
 	fclose(fp);
-	// TODO: ÔÚ´ËÌí¼Ó¿Ø¼þÍ¨Öª´¦Àí³ÌÐò´úÂë	
+	// TODO: åœ¨æ­¤æ·»åŠ æŽ§ä»¶é€šçŸ¥å¤„ç†ç¨‹åºä»£ç 
 }
 
-// decrypt a block of text 
+// decrypt a block of text
 #define i_nround(bo, bi, k) \
     i_rn(bo, bi, 0, k);     \
     i_rn(bo, bi, 1, k);     \
@@ -368,18 +368,18 @@ void AES::decrypt( CString fileName )
 	CFile c_ff((LPCTSTR)inFileName,CFile::modeRead);
 
 	long length=c_ff.GetLength();
-	long N=length/16;//È¡µÃ×éÊý×öÎªÑ­»·´ÎÊý
+	long N=length/16;//å–å¾—ç»„æ•°åšä¸ºå¾ªçŽ¯æ¬¡æ•°
 	u1byte *inBuff=new u1byte[length+1];
-	c_ff.Read(inBuff,length);//½«Ã÷ÎÄ¿½±´µ½inBuffÖ¸ÏòµÄÄÚ´æ
+	c_ff.Read(inBuff,length);//å°†æ˜Žæ–‡æ‹·è´åˆ°inBuffæŒ‡å‘çš„å†…å­˜
 	c_ff.Close();
 	u1byte *keyBuff=new u1byte[256];
-	//GetDlgItemText(IDC_EDIT2,(char*)keyBuff,256);//´ÓÎÄ±¾¿òÖÐÈ¡µÃÃÜÔ¿
-	//½«ÃÜÔ¿¿½±´µ½keyBuffÖ¸ÏòµÄÄÚ´æ
-	//rij.set_key(keyBuff,256);//ÉèÖÃÃÜÔ¿
-	u1byte *ouBuff;//ÓÃÓÚÖ¸Ïò¼ÓÃÜºóµÄÃÜÎÄ
+	//GetDlgItemText(IDC_EDIT2,(char*)keyBuff,256);//ä»Žæ–‡æœ¬æ¡†ä¸­å–å¾—å¯†é’¥
+	//å°†å¯†é’¥æ‹·è´åˆ°keyBuffæŒ‡å‘çš„å†…å­˜
+	//rij.set_key(keyBuff,256);//è®¾ç½®å¯†é’¥
+	u1byte *ouBuff;//ç”¨äºŽæŒ‡å‘åŠ å¯†åŽçš„å¯†æ–‡
 	ouBuff=new u1byte[length];
 
-	for(int j=0;j<N;j++) //Ñ­»·½âÃÜN´Î
+	for(int j=0;j<N;j++) //å¾ªçŽ¯è§£å¯†Næ¬¡
 	{
 		decrypt(inBuff,ouBuff);
 		inBuff+=16;
@@ -393,8 +393,7 @@ void AES::decrypt( CString fileName )
 	c_fp.Write(ouBuff,length);
 	c_fp.Close();
 	delete ouBuff;
-//	MessageBox("½âÃÜ³É¹¦£¡");
-//	SetDlgItemText(IDC_FILESELECT,m_filename);	
+//	MessageBox("è§£å¯†æˆåŠŸï¼");
+//	SetDlgItemText(IDC_FILESELECT,m_filename);
 
 }
-

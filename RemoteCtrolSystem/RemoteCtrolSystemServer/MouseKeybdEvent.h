@@ -1,19 +1,19 @@
 /**************************************************************************
 **             Guangzhou ZHIYUAN electronics Co.,LTD
-**             
 **
-**                   http://www.embedtools.com  
+**
+**                   http://www.embedtools.com
 **-------------File Info---------------------------------------------------
 **File Name:   MouseKeybdEvent.h
 **Latest modified Data:
 **Latest Version:
-**Description:  
+**Description:
 **
 **-------------------------------------------------------------------------
-**Create by:   魏胤
+**Create by:   榄忚儰
 **Create date:  2013/05/03   8:44
 **Version:
-**Description: 
+**Description:
 **
 **
 **-------------------------------------------------------------------------
@@ -40,40 +40,40 @@ public:
 	~MouseKeybdEvent(void);
 
 public:
-	//模拟键盘的一次按键，bExtended指定是否使用扩展方式
+	//妯℃嫙閿洏鐨勪竴娆℃寜閿紝bExtended鎸囧畾鏄惁浣跨敤鎵╁睍鏂瑰紡
 	static void GenerateKey(int vk, BOOL bExtended);
 
-	//模拟鼠标左键点击
+	//妯℃嫙榧犳爣宸﹂敭鐐瑰嚮
 	static void LeftClick(const int x,const int y);
 
-	//模拟鼠标右键点击
+	//妯℃嫙榧犳爣鍙抽敭鐐瑰嚮
 	static void RightClick(const int x,const int y);
 
-	//模拟鼠标左键双击
+	//妯℃嫙榧犳爣宸﹂敭鍙屽嚮
 	static void LeftDbClick(const int x,const int y);
 
-	//模拟鼠标右键双击
+	//妯℃嫙榧犳爣鍙抽敭鍙屽嚮
 	static void RightDbClick(const int x,const int y);
 
-	//模拟鼠标左键弹起
+	//妯℃嫙榧犳爣宸﹂敭寮硅捣
 	static void LeftClickUp(const int x,const int y);
 
-	//模拟鼠标左键按下
+	//妯℃嫙榧犳爣宸﹂敭鎸変笅
 	static void LeftClickDown(const int x,const int y);
-	
-	//模拟鼠标右键弹起
+
+	//妯℃嫙榧犳爣鍙抽敭寮硅捣
 	static void RightClickUp(const int x,const int y);
 
-	//模拟鼠标右键按下
+	//妯℃嫙榧犳爣鍙抽敭鎸変笅
 	static void RightClickDown(const int x,const int y);
 
-	//模拟鼠标滚轮移动
+	//妯℃嫙榧犳爣婊氳疆绉诲姩
 	static void MouseWheel(const int mouseData);
 
-	//模拟键盘按键弹起
+	//妯℃嫙閿洏鎸夐敭寮硅捣
 	static void KeyUp(int vk ,BOOL bExtended);
 
-	//模拟键盘按键按下
+	//妯℃嫙閿洏鎸夐敭鎸変笅
 	static void KeyDown(int vk,BOOL bExtended);
 };
 #endif//__MOUSEKEYBDEVENT_H__

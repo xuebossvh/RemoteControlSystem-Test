@@ -14,22 +14,22 @@
 #include <queue>
 #include <vector>
 #include "afxwin.h"
-// CClientMain ¶Ô»°¿ò
+// CClientMain å¯¹è¯æ¡†
 
 class CClientMain : public CDialog
 {
 	DECLARE_DYNAMIC(CClientMain)
 
 public:
-	CClientMain(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êı
+	CClientMain(CWnd* pParent = NULL);   // æ ‡å‡†æ„é€ å‡½æ•°
 	virtual ~CClientMain();
 
 
-// ¶Ô»°¿òÊı¾İ
+// å¯¹è¯æ¡†æ•°æ®
 	enum { IDD = IDD_CIENT_MAIN_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV æ”¯æŒ
 
 	CToolBar		m_MainToolBar;
 	CAddIpDlg		m_dlgAddIP;
@@ -43,7 +43,6 @@ protected:
 	int				m_Frame;
 	UINT_PTR		m_nTimer;
 	HostListConfig	m_HostListConfig;
-	TCPClient		m_tcpClien;
 	BOOL			m_AltCheck;
 	BOOL			m_WinCheck;
 	BOOL			m_CtrlCheck;
@@ -53,78 +52,80 @@ protected:
 	std::vector<Host>			m_vtHostList;
 	std::queue<ByteArrayMsg*>	m_SendQueue;
 	std::queue<ByteArrayMsg*>	m_RecvQueue;
-	//²âÊÔÊ¹ÓÃ
+	TCPClient m_tcpClien; // Destroy before the queues it references.
+	//æµ‹è¯•ä½¿ç”¨
 	ScreenShot		m_ScreenShooter;
 	LocalMutex m_mLocaMutex;
-	
-	
+
+
 	DECLARE_MESSAGE_MAP()
 	/**
-	   @brief:ÆÁÄ»½ØÍ¼±£´æÊµ¼Êµ÷ÓÃµÄº¯Êı
+	   @brief:å±å¹•æˆªå›¾ä¿å­˜å®é™…è°ƒç”¨çš„å‡½æ•°
 	   @Return:void
 	*/
 	void			OnScreenShot();
+	void LayoutDisplay();
 	afx_msg int		OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void	OnMove(int x, int y);
 	afx_msg void	OnSize(UINT nType, int cx, int cy);
 	//
 	/**
-	   @brief:¹¤¾ßÀ¸°´Å¥ÏûÏ¢£¬µ¯³öÔ¶³ÌÁĞ±í
+	   @brief:å·¥å…·æ æŒ‰é’®æ¶ˆæ¯ï¼Œå¼¹å‡ºè¿œç¨‹åˆ—è¡¨
 	   @Return:void
 	*/
 	afx_msg void	OnBtnServerList();
 	/**
-	   @brief:¹¤¾ßÀ¸°´Å¥ÏûÏ¢£¬µ¯³öÉèÖÃ´°¿Ú
+	   @brief:å·¥å…·æ æŒ‰é’®æ¶ˆæ¯ï¼Œå¼¹å‡ºè®¾ç½®çª—å£
 	   @Return:void
 	*/
 	afx_msg void	OnBtnSetup();
 	/**
-	   @brief:¹¤¾ßÀ¸°´Å¥ÏûÏ¢£¬ÆÁÄ»½ØÍ¼±£´æ
+	   @brief:å·¥å…·æ æŒ‰é’®æ¶ˆæ¯ï¼Œå±å¹•æˆªå›¾ä¿å­˜
 	   @Return:void
 	*/
 	afx_msg void	OnBtnScreenShot();
 	/**
-	   @brief:¹¤¾ßÀ¸°´Å¥ÏûÏ¢£¬È«ÆÁÏÔÊ¾
+	   @brief:å·¥å…·æ æŒ‰é’®æ¶ˆæ¯ï¼Œå…¨å±æ˜¾ç¤º
 	   @Return:void
 	*/
 	afx_msg void	OnBtnFullScreen();
 	/**
-	   @brief:¹¤¾ßÀ¸°´Å¥ÏûÏ¢£¬°´ÏÂ¹¤¾ßÀ¸ÉÏµÄalt¼ü
+	   @brief:å·¥å…·æ æŒ‰é’®æ¶ˆæ¯ï¼ŒæŒ‰ä¸‹å·¥å…·æ ä¸Šçš„alté”®
 	   @Return:void
 	*/
 	afx_msg void	OnBtnAlt();
 	/**
-	   @brief:¹¤¾ßÀ¸°´Å¥ÏûÏ¢£¬°´ÏÂ¹¤¾ßÀ¸ÉÏµÄCtrl¼ü
+	   @brief:å·¥å…·æ æŒ‰é’®æ¶ˆæ¯ï¼ŒæŒ‰ä¸‹å·¥å…·æ ä¸Šçš„Ctrlé”®
 	   @Return:void
 	*/
 	afx_msg void	OnBtnCtrl();
    /**
-	   @brief:¹¤¾ßÀ¸°´Å¥ÏûÏ¢£¬°´ÏÂ¹¤¾ßÀ¸ÉÏµÄwinkey¼ü
+	   @brief:å·¥å…·æ æŒ‰é’®æ¶ˆæ¯ï¼ŒæŒ‰ä¸‹å·¥å…·æ ä¸Šçš„winkeyé”®
 	   @Return:void
 	*/
 	afx_msg void	OnBtnWin();
 	/**
-	   @brief:¹¤¾ßÀ¸°´Å¥ÏûÏ¢£¬½«ÏÔÊ¾´óĞ¡±äÎª±¾µØ·Ö±æÂÊ´óĞ¡
+	   @brief:å·¥å…·æ æŒ‰é’®æ¶ˆæ¯ï¼Œå°†æ˜¾ç¤ºå¤§å°å˜ä¸ºæœ¬åœ°åˆ†è¾¨ç‡å¤§å°
 	   @Return:void
 	*/
 	afx_msg void	OnBtnScaleLocalSize();
 	/**
-	   @brief:¹¤¾ßÀ¸°´Å¥ÏûÏ¢£¬·Å´óÏÔÊ¾´óĞ¡
+	   @brief:å·¥å…·æ æŒ‰é’®æ¶ˆæ¯ï¼Œæ”¾å¤§æ˜¾ç¤ºå¤§å°
 	   @Return:void
 	*/
 	afx_msg void	OnBtnScaleUp();
 	/**
-	   @brief:¹¤¾ßÀ¸°´Å¥ÏûÏ¢£¬ËõĞ¡ÏÔÊ¾´óĞ¡
+	   @brief:å·¥å…·æ æŒ‰é’®æ¶ˆæ¯ï¼Œç¼©å°æ˜¾ç¤ºå¤§å°
 	   @Return:void
 	*/
 	afx_msg void	OnBtnScaleDown();
 	/**
-	   @brief:¹¤¾ßÀ¸°´Å¥ÏûÏ¢£¬¸øÔ¶³ÌÖ÷»ú·¢ËÍ´ò¿ªÈÎÎñ¹ÜÀíÆ÷ÏûÏ¢
+	   @brief:å·¥å…·æ æŒ‰é’®æ¶ˆæ¯ï¼Œç»™è¿œç¨‹ä¸»æœºå‘é€æ‰“å¼€ä»»åŠ¡ç®¡ç†å™¨æ¶ˆæ¯
 	   @Return:void
 	*/
 	afx_msg void	OnBtnTackMgr();
 	/**
-	   @brief:¹¤¾ßÀ¸°´Å¥ÏûÏ¢£¬ÓÃÓÚ½ØÆÁºÍÏÔÊ¾µÄ¶¨Ê±Æ÷»Øµ÷º¯Êı
+	   @brief:å·¥å…·æ æŒ‰é’®æ¶ˆæ¯ï¼Œç”¨äºæˆªå±å’Œæ˜¾ç¤ºçš„å®šæ—¶å™¨å›è°ƒå‡½æ•°
 	   @Parameter:UINT_PTR nIDEvent
 	   @Return:void
 	*/
@@ -132,26 +133,26 @@ protected:
 	afx_msg LRESULT OnAddIpMessage(WPARAM wParam, LPARAM lParam);
 public:
 	/**
-	   @brief:³õÊ¼»¯TcpÁ´½Ó£¬Èç¹û·µ»Ø1±íÊ¾ÓĞ¿ØÖÆÈ¨ÏŞ£¬0±íÊ¾¹Û¿´È¨ÏŞ£¬Ğ¡ÓÚ0ÔòÊÇÎŞ·¨Á¬½Ó¡£
+	   @brief:åˆå§‹åŒ–Tcpé“¾æ¥ï¼Œå¦‚æœè¿”å›1è¡¨ç¤ºæœ‰æ§åˆ¶æƒé™ï¼Œ0è¡¨ç¤ºè§‚çœ‹æƒé™ï¼Œå°äº0åˆ™æ˜¯æ— æ³•è¿æ¥ã€‚
 	   @Parameter:Host host
 	   @Parameter:UserMsg * userMsg
 	   @Return:int
 	*/
 	int InitTcpClien(Host host,UserMsg* userMsg);
 		/**
-	   @brief:ÉèÖÃÃ¿ÃëÏÔÊ¾µÄÖ¡Êı
+	   @brief:è®¾ç½®æ¯ç§’æ˜¾ç¤ºçš„å¸§æ•°
 	   @Parameter:int frame
 	   @Return:bool
 	*/
 	bool SetFrame(int frame);
 	/**
-	   @brief:ÉèÖÃÍ¼ÏñÖÊÁ¿
+	   @brief:è®¾ç½®å›¾åƒè´¨é‡
 	   @Parameter:int quality
 	   @Return:bool
 	*/
 	bool SetImageQuality(int quality);
 	/**
-	   @brief:·¢ËÍÊó±êÏûÏ¢
+	   @brief:å‘é€é¼ æ ‡æ¶ˆæ¯
 	   @Parameter:int x
 	   @Parameter:int y
 	   @Parameter:int MouseStatus
@@ -159,36 +160,36 @@ public:
 	*/
 	void SendMouseMsg(int x,int y,int MouseStatus);
 	/**
-	   @brief:·¢ËÍ¼üÅÌÏûÏ¢
+	   @brief:å‘é€é”®ç›˜æ¶ˆæ¯
 	   @Parameter:int key
 	   @Parameter:int status
 	   @Return:void
 	*/
 	void SendKeyboardMsg(int key,int status);
 	/**
-	   @brief:ÉèÖÃ·Ö¿é¿éÊı£¬»á·¢ËÍ¸Ä±ä·Ö¿éÏûÏ¢¸ø·şÎñ¶Ë
+	   @brief:è®¾ç½®åˆ†å—å—æ•°ï¼Œä¼šå‘é€æ”¹å˜åˆ†å—æ¶ˆæ¯ç»™æœåŠ¡ç«¯
 	   @Parameter:int Horz
 	   @Parameter:int Vert
 	   @Return:void
 	*/
 	void SetTileNumber(int Horz,int Vert);
 	/**
-	   @brief:½áÊøÈ«ÆÁÄ£Ê½
+	   @brief:ç»“æŸå…¨å±æ¨¡å¼
 	   @Return:bool
 	*/
 	bool EndFullScreen();
 	/**
-	   @brief:¿ªÆôÈ«ÆÁÄ£Ê½
+	   @brief:å¼€å¯å…¨å±æ¨¡å¼
 	   @Return:void
 	*/
 	void FullScreen();
 	/**
-	   @brief:·µ»Øµ±Ç°ÊÇ·ñÊÇÈ«ÆÁÄ£Ê½
+	   @brief:è¿”å›å½“å‰æ˜¯å¦æ˜¯å…¨å±æ¨¡å¼
 	   @Return:bool
 	*/
 	bool IsFullScreen();
 	/**
-	   @brief:´¦Àí½ÓÊÕµÄÏûÏ¢
+	   @brief:å¤„ç†æ¥æ”¶çš„æ¶ˆæ¯
 	   @Return:void
 	*/
 	void DealMessage();

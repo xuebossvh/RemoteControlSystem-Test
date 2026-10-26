@@ -1,4 +1,4 @@
-// ServerListDlg.cpp : ÊµÏÖÎÄ¼ş
+// ServerListDlg.cpp : å®ç°æ–‡ä»¶
 //
 
 #include "stdafx.h"
@@ -6,7 +6,7 @@
 #include "ServerListDlg.h"
 #include <math.h>
 
-// CServerListDlg ¶Ô»°¿ò
+// CServerListDlg å¯¹è¯æ¡†
 
 IMPLEMENT_DYNAMIC(CServerListDlg, CDialog)
 
@@ -32,36 +32,36 @@ BEGIN_MESSAGE_MAP(CServerListDlg, CDialog)
 	ON_WM_SIZE()
 	ON_WM_EXITSIZEMOVE()
 	ON_COMMAND(ID_BUTTON_SL_DELETE,&CServerListDlg::OnBtnDelete)
-	
+
 END_MESSAGE_MAP()
 
-// CServerListDlg ÏûÏ¢´¦Àí³ÌĞò
+// CServerListDlg æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 void CServerListDlg::OnSize(UINT nType, int cx, int cy)
 {
 	CDialog::OnSize(nType, cx, cy);
-	
-	
-	// TODO: ÔÚ´Ë´¦Ìí¼ÓÏûÏ¢´¦Àí³ÌĞò´úÂë
+
+
+	// TODO: åœ¨æ­¤å¤„æ·»åŠ æ¶ˆæ¯å¤„ç†ç¨‹åºä»£ç 
 	RepositionBars(AFX_IDW_CONTROLBAR_FIRST,AFX_IDW_CONTROLBAR_LAST,0);
 	CWnd* pLstServer = GetDlgItem(IDC_LIST_SERVER_LIST);
-	
+
 	if (pLstServer != NULL)
 	{
 		RECT rcList;
 	    GetWindowRect(&rcList);
-	    rcList.bottom -= (60+rcList.top ) ;  
+	    rcList.bottom -= (60+rcList.top ) ;
 	    rcList.right       -= (10+rcList.left);
 		rcList.top        =10;
 		rcList.left       = 5;
 	    pLstServer->MoveWindow(&rcList);
 	}
-	
+
 }
 
 void CServerListDlg::OnExitSizeMove()
 {
-	// TODO: ÔÚ´ËÌí¼ÓÏûÏ¢´¦Àí³ÌĞò´úÂëºÍ/»òµ÷ÓÃÄ¬ÈÏÖµ
+	// TODO: åœ¨æ­¤æ·»åŠ æ¶ˆæ¯å¤„ç†ç¨‹åºä»£ç å’Œ/æˆ–è°ƒç”¨é»˜è®¤å€¼
 
 	CDialog::OnExitSizeMove();
 	CWnd* pParent = GetParent();
@@ -78,10 +78,10 @@ void CServerListDlg::OnExitSizeMove()
 	/*else if (m_Status == SL_UNDOCK )
 	{
 		RECT rcScreen;
-		
+
 		if (rcServerList.right > )
 		{
-		} 
+		}
 		else
 		{
 		}
@@ -165,7 +165,7 @@ BOOL CServerListDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// TODO:  ÔÚ´ËÌí¼Ó¶îÍâµÄ³õÊ¼»¯
+	// TODO:  åœ¨æ­¤æ·»åŠ é¢å¤–çš„åˆå§‹åŒ–
 
 	RECT rcThis;
 	GetWindowRect(&rcThis);
@@ -178,12 +178,12 @@ BOOL CServerListDlg::OnInitDialog()
 	m_toolbar.LoadToolBar(IDR_TOOLBAR2);
 	m_toolbar.GetToolBarCtrl().SetBitmapSize(CSize(16,16));
 	m_toolbar.GetToolBarCtrl().SetButtonSize(CSize(22,22));
-	
-		
+
+
 	RepositionBars(AFX_IDW_CONTROLBAR_FIRST,AFX_IDW_CONTROLBAR_LAST,0);
-	
+
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// Òì³£: OCX ÊôĞÔÒ³Ó¦·µ»Ø FALSE
+	// å¼‚å¸¸: OCX å±æ€§é¡µåº”è¿”å› FALSE
 }
 
 void CServerListDlg::OnBtnDelete()
