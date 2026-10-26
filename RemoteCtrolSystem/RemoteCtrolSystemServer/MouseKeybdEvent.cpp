@@ -1,223 +1,72 @@
-#include "StdAfx.h"
 #include "MouseKeybdEvent.h"
+#include "../Common/RemoteInput.h"
 
-MouseKeybdEvent::MouseKeybdEvent(void)
-{
+MouseKeybdEvent::MouseKeybdEvent() {}
+MouseKeybdEvent::~MouseKeybdEvent() {}
+namespace {
+bool SendAt(int x, int y, const DWORD* actions, UINT count) {
+    if (!actions || count == 0 || count > 4) return false;
+    INPUT events[4] = {};
+    for (UINT index = 0; index < count; ++index)
+        if (!RemoteInput::MakePrimaryMouseInput(x, y, actions[index], events[index])) return false;
+    return SendInput(count, events, sizeof(INPUT)) == count;
+}
+void SendKey(int key, bool released, bool extended) {
+    if (key < 0 || key > 255) return;
+    INPUT event = RemoteInput::MakeKeyboardInput(key, released, extended);
+    SendInput(1, &event, sizeof(INPUT));
+}
 }
 
-MouseKeybdEvent::~MouseKeybdEvent(void)
-{
+bool MouseKeybdEvent::Move(int x, int y) {
+    const DWORD actions[] = {0};
+    return SendAt(x, y, actions, 1);
 }
-
-
-/**
- * @Brief 产生一个按键消息
- * @Parameter int 键的虚拟码
- * @Parameter BOOL 指定是否是扩展键
- * @Returns void
- * @Remark
- **/
-void MouseKeybdEvent::GenerateKey( int vk, BOOL bExtended )
-{
-	KEYBDINPUT kb = {0};
-	INPUT input = {0};
-	/* Generate a "key down" */
-	if (bExtended)
-	{
-		kb.dwFlags  = KEYEVENTF_EXTENDEDKEY;
-	}
-	kb.wVk = vk;
-	input.type = INPUT_KEYBOARD;
-	input.ki = kb;
-	SendInput(1, &input, sizeof(input));
-
-	/* Generate a "key up" */
-	ZeroMemory(&kb, sizeof(KEYBDINPUT));
-	ZeroMemory(&input, sizeof(INPUT));
-	kb.dwFlags  =  KEYEVENTF_KEYUP;
-	if (bExtended) { kb.dwFlags |= KEYEVENTF_EXTENDEDKEY; }
-	kb.wVk = vk;
-	input.type = INPUT_KEYBOARD;
-	input.ki = kb;
-	SendInput(1, &input, sizeof(input));
-
+void MouseKeybdEvent::LeftClick(int x, int y) {
+    const DWORD actions[] = {MOUSEEVENTF_LEFTDOWN, MOUSEEVENTF_LEFTUP};
+    SendAt(x, y, actions, 2);
 }
-
-void MouseKeybdEvent::LeftClick( const int x,const int y )
-{
-	SetCursorPos(x,y);
-
-	INPUT Input[2];
-	ZeroMemory(Input, sizeof(INPUT) * 2);
-	Input[0].type = INPUT_MOUSE;
-	Input[0].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-
-	Input[1].type = INPUT_MOUSE;
-	Input[1].mi.dwFlags = MOUSEEVENTF_LEFTUP;
-	SendInput(2, Input, sizeof(INPUT));
+void MouseKeybdEvent::RightClick(int x, int y) {
+    const DWORD actions[] = {MOUSEEVENTF_RIGHTDOWN, MOUSEEVENTF_RIGHTUP};
+    SendAt(x, y, actions, 2);
 }
-
-void MouseKeybdEvent::LeftClickDown( const int x,const int y )
-{
-	SetCursorPos(x,y);
-	INPUT Input;
-	ZeroMemory(&Input,sizeof(Input));
-	Input.type = INPUT_MOUSE;
-	Input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-
-	SendInput(1,&Input,sizeof(INPUT));
+void MouseKeybdEvent::LeftClickDown(int x, int y) {
+    const DWORD actions[] = {MOUSEEVENTF_LEFTDOWN};
+    SendAt(x, y, actions, 1);
 }
-
-void MouseKeybdEvent::LeftClickUp( const int x,const int y )
-{
-	SetCursorPos(x,y);
-	INPUT Input;
-	ZeroMemory(&Input,sizeof(Input));
-	Input.type = INPUT_MOUSE;
-	Input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
-
-	SendInput(1,&Input,sizeof(INPUT));
+void MouseKeybdEvent::LeftClickUp(int x, int y) {
+    const DWORD actions[] = {MOUSEEVENTF_LEFTUP};
+    SendAt(x, y, actions, 1);
 }
-
-void MouseKeybdEvent::RightClickDown( const int x,const int y )
-{
-	SetCursorPos(x,y);
-	INPUT Input;
-	ZeroMemory(&Input,sizeof(Input));
-	Input.type = INPUT_MOUSE;
-	Input.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
-
-	SendInput(1,&Input,sizeof(INPUT));
+void MouseKeybdEvent::RightClickDown(int x, int y) {
+    const DWORD actions[] = {MOUSEEVENTF_RIGHTDOWN};
+    SendAt(x, y, actions, 1);
 }
-
-void MouseKeybdEvent::RightClickUp( const int x,const int y )
-{
-	SetCursorPos(x,y);
-	INPUT Input;
-	ZeroMemory(&Input,sizeof(Input));
-	Input.type = INPUT_MOUSE;
-	Input.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
-	SendInput(1,&Input,sizeof(INPUT));
+void MouseKeybdEvent::RightClickUp(int x, int y) {
+    const DWORD actions[] = {MOUSEEVENTF_RIGHTUP};
+    SendAt(x, y, actions, 1);
 }
-
-void MouseKeybdEvent::RightClick( const int x,const int y )
-{
-	SetCursorPos(x,y);
-
-	INPUT Input[2];
-	ZeroMemory(Input, sizeof(INPUT) * 2);
-	Input[0].type = INPUT_MOUSE;
-	Input[0].mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
-
-	Input[1].type = INPUT_MOUSE;
-	Input[1].mi.dwFlags = MOUSEEVENTF_RIGHTUP;
-	SendInput(2, Input, sizeof(INPUT));
+void MouseKeybdEvent::LeftDbClick(int x, int y) {
+    const DWORD actions[] = {MOUSEEVENTF_LEFTDOWN, MOUSEEVENTF_LEFTUP, MOUSEEVENTF_LEFTDOWN, MOUSEEVENTF_LEFTUP};
+    SendAt(x, y, actions, 4);
 }
-
-void MouseKeybdEvent::LeftDbClick( const int x,const int y )
-{
-	const double XSCALEFACTOR = 65535 / (GetSystemMetrics(SM_CXSCREEN) - 1);
-	const double YSCALEFACTOR = 65535 / (GetSystemMetrics(SM_CYSCREEN) - 1);
-
-	POINT cursorPos;
-	GetCursorPos(&cursorPos);
-
-	double cx = cursorPos.x * XSCALEFACTOR;
-	double cy = cursorPos.y * YSCALEFACTOR;
-
-	double nx = x * XSCALEFACTOR;
-	double ny = y * YSCALEFACTOR;
-
-	INPUT Input={0};
-	Input.type = INPUT_MOUSE;
-
-	Input.mi.dx = (LONG)nx;
-	Input.mi.dy = (LONG)ny;
-
-	Input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP;
-
-	SendInput(1,&Input,sizeof(INPUT));
-	SendInput(1,&Input,sizeof(INPUT));
-
-	Input.mi.dx = (LONG)cx;
-	Input.mi.dy = (LONG)cy;
-
-	Input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE;
-
-	SendInput(1,&Input,sizeof(INPUT));
+void MouseKeybdEvent::RightDbClick(int x, int y) {
+    const DWORD actions[] = {MOUSEEVENTF_RIGHTDOWN, MOUSEEVENTF_RIGHTUP, MOUSEEVENTF_RIGHTDOWN, MOUSEEVENTF_RIGHTUP};
+    SendAt(x, y, actions, 4);
 }
-
-void MouseKeybdEvent::RightDbClick( const int x,const int y )
-{
-	const double XSCALEFACTOR = 65535 / (GetSystemMetrics(SM_CXSCREEN) - 1);
-	const double YSCALEFACTOR = 65535 / (GetSystemMetrics(SM_CYSCREEN) - 1);
-
-	POINT cursorPos;
-	GetCursorPos(&cursorPos);
-
-	double cx = cursorPos.x * XSCALEFACTOR;
-	double cy = cursorPos.y * YSCALEFACTOR;
-
-	double nx = x * XSCALEFACTOR;
-	double ny = y * YSCALEFACTOR;
-
-	INPUT Input={0};
-	Input.type = INPUT_MOUSE;
-
-	Input.mi.dx = (LONG)nx;
-	Input.mi.dy = (LONG)ny;
-
-	Input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_RIGHTDOWN | MOUSEEVENTF_RIGHTUP;
-
-	SendInput(1,&Input,sizeof(INPUT));
-	SendInput(1,&Input,sizeof(INPUT));
-
-	Input.mi.dx = (LONG)cx;
-	Input.mi.dy = (LONG)cy;
-
-	Input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE;
-
-	SendInput(1,&Input,sizeof(INPUT));
+void MouseKeybdEvent::MouseWheel(int delta) {
+    INPUT event = {};
+    event.type = INPUT_MOUSE;
+    event.mi.dwFlags = MOUSEEVENTF_WHEEL;
+    event.mi.mouseData = static_cast<DWORD>(delta);
+    event.mi.dwExtraInfo = RemoteInput::kExtraInfoMarker;
+    SendInput(1, &event, sizeof(INPUT));
 }
-
-void MouseKeybdEvent::MouseWheel( const int mouseData )
-{
-	INPUT Input;
-	Input.type = INPUT_MOUSE;
-	Input.mi.dwFlags = MOUSEEVENTF_WHEEL;
-	Input.mi.mouseData = mouseData;
-	Input.mi.dx = 0;
-	Input.mi.dy = 0;
-	SendInput(1,&Input,sizeof(INPUT));
+void MouseKeybdEvent::GenerateKey(int key, BOOL extended) {
+    if (key < 0 || key > 255) return;
+    INPUT events[] = {RemoteInput::MakeKeyboardInput(key, false, extended != FALSE),
+                      RemoteInput::MakeKeyboardInput(key, true, extended != FALSE)};
+    SendInput(2, events, sizeof(INPUT));
 }
-
-void MouseKeybdEvent::KeyDown( int vk,BOOL bExtended )
-{
-	KEYBDINPUT kb = {0};
-	INPUT input = {0};
-	/* Generate a "key down" */
-	if (bExtended)
-	{
-		kb.dwFlags  = KEYEVENTF_EXTENDEDKEY;
-	}
-	kb.wVk = vk;
-	input.type = INPUT_KEYBOARD;
-	input.ki = kb;
-	SendInput(1, &input, sizeof(input));
-}
-
-void MouseKeybdEvent::KeyUp( int vk ,BOOL bExtended )
-{
-	KEYBDINPUT kb = {0};
-	INPUT input = {0};
-	/* Generate a "key down" */
-	if (bExtended)
-	{
-		kb.dwFlags  = KEYEVENTF_EXTENDEDKEY;
-	}
-	kb.wVk = vk;
-	kb.dwFlags = KEYEVENTF_KEYUP;
-	input.type = INPUT_KEYBOARD;
-	input.ki = kb;
-	SendInput(1, &input, sizeof(input));
-}
+void MouseKeybdEvent::KeyDown(int key, BOOL extended) { SendKey(key, false, extended != FALSE); }
+void MouseKeybdEvent::KeyUp(int key, BOOL extended) { SendKey(key, true, extended != FALSE); }

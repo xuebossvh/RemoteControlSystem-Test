@@ -40,6 +40,7 @@ public:
 	~MouseKeybdEvent(void);
 
 public:
+    static bool Move(int x, int y);
 	//模拟键盘的一次按键，bExtended指定是否使用扩展方式
 	static void GenerateKey(int vk, BOOL bExtended);
 

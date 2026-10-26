@@ -5,6 +5,7 @@
 #include "ServerListDlg.h"
 #include "SetupDlg.h"
 #include "DisplayDlg.h"
+#include "FullscreenBar.h"
 #include "..\\ClientConfig\HostListConfig.h"
 #include "..\\Graphic\ScreenDisplay.h"
 #include "..\\Graphic\ScreenShot.h"
@@ -37,6 +38,12 @@ protected:
 	CServerListDlg	m_dlgServerList;
 	CSetupDlg		m_dlgSetup;
 	CDisplayDlg		m_dlgDisplay;
+	CFullscreenBar m_fullscreenBar;
+	bool m_changingWindowMode = false;
+	bool m_suppressEscapeUp = false;
+	bool m_suppressEnterUp = false;
+	WINDOWPLACEMENT m_savedPlacement = {sizeof(WINDOWPLACEMENT)};
+	LONG_PTR m_savedStyle = 0, m_savedExStyle = 0;
 	CStatic			m_pctDisplay;
 	bool			m_IsFullScreen;
 	ScreenDisplay	m_ScreenDisplayer;
@@ -199,4 +206,8 @@ protected:
 	virtual void OnOK();
 public:
 	afx_msg void OnDestroy();
+	afx_msg void OnDisconnect();
+	afx_msg void OnGetMinMaxInfo(MINMAXINFO* info);
+	bool HandleLocalShortcut(MSG* message);
+	bool IsRemoteInputTarget(HWND target) const;
 };

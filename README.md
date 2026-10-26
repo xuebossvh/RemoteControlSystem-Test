@@ -4,7 +4,7 @@
 
 原始 VS2008 教程源码已先推送到 [v1.0.0](https://github.com/xuebossvh/RemoteControlSystem-Test/tree/v1.0.0)，对应提交 `40a47b82a703b0c4ee114c878d7d2b8710a93cd4`。基线包含源码、资源、配置样例及中文说明；历史编译缓存、个人 IDE 设置与账户数据留在本地，没有公开上传。
 
-**v1.0.1** 加入了 VS2022 / CMake 构建、运行修复、Client 窗口捕获排除与等比显示。原有 13 个章节的详细分析保留在 [v1.0.0 源码详解](./docs/v1.0.0-analysis.md)，其中源码链接固定到原版标签，避免与当前实现混淆。
+**v1.1.0** 修复高 DPI 标签遮挡与客户端最小化恢复后的重绘问题，新增顶部浮动全屏控制条。此前 [v1.0.1](https://github.com/xuebossvh/RemoteControlSystem-Test/tree/v1.0.1)已加入 VS2022 / CMake 构建、运行修复、Client 窗口捕获排除与等比显示。原有 13 个章节的详细分析保留在 [v1.0.0 源码详解](./docs/v1.0.0-analysis.md)，其中源码链接固定到原版标签。
 
 ## 1. 构建
 
@@ -40,7 +40,7 @@ ctest --test-dir build -C Release --output-on-failure
 
 非默认依赖位置使用 `-MfcRoot <目录>`，或给 CMake 传入 `-DRCS_ATLMFC_ROOT=<目录>`。现代入口是 [CMakeLists.txt](./CMakeLists.txt)；旧 `.sln/.vcproj` 保留作历史资料，不用于上述构建。
 
-旧程序正在运行时，可使用 `.\scripts\build.ps1 -BuildDirectory build-v1.0.1` 在另一目录构建，避免覆盖被占用的 EXE。测试通过后关闭旧程序，再从新目录启动；如需复用已有账户，可用下面的 `--data-dir` 指向原数据目录。
+旧程序正在运行时，可使用 `.\scripts\build.ps1 -BuildDirectory build-v1.1.0` 在另一目录构建，避免覆盖被占用的 EXE。测试通过后关闭旧程序，再从新目录启动；如需复用已有账户，可用下面的 `--data-dir` 指向原数据目录。
 
 ```text
 build/bin/Release/
@@ -63,9 +63,25 @@ build/bin/Release/
 5. 登录后观看画面；控制账户可以发送基本键鼠操作。工具栏提供适应窗口、缩放、全屏、截图和图像参数设置。
 6. 用 Server 连接列表断开会话，或停止服务。关闭时先断开连接，再等待工作线程结束并释放对象。
 
+### 顶部全屏控制条
+
+登录后，远程画面顶部居中显示当前权限以及“全屏 / 适应窗口 / 断开”控制条：
+
+- 点击“全屏”，主窗口切换为覆盖当前显示器完整区域的无边框窗口，本机任务栏被窗口覆盖。这里显示的仍是 Server 桌面；Server 自己的任务栏属于远程画面，会正常显示。
+- 全屏时，鼠标离开控制条约 1.8 秒后，控制条收起为顶部细条；把鼠标移到屏幕顶端中间即可展开。
+- 点击“退出全屏”或按 `Esc` 返回原来的窗口位置和最大化状态；`Ctrl+Shift+Enter` 也可以切换全屏。
+- “适应窗口”恢复等比显示完整桌面；“断开”结束当前会话并关闭 Client。
+- 权限标签为“可控制”时才允许远端键鼠操作；如果显示“仅观看”，请使用 Server 上具有控制权限的账户重新登录。更改账户权限后，应断开旧连接再登录。
+
+全屏只调整 Client 自己的窗口，不关闭、隐藏或修改系统任务栏设置。显示区和控制条都是 Client 主窗口的子窗口，最小化时一起隐藏；恢复时直接从缓存重绘，即使暂时没有新网络图像也可以恢复画面。操作控制条、登录框或设置框不会被当作远端鼠标/键盘事件发送。
+
+Server 的鼠标和键盘注入统一带有事件标记；Client 识别后不会把这些事件再次回传，避免同机输入反馈循环。鼠标使用物理像素到 Windows 绝对坐标的转换。同机仍共用一个 Windows 桌面和光标，捕获排除不会创建独立桌面；同机演示建议先用观看权限，完整控制体验应在两台电脑之间验证。
+
 **同机观看不再采集 Client 自身。** 在支持的系统上，Client 的主窗口、登录框、显示窗口、设置及其他顶层弹窗在本机仍然可见；Server 继续采集整个主屏幕，但画面中呈现的是这些窗口后方的桌面内容，避免重复“套娃”。两机使用时只需配置所选端口的必要防火墙规则。
 
 该功能由 [CaptureExclusion](./RemoteCtrolSystem/Client/CaptureExclusion.cpp)在 Client 自己的 UI 线程中，为顶层窗口设置 `WDA_EXCLUDEFROMCAPTURE`，不修改其他程序的窗口。Windows 10 2004 起支持这一标志，且需要 DWM 桌面合成；条件不满足或调用失败会明确提示，不会静默当作成功。机制和限制见[微软 API 文档](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowdisplayaffinity)。这一设置也会影响遵守该机制的其他截图/录屏工具对 Client 窗口的采集。
+
+因此，“肉眼看到的远程画面黑了”和“系统截图/录屏没有捕获到 Client”需要区分。后者可能是防套娃机制的正常效果；需要保存远程画面时，可使用 Client 自身的截图按钮。
 
 仅用于自己的设备或获得明确授权的实验环境。**当前协议没有 TLS，账户字段仍以原始字节传输，不适合直接作为公网管理服务。**
 
@@ -133,7 +149,9 @@ flowchart LR
 
 整数沿用 Win32 小端表示，单块 JPEG 上限 16 MiB，账户字段验证终止符。完整设置常量及原协议背景见[历史协议说明](./docs/v1.0.0-analysis.md#protocol)。
 
-Server 使用监听线程、每连接处理线程、图像发送线程；Client 网络线程生产消息，UI 定时消费和绘制。关闭时先断开 Socket，再等待线程，最后释放队列。连接列表使用异步窗口消息刷新，避免工作线程同步等待被阻塞的 UI。
+Server 使用监听线程、每连接处理线程、图像发送线程；Client 网络线程生产消息，UI 定时消费并使画布失效，由 [RemoteCanvas](./RemoteCtrolSystem/Client/RemoteCanvas.cpp)的 `WM_PAINT` 调用同一缓存绘制路径。最小化不把画布缩为零尺寸，恢复、调整窗口或解除遮挡时都可以重绘原有图像。关闭时先断开 Socket，再等待线程，最后释放队列。连接列表使用异步窗口消息刷新，避免工作线程同步等待被阻塞的 UI。
+
+Server 每 5 秒发送一次完整图像块更新，用于恢复未变化但曾被拒收的块。截图暂时失败时保留连接并稍后重试，恢复后强制完整更新；合法的全黑桌面仍被当作正常图像，不通过“是不是黑色”猜测故障。
 
 ## 4. 已修复内容与边界
 
@@ -151,6 +169,11 @@ Server 使用监听线程、每连接处理线程、图像发送线程；Client 
 | Client 顶层窗口捕获排除 | 同机仍显示整个桌面，但不把 Client 自身传回 |
 | 等比显示与统一输入映射 | 消除横纵拉伸，正确处理黑边、缩放和坐标 |
 | 进程级 DPI 感知 | 避免高 DPI 下只截取主屏幕左上区域 |
+| Server 标签页按原生内容区布局 | 适配实际字体/DPI，页面不再遮住 tab 文字 |
+| 嵌入式画布和持久缓存重绘 | 修复最小化恢复及遮挡后画面丢失 |
+| 顶部全屏控制条 | 覆盖本机任务栏，支持自动收起、Esc 退出和窗口状态恢复 |
+| 周期完整更新及截图失败重试 | 避免一次失败后静态区域长期无法恢复 |
+| 输入注入标记及 Client 回注过滤 | 修复同机鼠标/键盘反馈循环，并保留每条输入的权限检查 |
 
 当前限制：
 
@@ -176,12 +199,14 @@ Server 使用监听线程、每连接处理线程、图像发送线程；Client 
 
 ## 6. 验证与排错
 
-本机 Release 构建的四组 CTest 均已通过：
+本机 Release 构建的六组 CTest 均已通过：
 
 - [图像测试](./RemoteCtrolSystem/Graphic/tests/image_tests.cpp)：人工像素、奇数宽度、行步长、上下方向、PNG/JPEG、合成、坏数据。
 - [协议测试](./tests/protocol_tests.cpp)：分片/合并、头部边界、长度限制、回环传输、握手余包、主动断开、服务回收。
 - [账户测试](./tests/account_tests.cpp)：DPAPI、错误密码、重复账户、权限修改、格式切换、保留旧密文。
 - [显示几何测试](./RemoteCtrolSystem/Graphic/tests/display_geometry_tests.cpp)：等比缩放、横竖视口、黑边拒绝、角落/中心坐标、分辨率变化和反复缩放不漂移。
+- [显示恢复测试](./RemoteCtrolSystem/Graphic/tests/display_recovery_tests.cpp)：无新包时缓存重绘、零尺寸/恢复、资源释放、坏 JPEG 不覆盖有效画面、静态丢块恢复和合法黑色图像。
+- [输入结构测试](./tests/remote_input_tests.cpp)：物理坐标边界、单调归一化、输入标记与键盘扩展键释放标志；此测试不注入真实输入。
 
 常规回环冒烟覆盖认证、JPEG 数据、观看权限限制、IP 拒绝、重连、主窗口显示、绘制区域和正常关闭。全局键盘输入未注入；没有完成两台电脑联调或长期压力测试。MFC 对话框式应用正常关闭时可能返回对话框结果码（Client 为 2、Server 为 1），测试同时检查退出过程和超时，而非只要求返回 0。
 
@@ -204,6 +229,25 @@ python tests/capture_exclusion_smoke.py --bin-dir build/bin/Release --report bui
 窗口启用捕获排除后，Windows 也可能拒绝外部进程对 Client 窗口执行 `GetPixel`。常规冒烟测试只有在确认排除标志为 `0x11`，且所有采样都返回 `CLR_INVALID` 时，才将这项跨进程读取记录为跳过；窗口可见性和布局仍单独检查，Server 实际 JPEG 中的排除效果由上述色块回归验证。
 
 v1.0.1 的实际结果：捕获排除回归 **8 项通过**，常规冒烟 **13 项通过、2 项明确跳过**（全局键盘注入及受 WDA 限制的外部像素读取）。本机 200% 缩放环境下，协议图像与物理主屏幕均为 2560×1600；Client 各窗口所在区域的背景采样全部匹配，JPEG 的最大 RGB 误差为 3，没有黑块或自我嵌套。
+
+v1.1.0 另有[窗口模式回归](./tests/ui_modes_smoke.py)：
+
+```powershell
+python tests/ui_modes_smoke.py --bin-dir build/bin/Release --report build/ui-modes-smoke.json
+```
+
+它检查四个标签页的实际布局，并让测试 Client 只接收一张人工棋盘 JPEG，随后不再发图，以验证最小化/恢复、遮挡、全屏切换确实依靠缓存恢复。测试通过显式 `--ui-paint-self-test` 启用同进程离屏采样，再结合真实 `WM_PAINT` 成功计数验证绘制；普通启动不启用此诊断接口。整个测试不取消捕获排除，不跨进程传递 GDI 句柄，不保存真实桌面截图，也不操作其他已运行的 Client/Server。
+
+实际结果：窗口模式回归 **20 项通过，无跳过**。只发送一张 JPEG 后，11 次缓存检查的每次 112 个采样点均无黑点、无错误；覆盖三轮最小化恢复、遮挡重绘及“最大化 → 全屏 → 最小化恢复 → 返回最大化”。200% DPI 下四个标签页无遮挡；全屏覆盖 2560×1600 的完整显示器，浮条可以收起和展开。常规冒烟 14 项通过、2 项预定跳过，捕获排除回归 8 项通过。
+
+鼠标还有两组显式交互测试（执行时会短暂移动光标，结束后恢复）：
+
+```powershell
+python tests/remote_input_smoke.py --bin-dir build/bin/Release --report build/remote-input-smoke.json
+python tests/client_input_smoke.py --bin-dir build/bin/Release --report build/client-input-smoke.json
+```
+
+[Server 输入测试](./tests/remote_input_smoke.py)使用新启动的隔离 Server 与测试窗口，验证观看账户不能移动光标、控制账户请求的物理位置实际到达并带有注入标记；不发送键盘或点击。[Client 输入测试](./tests/client_input_smoke.py)只连接人工画面的模拟服务，验证普通移动发送正确坐标、带标记移动零回发、之后普通输入仍正常，以及只点击自身工具条不会产生远端输入。两组实际测试均通过，测试进程和临时数据已清理，原光标已恢复。
 
 | 问题 | 检查方式 |
 | --- | --- |

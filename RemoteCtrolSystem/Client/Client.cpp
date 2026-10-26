@@ -5,6 +5,7 @@
 #include "../Common/RuntimePaths.h"
 #include "Client.h"
 #include "CaptureExclusion.h"
+#include "../Common/RemoteInput.h"
 #include "ClientDlg.h"
 #include "ClientMain.h"
 #include "ServerListDlg.h"
@@ -98,96 +99,39 @@ BOOL CClientApp::InitInstance()
 	return FALSE;
 }
 
-//BOOL CClientApp::PreTranslateMessage(MSG* pMsg)
-//{
-//	// TODO: 在此添加专用代码和/或调用基类
-//
-//	return CWinApp::PreTranslateMessage(pMsg);
-//}
-
-BOOL CClientApp::OnIdle(LONG lCount)
+BOOL CClientApp::OnIdle(LONG count)
 {
-	CaptureExclusion::ShowPendingFailure(m_pMainWnd ? m_pMainWnd->GetSafeHwnd() : NULL);
-	// TODO: 在此添加专用代码和/或调用基类
-
-
-	return CWinApp::OnIdle(lCount);
+    CaptureExclusion::ShowPendingFailure(m_pMainWnd ? m_pMainWnd->GetSafeHwnd() : NULL);
+    return CWinApp::OnIdle(count);
 }
 
-BOOL CClientApp::PreTranslateMessage(MSG* pMsg)
+BOOL CClientApp::PreTranslateMessage(MSG* message)
 {
-	if (CaptureExclusion::ProcessThreadMessage(*pMsg)) return TRUE;
-	// TODO: 在此添加专用代码和/或调用基类
-	//static float sLastTime = GetTickCount();
-
-	if(WM_MOUSEMOVE == pMsg->message)
-	{
-		DWORD  curTime = GetTickCount();
-		if (curTime - m_lastTime > 1000/24)
-		{
-			CPoint mousePoint;
-			GetCursorPos(&mousePoint);
-			if (m_oldMousePos != mousePoint)
-			{
-				((CClientMain*)m_pMainWnd)->SendMouseMsg(mousePoint.x,mousePoint.y,0);
-			}
-			m_oldMousePos = mousePoint;
-			m_lastTime = curTime;
-		}
-	}
-	if(pMsg->message >= WM_LBUTTONDOWN && pMsg->message <= WM_MBUTTONDBLCLK )
-	{
-		CPoint mousePoint;
-		GetCursorPos(&mousePoint);
-		((CClientMain*)m_pMainWnd)->SendMouseMsg(mousePoint.x,mousePoint.y,pMsg->message);
-	}
-
-	if (WM_MOUSEWHEEL == pMsg->message)
-	{
-		CPoint mousePoint;
-		GetCursorPos(&mousePoint);
-		((CClientMain*)m_pMainWnd)->SendMouseMsg(mousePoint.x,mousePoint.y,(short)HIWORD(pMsg->wParam));
-	}
-
-	if (WM_KEYDOWN==pMsg->message||WM_SYSKEYDOWN == pMsg->message)
-	{
-		if( GetKeyState(VK_CONTROL) < 0 &&
-			GetKeyState(VK_SHIFT) < 0 &&
-			GetKeyState(VK_RETURN) < 0)
-		{
-			if (((CClientMain*)m_pMainWnd)->IsFullScreen())
-			{
-				((CClientMain*)m_pMainWnd)->EndFullScreen();
-			}
-			else
-			{
-				((CClientMain*)m_pMainWnd)->FullScreen();
-			}
-
-			return true;
-		}
-
-		((CClientMain*)m_pMainWnd)->SendKeyboardMsg(pMsg->wParam,RCS_KEY_DOWN);
-		if (((CClientMain*)m_pMainWnd)->IsFullScreen())
-		{
-			return TRUE;
-		}
-	}
-	if (WM_KEYUP==pMsg->message||WM_SYSKEYUP == pMsg->message)
-	{
-		((CClientMain*)m_pMainWnd)->SendKeyboardMsg(pMsg->wParam,RCS_KEY_UP);
-		if (((CClientMain*)m_pMainWnd)->IsFullScreen())
-		{
-			return TRUE;
-		}
-	}
-
-	//float  fCurTime = GetTickCount();
-	//if (fCurTime - sLastTime > 100)
-	//{
-	//	((CClientMain*)m_pMainWnd)->DealMessage();
-	//}
-	return CWinApp::PreTranslateMessage(pMsg);
+    if (CaptureExclusion::ProcessThreadMessage(*message)) return TRUE;
+    const bool input = (message->message >= WM_MOUSEFIRST && message->message <= WM_MOUSELAST) ||
+                       (message->message >= WM_KEYFIRST && message->message <= WM_KEYLAST);
+    if (input && RemoteInput::IsCurrentMessageInjected())
+        return CWinApp::PreTranslateMessage(message); // Do not echo Server input back to itself.
+    CClientMain* main = DYNAMIC_DOWNCAST(CClientMain,m_pMainWnd);
+    if (!main) return CWinApp::PreTranslateMessage(message);
+    if (main->HandleLocalShortcut(message)) return TRUE;
+    if (!main->IsRemoteInputTarget(message->hwnd)) return CWinApp::PreTranslateMessage(message);
+    if (message->message == WM_MOUSEMOVE) {
+        DWORD now=GetTickCount();
+        if (now-m_lastTime > 1000/24) {
+            CPoint point; GetCursorPos(&point);
+            if (m_oldMousePos != point) main->SendMouseMsg(point.x,point.y,0);
+            m_oldMousePos=point; m_lastTime=now;
+        }
+    } else if (message->message >= WM_LBUTTONDOWN && message->message <= WM_MBUTTONDBLCLK) {
+        CPoint point; GetCursorPos(&point);
+        main->SendMouseMsg(point.x,point.y,message->message);
+    } else if (message->message == WM_KEYDOWN || message->message == WM_SYSKEYDOWN) {
+        main->SendKeyboardMsg(static_cast<int>(message->wParam),RCS_KEY_DOWN); return TRUE;
+    } else if (message->message == WM_KEYUP || message->message == WM_SYSKEYUP) {
+        main->SendKeyboardMsg(static_cast<int>(message->wParam),RCS_KEY_UP); return TRUE;
+    }
+    return CWinApp::PreTranslateMessage(message);
 }
 
 int CClientApp::ExitInstance()

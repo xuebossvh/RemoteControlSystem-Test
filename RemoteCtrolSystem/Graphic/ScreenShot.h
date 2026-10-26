@@ -36,6 +36,9 @@ public:
     ScreenShot() = default;
     bool Init(int horizontal, int vertical);
     bool ShotScreenImage(std::queue<ByteArrayMsg*>* messages);
+    // Also used by alternative capture sources and deterministic recovery tests.
+    bool EncodeFrame(const GdiImage& image, std::queue<ByteArrayMsg*>* messages, ULONGLONG nowMilliseconds);
+    void RequestFullRefresh();
     bool SetTileNumber(int horizontal, int vertical);
     bool SetQuality(int quality);
     int GetScreenWidth();
@@ -44,6 +47,8 @@ public:
 private:
     std::mutex mutex_;
     int columns_ = 15, rows_ = 15, width_ = 0, height_ = 0, quality_ = 60;
-    bool pixelChanged_ = false;
+    bool pixelChanged_ = false, sizeChangePending_ = false;
+    bool fullRefreshPending_ = true, haveFullRefresh_ = false;
+    ULONGLONG lastFullRefresh_ = 0;
     std::vector<ImageTile> previous_;
 };

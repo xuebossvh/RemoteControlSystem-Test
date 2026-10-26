@@ -54,8 +54,11 @@ public:
     ScreenDisplay& operator=(const ScreenDisplay&) = delete;
     bool Initialize(HWND window, int windowWidth, int windowHeight, int serverWidth, int serverHeight);
     bool SetSize(int width, int height);
+    // WM_PAINT / WM_PRINTCLIENT share this renderer. The caller owns targetDC.
+    bool Render(HDC targetDC);
+    // Schedule a paint; never draw around the window's WM_PAINT lifecycle.
     void Display();
-    void RecvImageMsg(ByteArrayMsg* message); // Consumes/deletes message on every path.
+    bool RecvImageMsg(ByteArrayMsg* message); // Consumes/deletes message on every path; false rejects bad data.
     int GetDisplayWidth() const { const RECT r = view_.GetDisplayRect(); return r.right - r.left; }
     int GetDisplayHeight() const { const RECT r = view_.GetDisplayRect(); return r.bottom - r.top; }
     RECT GetDisplayRect() const { return view_.GetDisplayRect(); }

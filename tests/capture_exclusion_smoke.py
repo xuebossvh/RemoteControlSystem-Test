@@ -279,6 +279,8 @@ def check_region(frame, physical_rect, ui: PhysicalUI, phase: int, solid=None) -
     bounds = (int(left * sx), int(top * sy), int(right * sx), int(bottom * sy))
     lx, ty, rx, by = bounds
     errors = []
+    bad_points = []
+    bad_gray = bad_black = 0
     palette = PALETTES[phase % len(PALETTES)]
     for row in range(1, 8):
         for column in range(1, 12):
@@ -290,11 +292,19 @@ def check_region(frame, physical_rect, ui: PhysicalUI, phase: int, solid=None) -
                 continue
             expected = solid if solid is not None else palette[(int(fx) + int(fy)) % 4]
             actual = frame.getpixel((x, y))
-            errors.append(max(abs(a - b) for a, b in zip(actual, expected)))
+            error = max(abs(a - b) for a, b in zip(actual, expected))
+            errors.append(error)
+            if error > 35:
+                bad_points.append((x, y))
+                bad_gray += max(actual) - min(actual) < 12
+                bad_black += max(actual) < 12
     require(len(errors) >= 12, "Not enough interior sample points")
     bad = sum(error > 35 for error in errors)
     measurements = {"physical_rectangle": list(physical_rect), "protocol_rectangle": list(bounds),
-                    "samples": len(errors), "mismatched_samples": bad, "max_rgb_error": max(errors)}
+                    "samples": len(errors), "mismatched_samples": bad, "max_rgb_error": max(errors),
+                    "mismatched_sample_bounds": [min(p[0] for p in bad_points), min(p[1] for p in bad_points),
+                                                 max(p[0] for p in bad_points), max(p[1] for p in bad_points)] if bad_points else None,
+                    "mismatched_gray_samples": bad_gray, "mismatched_black_samples": bad_black}
     require(bad == 0, "Captured pixels differ from synthetic background/negative control: " + json.dumps(measurements))
     return measurements
 
@@ -406,21 +416,27 @@ def main() -> int:
         ui.set_text(ui.api.GetDlgItem(login, 1012), "view")
         ui.set_text(ui.api.GetDlgItem(login, 1003), PASSWORD)
         ui.click(login, 1004)
-        main_window = ui.dialog(client, (1028,), args.timeout, expected_title="Remote Control Client")
+        main_window = ui.dialog(client, (), args.timeout, expected_title="Remote Control Client")
         ui.place_own(client, main_window, ui.width // 10, ui.height // 8, ui.width * 3 // 5, ui.height * 3 // 5)
 
         def find_display():
+            child = ui.api.GetDlgItem(main_window, 4100)
+            if child and ui.api.GetDlgItem(child, 1028):
+                return child
             return next((window for window in ui.windows(client.pid)
                          if not ui.title(window) and ui.api.GetDlgItem(window, 1028)), None)
 
         display = wait_until(find_display, args.timeout, "Our Client DisplayDlg was not visible")
-        ui.raise_own(client, display)
+        display_root = ui.api.GetAncestor(display, 2)
+        if display_root == display:  # Legacy popup; v1.1+ is an embedded child.
+            ui.raise_own(client, display)
         background.set_phase(2)
         frame, _ = frame_now()
         left, top, right, bottom = ui.rect(main_window)
         shell = (left + 6, top + 6, right - 6, min(bottom - 6, top + max(40, ui.height // 14)))
         record("main_window_excluded", {**check_region(frame, shell, ui, 2), "affinity": ui.affinity(main_window)})
-        record("display_popup_excluded", {**check_region(frame, ui.rect(display), ui, 2), "affinity": ui.affinity(display)})
+        record("display_window_excluded", {**check_region(frame, ui.rect(display), ui, 2), "affinity": ui.affinity(display_root),
+                                            "inherits_root_affinity": display_root != display})
 
         require(bool(ui.api.PostMessageW(main_window, 0x0111, 32813, 0)), "Could not open our Client settings")
         settings = ui.dialog(client, (1016, 1017, 1018), args.timeout)

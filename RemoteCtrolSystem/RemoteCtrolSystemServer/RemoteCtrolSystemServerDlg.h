@@ -15,6 +15,13 @@
 
 #include "../SocketIPv4/TCPThreadedServer.h"
 // CRemoteCtrolSystemServerDlg 对话框
+// The tab owns its pages. Recalculate the display area after font/theme/size changes.
+class CServerTabCtrl : public CTabCtrl
+{
+protected:
+    virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+};
+
 class CRemoteCtrolSystemServerDlg : public CDialog
 {
 // 构造
@@ -39,7 +46,7 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
-	CTabCtrl m_tabCtrl;
+	CServerTabCtrl m_tabCtrl;
 	TabServerDlg m_tsdServer;
 	TabConnectionDlg m_dlgConnection;
 	TabAccountDlg m_dlgAcount;
@@ -81,6 +88,9 @@ public:
 	afx_msg void OnBnClickedBtnStartserver();
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnDestroy();
+    afx_msg void OnSize(UINT type, int width, int height);
+    afx_msg void OnGetMinMaxInfo(MINMAXINFO* info);
+    afx_msg LRESULT OnTabLayoutChanged(WPARAM, LPARAM);
 
 	TCPThreadedServer m_threadServer;  //使用多线程的TCP服务器
 	TCPServiceFactoryTemplate<DealConnection> servicFactory;  //用于创建一个TCP连接对象的工厂
@@ -88,5 +98,15 @@ public:
 
 private:
 	BOOL m_bIsServerStarted;
+    bool m_layoutReady = false;
+    CSize m_initialClientSize;
+    CSize m_minimumPageSize;
+    CSize m_minimumWindowSize = CSize(0, 0);
+    CRect m_initialTabRect;
+    CRect m_initialButtonRects[2];
+    void InitializeTabLayout();
+    void LayoutMainControls();
+    void LayoutTabPages();
+    void EnsureTabPageSpace();
 
 };

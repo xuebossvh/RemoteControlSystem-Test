@@ -47,6 +47,9 @@ BEGIN_MESSAGE_MAP(CClientMain, CDialog)
 	ON_COMMAND(ID_BUTTON_SETUP,&CClientMain::OnBtnSetup)
 	ON_COMMAND(ID_BUTTON_SHOT_SCREEN,&CClientMain::OnBtnScreenShot)
 	ON_COMMAND(ID_BUTTON_FULL_SCREEN,&CClientMain::OnBtnFullScreen)
+	ON_COMMAND(IDC_REMOTE_FULLSCREEN,&CClientMain::OnBtnFullScreen)
+	ON_COMMAND(IDC_REMOTE_FIT,&CClientMain::OnBtnScaleLocalSize)
+	ON_COMMAND(IDC_REMOTE_DISCONNECT,&CClientMain::OnDisconnect)
 	ON_COMMAND(ID_BUTTON_ALT,&CClientMain::OnBtnAlt)
 	ON_COMMAND(ID_BUTTON_CTRL,&CClientMain::OnBtnCtrl)
 	ON_COMMAND(ID_BUTTON_WINKEY,&CClientMain::OnBtnWin)
@@ -60,6 +63,7 @@ BEGIN_MESSAGE_MAP(CClientMain, CDialog)
 	ON_WM_VSCROLL()
 	ON_WM_HSCROLL()
 	ON_WM_DESTROY()
+	ON_WM_GETMINMAXINFO()
 //	ON_MESSAGE(WM_ADDIP, OnAddIpMessage)
 END_MESSAGE_MAP()
 
@@ -78,6 +82,7 @@ int CClientMain::OnCreate(LPCREATESTRUCT lpCreateStruct)
 void CClientMain::OnMove(int x, int y)
 {
 	CDialog::OnMove(x, y);
+	if (IsIconic() || m_changingWindowMode) return;
 
 	if (m_dlgServerList.GetStatus() == SL_DOCK_WINDOW
 		&& m_dlgServerList.GetSafeHwnd() != NULL)
@@ -101,6 +106,7 @@ void CClientMain::OnMove(int x, int y)
 void CClientMain::OnSize(UINT nType, int cx, int cy)
 {
 	CDialog::OnSize(nType, cx, cy);
+	if (nType == SIZE_MINIMIZED || cx <= 0 || cy <= 0 || m_changingWindowMode) return;
 
 	if (!m_IsFullScreen && m_dlgServerList.GetSafeHwnd() != NULL)
 	{
@@ -144,6 +150,7 @@ void CClientMain::OnTimer(UINT_PTR nIDEvent)
 	//m_ScreenShooter.ShotScreenImage(&m_RecvQueue);
 
     DealMessage();
+    m_fullscreenBar.TrackPointer();
 	CDialog::OnTimer(nIDEvent);
 }
 
@@ -208,9 +215,10 @@ bool CClientMain::SetImageQuality( int quality )
 BOOL CClientMain::OnInitDialog()
 {
 	CDialog::OnInitDialog();
+	ModifyStyle(0, WS_CLIPCHILDREN);
 
 	m_bTcpConect  =FALSE;
-	m_MainToolBar.CreateEx(this,WS_CHILD|WS_VISIBLE|CBRS_TOP|CBRS_GRIPPER|CBRS_TOOLTIPS|CBRS_FLYBY|CBRS_SIZE_DYNAMIC);
+	m_MainToolBar.CreateEx(this, TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_TOOLTIPS | CBRS_FLYBY);
 	m_MainToolBar.LoadToolBar(IDR_TOOLBAR3);
 	m_MainToolBar.GetToolBarCtrl().SetBitmapSize(CSize(16,16));
 	m_MainToolBar.GetToolBarCtrl().SetButtonSize(CSize(22,22));
@@ -246,6 +254,9 @@ BOOL CClientMain::OnInitDialog()
 	::GetClientRect(::GetDesktopWindow(),&rcScreen);
 	int ScreenWidth = rcScreen.right - rcScreen.left;
 	int ScreenHeight = rcScreen.bottom - rcScreen.top;
+	m_pctDisplay.ShowWindow(SW_HIDE);
+	if (!m_fullscreenBar.CreateBar(this)) { m_tcpClien.Close(); EndDialog(IDCANCEL); return FALSE; }
+	m_fullscreenBar.SetControlMode(m_bCtrlPermission != FALSE);
 	m_dlgDisplay.Init(ScreenWidth,ScreenHeight);
 	m_dlgDisplay.ShowWindow(SW_SHOW);
 	m_dlgServerList.SetStatus(SL_HIDE);
@@ -272,10 +283,8 @@ BOOL CClientMain::OnInitDialog()
 
 void CClientMain::OnBtnFullScreen()
 {
-	//ShowWindow(SW_HIDE);
-	FullScreen();
+    if (m_IsFullScreen) EndFullScreen(); else FullScreen();
 }
-
 
 BOOL CClientMain::PreTranslateMessage(MSG* pMsg)
 {
@@ -423,18 +432,71 @@ void CClientMain::SendKeyboardMsg( int key,int status )
 
 void CClientMain::FullScreen()
 {
-	 m_dlgDisplay.FullScreen();
-	 m_ScreenDisplayer.Scale2LocalSize();
+    if (m_IsFullScreen || !m_dlgDisplay.GetSafeHwnd() || IsIconic()) return;
+    m_savedPlacement.length = sizeof(m_savedPlacement);
+    GetWindowPlacement(&m_savedPlacement);
+    m_savedStyle = GetWindowLongPtr(m_hWnd,GWL_STYLE);
+    m_savedExStyle = GetWindowLongPtr(m_hWnd,GWL_EXSTYLE);
+    MONITORINFO monitor = {sizeof(monitor)};
+    if (!GetMonitorInfo(MonitorFromWindow(m_hWnd,MONITOR_DEFAULTTONEAREST),&monitor)) return;
+    m_changingWindowMode = true; m_IsFullScreen = true;
+    if (IsZoomed()) ShowWindow(SW_RESTORE);
+    m_MainToolBar.ShowWindow(SW_HIDE);
+    m_dlgSetup.ShowWindow(SW_HIDE); m_dlgServerList.SetStatus(SL_HIDE);
+    SetWindowLongPtr(m_hWnd,GWL_STYLE,(m_savedStyle & ~(WS_CAPTION|WS_THICKFRAME|WS_SYSMENU|WS_MINIMIZEBOX|WS_MAXIMIZEBOX|WS_MAXIMIZE|WS_MINIMIZE|DS_MODALFRAME)) | WS_POPUP);
+    SetWindowLongPtr(m_hWnd,GWL_EXSTYLE,m_savedExStyle & ~(WS_EX_DLGMODALFRAME|WS_EX_WINDOWEDGE|WS_EX_CLIENTEDGE|WS_EX_STATICEDGE));
+    SetWindowPos(&wndTopMost,monitor.rcMonitor.left,monitor.rcMonitor.top,
+                 monitor.rcMonitor.right-monitor.rcMonitor.left,monitor.rcMonitor.bottom-monitor.rcMonitor.top,
+                 SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+    m_changingWindowMode = false;
+    LayoutDisplay(); m_ScreenDisplayer.Scale2LocalSize();
+    m_fullscreenBar.Layout(true,0,true); m_dlgDisplay.FocusSurface();
 }
 
 bool CClientMain::EndFullScreen()
 {
-	return m_dlgDisplay.EndFullScreen();
+    if (!m_IsFullScreen) return true;
+    m_changingWindowMode = true; m_IsFullScreen = false;
+    SetWindowLongPtr(m_hWnd,GWL_STYLE,m_savedStyle);
+    SetWindowLongPtr(m_hWnd,GWL_EXSTYLE,m_savedExStyle);
+    SetWindowPos((m_savedExStyle & WS_EX_TOPMOST) ? &wndTopMost : &wndNoTopMost,0,0,0,0,
+                 SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED | SWP_NOACTIVATE);
+    SetWindowPlacement(&m_savedPlacement);
+    m_MainToolBar.ShowWindow(SW_SHOW);
+    m_changingWindowMode = false;
+    LayoutDisplay(); m_ScreenDisplayer.Scale2LocalSize(); m_dlgDisplay.FocusSurface();
+    return true;
 }
 
-bool CClientMain::IsFullScreen()
+bool CClientMain::IsFullScreen() { return m_IsFullScreen; }
+
+bool CClientMain::HandleLocalShortcut(MSG* message)
 {
-	return m_dlgDisplay.IsFullScreen();
+    const bool down = message->message == WM_KEYDOWN || message->message == WM_SYSKEYDOWN;
+    const bool up = message->message == WM_KEYUP || message->message == WM_SYSKEYUP;
+    if (!down && !up) return false;
+    if (message->wParam == VK_ESCAPE && m_suppressEscapeUp) {
+        if (up) m_suppressEscapeUp = false;
+        return true;
+    }
+    if (message->wParam == VK_RETURN && m_suppressEnterUp) {
+        if (up) m_suppressEnterUp = false;
+        return true;
+    }
+    if (down && message->wParam == VK_ESCAPE && m_IsFullScreen) {
+        m_suppressEscapeUp = true; EndFullScreen(); return true;
+    }
+    if (down && message->wParam == VK_RETURN && GetKeyState(VK_CONTROL) < 0 && GetKeyState(VK_SHIFT) < 0) {
+        m_suppressEnterUp = true;
+        if (!(message->lParam & (1L << 30))) OnBtnFullScreen();
+        return true;
+    }
+    return false;
+}
+
+bool CClientMain::IsRemoteInputTarget(HWND target) const
+{
+    return m_dlgDisplay.GetSafeHwnd() && target == const_cast<CDisplayDlg&>(m_dlgDisplay).GetDisplayHwnd();
 }
 
 void CClientMain::DealMessage()
@@ -450,17 +512,20 @@ void CClientMain::DealMessage()
             if (setup->GetStatusType() == RCS_SETUP_MSG_PIXEL)
                 m_ScreenDisplayer.SetServerSize(setup->GetValue1(),setup->GetValue2());
             if (setup->GetStatusType() == RCS_SETUP_MSG_PERMISSION &&
-                setup->GetValue1() == RCS_PERMISSION_CONTROL)
+                setup->GetValue1() == RCS_PERMISSION_CONTROL) {
                 m_bCtrlPermission = setup->GetValue2() == 1;
+                m_fullscreenBar.SetControlMode(m_bCtrlPermission != FALSE, m_tcpClien.IsConnected());
+            }
             delete message;
         } else {
             delete message;
         }
     }
-    m_ScreenDisplayer.Display();
+    if (!IsIconic()) m_ScreenDisplayer.Display();
     if (m_bTcpConect && !m_tcpClien.IsConnected()) {
         m_bTcpConect = FALSE;
         m_bCtrlPermission = FALSE;
+        m_fullscreenBar.SetControlMode(false, false);
         SetWindowText(L"Remote Control Client - disconnected");
     }
 }
@@ -468,6 +533,7 @@ void CClientMain::DealMessage()
 void CClientMain::OnBtnScaleLocalSize()
 {
 	m_ScreenDisplayer.Scale2LocalSize();
+	m_dlgDisplay.FocusSurface();
 }
 
 void CClientMain::OnBtnTackMgr()
@@ -478,9 +544,25 @@ void CClientMain::OnBtnTackMgr()
 
 void CClientMain::LayoutDisplay()
 {
-	if (m_dlgDisplay.GetSafeHwnd() && !m_dlgDisplay.IsFullScreen()) {
-        CRect area; GetClientRect(&area);
-        CPoint origin(0, 28); ClientToScreen(&origin);
-        m_dlgDisplay.SetSize(origin.x, origin.y, max(1, area.Width()), max(1, area.Height() - 28));
+    if (m_changingWindowMode || IsIconic() || !m_dlgDisplay.GetSafeHwnd()) return;
+    CRect area; GetClientRect(&area);
+    if (area.Width() <= 0 || area.Height() <= 0) return;
+    int toolbarHeight = 0;
+    if (!m_IsFullScreen && m_MainToolBar.GetSafeHwnd()) {
+        toolbarHeight = m_MainToolBar.CalcFixedLayout(FALSE,TRUE).cy;
+        m_MainToolBar.SetWindowPos(NULL,0,0,area.Width(),toolbarHeight,SWP_NOZORDER|SWP_NOACTIVATE);
     }
+    m_dlgDisplay.SetSize(0,toolbarHeight,area.Width(),max(1,area.Height()-toolbarHeight));
+    m_dlgDisplay.ShowWindow(SW_SHOW);
+    m_fullscreenBar.Layout(m_IsFullScreen,toolbarHeight+6);
+    m_ScreenDisplayer.Display();
+}
+
+void CClientMain::OnDisconnect() { EndFullScreen(); OnCancel(); }
+void CClientMain::OnGetMinMaxInfo(MINMAXINFO* info)
+{
+    CDialog::OnGetMinMaxInfo(info);
+    CClientDC dc(this); const int dpi=dc.GetDeviceCaps(LOGPIXELSX);
+    info->ptMinTrackSize.x=max(info->ptMinTrackSize.x,MulDiv(330,dpi,96));
+    info->ptMinTrackSize.y=max(info->ptMinTrackSize.y,MulDiv(220,dpi,96));
 }

@@ -51,30 +51,45 @@ bool ScreenShot::Init(int horizontal, int vertical) {
     std::lock_guard<std::mutex> lock(mutex_);
     columns_ = horizontal; rows_ = vertical;
     previous_.clear(); // A grid change requires a complete refresh.
+    fullRefreshPending_ = true;
     return true;
 }
 bool ScreenShot::SetTileNumber(int horizontal, int vertical) { return Init(horizontal, vertical); }
 bool ScreenShot::SetQuality(int quality) {
     if (quality < 0 || quality > 100) return false;
     std::lock_guard<std::mutex> lock(mutex_);
-    if (quality_ != quality) { quality_ = quality; previous_.clear(); }
+    if (quality_ != quality) { quality_ = quality; previous_.clear(); fullRefreshPending_ = true; }
     return true;
 }
 
 bool ScreenShot::ShotScreenImage(std::queue<ByteArrayMsg*>* messages) {
     if (!messages) return false;
+    GdiImage screen;
+    if (!CaptureDesktop(screen)) { RequestFullRefresh(); return false; }
+    return EncodeFrame(screen, messages, GetTickCount64());
+}
+void ScreenShot::RequestFullRefresh() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    fullRefreshPending_ = true;
+}
+bool ScreenShot::EncodeFrame(const GdiImage& screen, std::queue<ByteArrayMsg*>* messages, ULONGLONG nowMilliseconds) {
     std::lock_guard<std::mutex> lock(mutex_);
     pixelChanged_ = false;
-    GdiImage screen;
-    if (!CaptureDesktop(screen)) return false;
+    if (!messages || !screen.IsValid()) { fullRefreshPending_ = true; return false; }
     const int width = screen.GetWidth(), height = screen.GetHeight();
     const int columns = (std::min)(columns_, width), rows = (std::min)(rows_, height);
     try {
         if (width != width_ || height != height_) {
-            previous_.clear(); width_ = width; height_ = height; pixelChanged_ = true;
+            previous_.clear(); width_ = width; height_ = height; sizeChangePending_ = true;
+            fullRefreshPending_ = true;
         }
         if (previous_.size() != static_cast<std::size_t>(columns * rows))
             previous_.resize(columns * rows);
+        // The wire format has no frame acknowledgement. Periodic full updates
+        // recover an unchanged tile discarded after a decode or resize failure.
+        // Black pixels are legitimate content and never used as a failure signal.
+        const bool fullRefresh = fullRefreshPending_ || !haveFullRefresh_ ||
+            nowMilliseconds < lastFullRefresh_ || nowMilliseconds - lastFullRefresh_ >= 5000;
         bool succeeded = true;
         for (int y = 0; y < rows; ++y) {
             for (int x = 0; x < columns; ++x) {
@@ -84,7 +99,7 @@ bool ScreenShot::ShotScreenImage(std::queue<ByteArrayMsg*>* messages) {
                 ImageTile current;
                 if (!current.CopyFrom(screen, rect)) { succeeded = false; continue; }
                 ImageTile& previous = previous_[y * columns + x];
-                if (current.Matches(previous)) continue;
+                if (!fullRefresh && current.Matches(previous)) continue;
                 GdiImage encoder;
                 const int tileWidth = rect.right - rect.left;
                 const int tileHeight = rect.bottom - rect.top;
@@ -106,8 +121,21 @@ bool ScreenShot::ShotScreenImage(std::queue<ByteArrayMsg*>* messages) {
                 SwapImageTile(current, previous); // Retry failed tiles next time.
             }
         }
+        if (succeeded && fullRefresh) {
+            lastFullRefresh_ = nowMilliseconds;
+            haveFullRefresh_ = true;
+            fullRefreshPending_ = false;
+        } else if (!succeeded) {
+            fullRefreshPending_ = true;
+        }
+        if (succeeded) {
+            // Announce a new size with the first successfully encoded update,
+            // even when the first capture at that size failed partway through.
+            pixelChanged_ = sizeChangePending_;
+            sizeChangePending_ = false;
+        }
         return succeeded;
-    } catch (const std::bad_alloc&) { return false; }
+    } catch (const std::bad_alloc&) { fullRefreshPending_ = true; return false; }
 }
 int ScreenShot::GetScreenWidth() { std::lock_guard<std::mutex> lock(mutex_); return width_; }
 int ScreenShot::GetScreenHeight() { std::lock_guard<std::mutex> lock(mutex_); return height_; }

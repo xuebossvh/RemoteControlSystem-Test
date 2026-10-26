@@ -65,6 +65,8 @@ class WinUI:
         self.api.IsWindowVisible.restype = wintypes.BOOL
         self.api.GetDlgItem.argtypes = [wintypes.HWND, ctypes.c_int]
         self.api.GetDlgItem.restype = wintypes.HWND
+        self.api.GetAncestor.argtypes = [wintypes.HWND, wintypes.UINT]
+        self.api.GetAncestor.restype = wintypes.HWND
         self.api.PostMessageW.argtypes = [wintypes.HWND, wintypes.UINT, ctypes.c_size_t, ctypes.c_ssize_t]
         self.api.PostMessageW.restype = wintypes.BOOL
         self.api.SendMessageTimeoutW.argtypes = [
@@ -182,6 +184,7 @@ class WinUI:
         return rectangle.right - rectangle.left, rectangle.bottom - rectangle.top
 
     def display_affinity(self, window: int):
+        window = self.api.GetAncestor(window, 2)  # GA_ROOT; children inherit WDA.
         value = wintypes.DWORD()
         return value.value if self.api.GetWindowDisplayAffinity(window, ctypes.byref(value)) else None
 
@@ -494,7 +497,7 @@ def main() -> int:
             ui.click(dialog, 1004)
             # The owned DisplayDlg popup also contains control 1028; the main
             # dialog is the titled top-level window, not that drawing surface.
-            client_window = ui.dialog(client, (1028,), args.timeout, titled=True, expected_title="Remote Control Client")
+            client_window = ui.dialog(client, (), args.timeout, titled=True, expected_title="Remote Control Client")
             time.sleep(1)
             require(client.poll() is None and ui.api.IsWindowVisible(client_window), "Client main window did not stay visible")
             stale_logins = [window for window in ui.windows(client.pid)
@@ -504,6 +507,11 @@ def main() -> int:
                                              "main_client_size": list(ui.client_size(client_window))})
 
             def drawing_surface():
+                display = ui.api.GetDlgItem(client_window, 4100)
+                if display:
+                    surface = ui.api.GetDlgItem(display, 1028)
+                    if surface:
+                        return display, surface
                 for window in ui.windows(client.pid):
                     if window != client_window and not ui.title(window):
                         surface = ui.api.GetDlgItem(window, 1028)
@@ -512,6 +520,9 @@ def main() -> int:
                 return None
 
             display_window, surface = wait_until(drawing_surface, args.timeout, "Native DisplayDlg drawing surface was not shown")
+            if ui.api.GetDlgItem(client_window, 4100):
+                require(ui.send(surface, 0x8340) == 0, "Normal Client unexpectedly enabled the opt-in paint probe")
+                record("paint_probe_disabled_by_default")
             display_size, surface_size = ui.client_size(display_window), ui.client_size(surface)
             require(surface_size == display_size and surface_size[0] > 24 and surface_size[1] > 15,
                     f"Drawing surface did not fill its window: display={display_size}, surface={surface_size}")

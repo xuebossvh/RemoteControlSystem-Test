@@ -7,8 +7,10 @@
 #include "WndClassList.h"
 #include "IniFile.h"
 #include "Config.h"
+#include <algorithm>
 
 #define WM_SHOWTASK (WM_USER + 101)
+#define WM_TAB_LAYOUT_CHANGED (WM_APP + 205)
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -48,6 +50,9 @@ BEGIN_MESSAGE_MAP(CRemoteCtrolSystemServerDlg, CDialog)
 	ON_BN_CLICKED(IDC_BTN_STARTSERVER, &CRemoteCtrolSystemServerDlg::OnBnClickedBtnStartserver)
 	ON_WM_KEYDOWN()
 	ON_WM_DESTROY()
+    ON_WM_SIZE()
+    ON_WM_GETMINMAXINFO()
+    ON_MESSAGE(WM_TAB_LAYOUT_CHANGED, &CRemoteCtrolSystemServerDlg::OnTabLayoutChanged)
 END_MESSAGE_MAP()
 
 
@@ -94,23 +99,12 @@ BOOL CRemoteCtrolSystemServerDlg::OnInitDialog()
 	m_tabCtrl.InsertItem(3,&item);
 
 	//设置选项卡的内容的布局的大小
-	CRect rc;
-	m_tabCtrl.GetClientRect(&rc);
-	rc.top+=30;
-	rc.bottom-=8;
-	rc.left+=8;
-	rc.right -=8;
-
-	//创建四个选项
 	m_tsdServer.Create(IDD_TAB_SERVER,&m_tabCtrl);
 	m_dlgConnection.Create(IDD_TAB_CONNECTION,&m_tabCtrl);
 	m_dlgAcount.Create(IDD_TAB_ACCOUNT,&m_tabCtrl);
 	m_dlgAbout.Create(IDD_TAB_ABOUT,&m_tabCtrl);
 
-	m_tsdServer.MoveWindow(&rc);
-	m_dlgConnection.MoveWindow(&rc);
-	m_dlgAcount.MoveWindow(&rc);
-	m_dlgAbout.MoveWindow(&rc);
+	InitializeTabLayout();
 
 	m_tsdServer.ShowWindow(SW_SHOW);
 	m_dlgAcount.ShowWindow(SW_HIDE);
@@ -188,6 +182,7 @@ HCURSOR CRemoteCtrolSystemServerDlg::OnQueryDragIcon()
 void CRemoteCtrolSystemServerDlg::OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	// TODO: 在此添加控件通知处理程序代码
+    LayoutTabPages();
 	switch(m_tabCtrl.GetCurSel())
 	{
 	case 0:
@@ -390,4 +385,140 @@ void CRemoteCtrolSystemServerDlg::UpdateWindowControl()
 	}
 
 	// Account persistence is handled by CUserFile using DPAPI.
+}
+
+LRESULT CServerTabCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+    const LRESULT result = CTabCtrl::WindowProc(message, wParam, lParam);
+    switch (message) {
+    case WM_SIZE:
+    case WM_SETFONT:
+    case WM_FONTCHANGE:
+    case WM_THEMECHANGED:
+    case WM_STYLECHANGED:
+    case 0x02E3: // WM_DPICHANGED_AFTERPARENT (not exposed by the legacy targetver.h)
+        if (GetParent()) GetParent()->PostMessage(WM_TAB_LAYOUT_CHANGED);
+        break;
+    default:
+        break;
+    }
+    return result;
+}
+
+void CRemoteCtrolSystemServerDlg::InitializeTabLayout()
+{
+    // Preserve the resource's dialog-unit layout, measured at the actual DPI.
+    // Pages use their own dialog font; their initial size is the minimum space
+    // needed by the controls in those templates.
+    ModifyStyle(0, WS_CLIPCHILDREN);
+    m_tabCtrl.ModifyStyle(0, WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
+    CWnd* pages[] = { &m_tsdServer, &m_dlgConnection, &m_dlgAcount, &m_dlgAbout };
+    m_minimumPageSize = CSize(0, 0);
+    for (CWnd* page : pages) {
+        page->ModifyStyle(WS_SYSMENU, WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
+        CRect bounds;
+        page->GetClientRect(&bounds);
+        m_minimumPageSize.cx = (std::max)(m_minimumPageSize.cx, static_cast<LONG>(bounds.Width()));
+        m_minimumPageSize.cy = (std::max)(m_minimumPageSize.cy, static_cast<LONG>(bounds.Height()));
+    }
+    CRect client;
+    GetClientRect(&client);
+    m_initialClientSize = client.Size();
+    m_tabCtrl.GetWindowRect(&m_initialTabRect);
+    ScreenToClient(&m_initialTabRect);
+    const int buttonIds[] = { IDC_BTN_STARTSERVER, IDC_BTN_APPLY };
+    LONG firstButtonTop = client.bottom;
+    for (int index = 0; index < 2; ++index) {
+        GetDlgItem(buttonIds[index])->GetWindowRect(&m_initialButtonRects[index]);
+        ScreenToClient(&m_initialButtonRects[index]);
+        firstButtonTop = (std::min)(firstButtonTop, m_initialButtonRects[index].top);
+    }
+    CRect gap(0, 0, 0, 4);
+    MapDialogRect(&gap);
+    m_initialTabRect.bottom = (std::min)(m_initialTabRect.bottom, firstButtonTop - gap.bottom);
+    m_layoutReady = true;
+    LayoutMainControls();
+    EnsureTabPageSpace();
+    LayoutTabPages();
+}
+
+void CRemoteCtrolSystemServerDlg::LayoutMainControls()
+{
+    if (!m_layoutReady || !::IsWindow(m_tabCtrl.GetSafeHwnd())) return;
+    CRect client;
+    GetClientRect(&client);
+    const int widthChange = client.Width() - m_initialClientSize.cx;
+    const int heightChange = client.Height() - m_initialClientSize.cy;
+    CRect tab = m_initialTabRect;
+    tab.right += widthChange;
+    tab.bottom += heightChange;
+    m_tabCtrl.SetWindowPos(NULL, tab.left, tab.top,
+        (std::max)(1, tab.Width()), (std::max)(1, tab.Height()), SWP_NOZORDER | SWP_NOACTIVATE);
+    const int buttonIds[] = { IDC_BTN_STARTSERVER, IDC_BTN_APPLY };
+    for (int index = 0; index < 2; ++index) {
+        CRect button = m_initialButtonRects[index];
+        button.OffsetRect(widthChange, heightChange);
+        GetDlgItem(buttonIds[index])->SetWindowPos(NULL, button.left, button.top,
+            button.Width(), button.Height(), SWP_NOZORDER | SWP_NOACTIVATE);
+    }
+    LayoutTabPages();
+}
+
+void CRemoteCtrolSystemServerDlg::EnsureTabPageSpace()
+{
+    if (!m_layoutReady || IsIconic()) return;
+    CRect display;
+    m_tabCtrl.GetClientRect(&display);
+    m_tabCtrl.AdjustRect(FALSE, &display);
+    const int addWidth = (std::max)(0L, m_minimumPageSize.cx - display.Width());
+    const int addHeight = (std::max)(0L, m_minimumPageSize.cy - display.Height());
+    CRect window;
+    GetWindowRect(&window);
+    m_minimumWindowSize = CSize(window.Width() + m_minimumPageSize.cx - display.Width(),
+        window.Height() + m_minimumPageSize.cy - display.Height());
+    if (addWidth || addHeight) {
+        SetWindowPos(NULL, 0, 0, window.Width() + addWidth, window.Height() + addHeight,
+            SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+    }
+}
+
+void CRemoteCtrolSystemServerDlg::LayoutTabPages()
+{
+    if (!m_layoutReady || !::IsWindow(m_tabCtrl.GetSafeHwnd())) return;
+    CRect display;
+    m_tabCtrl.GetClientRect(&display);
+    // AdjustRect returns the tab's display area in tab-client coordinates.
+    // This is also the pages' parent coordinate system: never add screen or
+    // main-dialog offsets, and never assume a fixed tab-header pixel height.
+    m_tabCtrl.AdjustRect(FALSE, &display);
+    if (display.Width() <= 0 || display.Height() <= 0) return;
+    CWnd* pages[] = { &m_tsdServer, &m_dlgConnection, &m_dlgAcount, &m_dlgAbout };
+    for (CWnd* page : pages) {
+        if (::IsWindow(page->GetSafeHwnd())) page->SetWindowPos(NULL,
+            display.left, display.top, display.Width(), display.Height(),
+            SWP_NOZORDER | SWP_NOACTIVATE);
+    }
+    m_tabCtrl.RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN);
+}
+
+void CRemoteCtrolSystemServerDlg::OnSize(UINT type, int width, int height)
+{
+    CDialog::OnSize(type, width, height);
+    if (type != SIZE_MINIMIZED) LayoutMainControls();
+}
+
+void CRemoteCtrolSystemServerDlg::OnGetMinMaxInfo(MINMAXINFO* info)
+{
+    CDialog::OnGetMinMaxInfo(info);
+    if (m_layoutReady) {
+        info->ptMinTrackSize.x = (std::max)(info->ptMinTrackSize.x, m_minimumWindowSize.cx);
+        info->ptMinTrackSize.y = (std::max)(info->ptMinTrackSize.y, m_minimumWindowSize.cy);
+    }
+}
+
+LRESULT CRemoteCtrolSystemServerDlg::OnTabLayoutChanged(WPARAM, LPARAM)
+{
+    EnsureTabPageSpace();
+    LayoutTabPages();
+    return 0;
 }

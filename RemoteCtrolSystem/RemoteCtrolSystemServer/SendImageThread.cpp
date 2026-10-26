@@ -28,17 +28,26 @@ void SendImageThread::SetTileNumber(int horizontal, int vertical) {
     m_ScreenShooter.Init(horizontal, vertical);
 }
 void SendImageThread::Run() {
+    unsigned captureFailures = 0;
     try {
         while (!m_stop && m_connection && m_connection->IsConnected()) {
             const DWORD frameStart = GetTickCount();
-            bool changed = false;
+            bool changed = false, captured = false;
             int width = 0, height = 0;
             {
                 std::lock_guard<std::mutex> lock(m_captureMutex);
-                if (!m_ScreenShooter.ShotScreenImage(&m_SendQueue)) throw TCPException("Screen capture failed");
+                captured = m_ScreenShooter.ShotScreenImage(&m_SendQueue);
                 changed = m_ScreenShooter.IsPixelChange();
                 width = m_ScreenShooter.GetScreenWidth(); height = m_ScreenShooter.GetScreenHeight();
             }
+            if (!captured) {
+                ClearImages();
+                if (++captureFailures == 1 || captureFailures % 50 == 0)
+                    OutputDebugStringW(L"RemoteControlSystem: capture unavailable; retaining client frame and retrying.\n");
+                for (int wait = 0; wait < 40 && !m_stop && m_connection->IsConnected(); ++wait) Sleep(5);
+                continue;
+            }
+            captureFailures = 0;
             if (changed) {
                 SetupMsg dimensions;
                 dimensions.PacketMsg(RCS_SETUP_MSG_PIXEL, width, height);

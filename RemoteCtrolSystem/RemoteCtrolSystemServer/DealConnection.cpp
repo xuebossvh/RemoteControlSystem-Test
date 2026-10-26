@@ -19,7 +19,7 @@ void HandleMouse(MouseMsg& message) {
     const int x = message.GetMouseX(), y = message.GetMouseY();
     if (x < 0 || y < 0 || x >= GetSystemMetrics(SM_CXSCREEN) || y >= GetSystemMetrics(SM_CYSCREEN)) return;
     switch (message.GetMouseStatus()) {
-    case 0: SetCursorPos(x, y); break;
+    case 0: MouseKeybdEvent::Move(x, y); break;
     case RCS_MOUSE_LEFT_DOWN: MouseKeybdEvent::LeftClickDown(x, y); break;
     case RCS_MOUSE_LEFT_UP: MouseKeybdEvent::LeftClickUp(x, y); break;
     case RCS_MOUSE_RIGHT_DOWN: MouseKeybdEvent::RightClickDown(x, y); break;

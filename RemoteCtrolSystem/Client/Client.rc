@@ -175,10 +175,10 @@ BEGIN
 END
 
 IDD_DIALOG_DISPLAY DIALOGEX 0, 0, 316, 180
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_VSCROLL | WS_HSCROLL
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "",IDC_STATIC_DISPLAY,"Static",SS_WHITEFRAME,0,0,24,15
+    CONTROL         "",IDC_STATIC_DISPLAY,"Static",SS_NOTIFY | WS_TABSTOP,0,0,24,15
 END
 
 
@@ -188,8 +188,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,1,0
- PRODUCTVERSION 1,0,1,0
+ FILEVERSION 1,1,0,0
+ PRODUCTVERSION 1,1,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -206,12 +206,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "TODO: <公司名>"
             VALUE "FileDescription", "TODO: <文件说明>"
-            VALUE "FileVersion", "1.0.1.0"
+            VALUE "FileVersion", "1.1.0.0"
             VALUE "InternalName", "Client.exe"
             VALUE "LegalCopyright", "TODO: (C) <公司名>。保留所有权利。"
             VALUE "OriginalFilename", "Client.exe"
             VALUE "ProductName", "TODO: <产品名>"
-            VALUE "ProductVersion", "1.0.1.0"
+            VALUE "ProductVersion", "1.1.0.0"
         END
     END
     BLOCK "VarFileInfo"

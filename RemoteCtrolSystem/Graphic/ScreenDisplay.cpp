@@ -119,32 +119,42 @@ bool ScreenDisplay::SetSize(int width, int height) {
     return ReflashDC();
 }
 void ScreenDisplay::Display() {
-    if (!memoryDC_ || !bitmap_) return;
-    WindowDC windowDC(window_);
-    if (!windowDC.handle) return;
-    PatBlt(memoryDC_, 0, 0, windowWidth_, windowHeight_, BLACKNESS);
-    const RECT rect = view_.GetDisplayRect();
-    frame_.Stretch(memoryDC_, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
-    BitBlt(windowDC.handle, 0, 0, windowWidth_, windowHeight_, memoryDC_, 0, 0, SRCCOPY);
+    if (IsWindow(window_)) InvalidateRect(window_, nullptr, FALSE);
 }
-void ScreenDisplay::RecvImageMsg(ByteArrayMsg* message) {
+bool ScreenDisplay::Render(HDC targetDC) {
+    if (!targetDC || !memoryDC_ || !bitmap_ || !frame_.IsValid()) return false;
+    const RECT rect = view_.GetDisplayRect();
+    // A failed StretchDIBits must not turn a previously valid desktop into a
+    // freshly cleared black frame. Keep the persistent image for the next paint.
+    if (!frame_.Stretch(memoryDC_, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top))
+        return false;
+    const int saved = SaveDC(memoryDC_);
+    if (!saved) return false;
+    const int clip = ExcludeClipRect(memoryDC_, rect.left, rect.top, rect.right, rect.bottom);
+    const BOOL cleared = clip == NULLREGION ||
+        (clip != ERROR && PatBlt(memoryDC_, 0, 0, windowWidth_, windowHeight_, BLACKNESS));
+    RestoreDC(memoryDC_, saved);
+    if (!cleared) return false;
+    return BitBlt(targetDC, 0, 0, windowWidth_, windowHeight_, memoryDC_, 0, 0, SRCCOPY) != FALSE;
+}
+bool ScreenDisplay::RecvImageMsg(ByteArrayMsg* message) {
     std::unique_ptr<ByteArrayMsg> owner(message);
-    if (!message || message->GetType() != RCS_MSG_IMAGE || message->GetSize() < 21) return;
+    if (!message || message->GetType() != RCS_MSG_IMAGE || message->GetSize() < 21) return false;
     // Queue objects can be ByteArrayMsg. Validate the header before decoding/copying data.
     const char* bytes = message->GetBufferPtr();
-    if (!bytes) return;
+    if (!bytes) return false;
     RECT rect = {};
     std::uint32_t encodedSize = 0;
     std::memcpy(&rect, bytes + 1, 16);
     std::memcpy(&encodedSize, bytes + 17, 4);
     if (rect.left < 0 || rect.top < 0 || rect.right <= rect.left || rect.bottom <= rect.top ||
         rect.right > serverWidth_ || rect.bottom > serverHeight_ ||
-        encodedSize != message->GetSize() - 21 || encodedSize > 16u * 1024u * 1024u) return;
+        encodedSize != message->GetSize() - 21 || encodedSize > 16u * 1024u * 1024u) return false;
     GdiImage decoded;
-    if (!decoded.Decode(reinterpret_cast<const BYTE*>(bytes + 21), encodedSize)) return;
+    if (!decoded.Decode(reinterpret_cast<const BYTE*>(bytes + 21), encodedSize)) return false;
     if (decoded.GetWidth() != rect.right - rect.left || decoded.GetHeight() != rect.bottom - rect.top)
-        return;
-    frame_.MixFrom(decoded, rect.left, rect.top);
+        return false;
+    return frame_.MixFrom(decoded, rect.left, rect.top);
 }
 void ScreenDisplay::SetServerSize(int width, int height) {
     if (width == serverWidth_ && height == serverHeight_) return;
@@ -162,7 +172,9 @@ bool ScreenDisplay::ScaleDown() {
     ReflashDC(); return changed;
 }
 bool ScreenDisplay::ReflashDC() {
-    return memoryDC_ && bitmap_ && PatBlt(memoryDC_, 0, 0, windowWidth_, windowHeight_, BLACKNESS) != FALSE;
+    if (!memoryDC_ || !bitmap_) return false;
+    Display();
+    return true;
 }
 void ScreenDisplay::Scale2LocalSize() {
     view_.Fit(); ReflashDC();
