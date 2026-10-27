@@ -54,10 +54,10 @@ void MouseKeybdEvent::RightDbClick(int x, int y) {
     const DWORD actions[] = {MOUSEEVENTF_RIGHTDOWN, MOUSEEVENTF_RIGHTUP, MOUSEEVENTF_RIGHTDOWN, MOUSEEVENTF_RIGHTUP};
     SendAt(x, y, actions, 4);
 }
-void MouseKeybdEvent::MouseWheel(int delta) {
+void MouseKeybdEvent::MouseWheel(int delta, bool horizontal) {
     INPUT event = {};
     event.type = INPUT_MOUSE;
-    event.mi.dwFlags = MOUSEEVENTF_WHEEL;
+    event.mi.dwFlags = horizontal ? MOUSEEVENTF_HWHEEL : MOUSEEVENTF_WHEEL;
     event.mi.mouseData = static_cast<DWORD>(delta);
     event.mi.dwExtraInfo = RemoteInput::kExtraInfoMarker;
     SendInput(1, &event, sizeof(INPUT));
@@ -70,3 +70,24 @@ void MouseKeybdEvent::GenerateKey(int key, BOOL extended) {
 }
 void MouseKeybdEvent::KeyDown(int key, BOOL extended) { SendKey(key, false, extended != FALSE); }
 void MouseKeybdEvent::KeyUp(int key, BOOL extended) { SendKey(key, true, extended != FALSE); }
+
+void MouseKeybdEvent::MiddleClickDown(int x, int y) {
+    const DWORD actions[] = {MOUSEEVENTF_MIDDLEDOWN};
+    SendAt(x, y, actions, 1);
+}
+void MouseKeybdEvent::MiddleClickUp(int x, int y) {
+    const DWORD actions[] = {MOUSEEVENTF_MIDDLEUP};
+    SendAt(x, y, actions, 1);
+}
+void MouseKeybdEvent::ReleaseButtons(DWORD buttons) {
+    DWORD flags = 0;
+    if (buttons & MK_LBUTTON) flags |= MOUSEEVENTF_LEFTUP;
+    if (buttons & MK_RBUTTON) flags |= MOUSEEVENTF_RIGHTUP;
+    if (buttons & MK_MBUTTON) flags |= MOUSEEVENTF_MIDDLEUP;
+    if (!flags) return;
+    INPUT event = {};
+    event.type = INPUT_MOUSE;
+    event.mi.dwFlags = flags;
+    event.mi.dwExtraInfo = RemoteInput::kExtraInfoMarker;
+    SendInput(1, &event, sizeof(INPUT));
+}

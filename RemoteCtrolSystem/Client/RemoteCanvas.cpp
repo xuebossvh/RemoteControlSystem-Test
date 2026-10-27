@@ -25,6 +25,9 @@ BEGIN_MESSAGE_MAP(CRemoteCanvas, CStatic)
     ON_WM_LBUTTONDOWN()
     ON_WM_GETDLGCODE()
     ON_WM_DESTROY()
+    ON_WM_CAPTURECHANGED()
+    ON_WM_KILLFOCUS()
+    ON_MESSAGE(WM_MOUSELEAVE, &CRemoteCanvas::OnMouseLeave)
     ON_MESSAGE(WM_APP + 0x340, &CRemoteCanvas::OnProbeBegin)
     ON_MESSAGE(WM_APP + 0x341, &CRemoteCanvas::OnProbePixel)
     ON_MESSAGE(WM_APP + 0x342, &CRemoteCanvas::OnProbeEnd)
@@ -46,6 +49,20 @@ void CRemoteCanvas::OnLButtonDown(UINT flags, CPoint point) {
     CStatic::OnLButtonDown(flags, point);
 }
 UINT CRemoteCanvas::OnGetDlgCode() { return DLGC_WANTALLKEYS | DLGC_WANTARROWS; }
+void CRemoteCanvas::OnCaptureChanged(CWnd* window) {
+    // Synchronous: a delayed notification could release a later, new drag.
+    if (!window || window->GetSafeHwnd() != GetSafeHwnd())
+        ::SendMessage(::GetAncestor(m_hWnd, GA_ROOT), WM_APP + 0x343, WM_CAPTURECHANGED, 0);
+    CStatic::OnCaptureChanged(window);
+}
+void CRemoteCanvas::OnKillFocus(CWnd* window) {
+    ::SendMessage(::GetAncestor(m_hWnd, GA_ROOT), WM_APP + 0x343, WM_KILLFOCUS, 0);
+    CStatic::OnKillFocus(window);
+}
+LRESULT CRemoteCanvas::OnMouseLeave(WPARAM, LPARAM) {
+    ::SendMessage(::GetAncestor(m_hWnd, GA_ROOT), WM_APP + 0x343, WM_MOUSELEAVE, 0);
+    return 0;
+}
 void CRemoteCanvas::OnDestroy() {
     ReleaseProbe();
     RemovePropW(GetSafeHwnd(), L"RCS.RenderPaintCount");

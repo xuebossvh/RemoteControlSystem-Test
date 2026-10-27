@@ -9,6 +9,8 @@
 #include "..\Message\SetupMsg.h"
 #include "..\Message\UserMsg.h"
 #include "..\Message\MouseMsg.h"
+#include "LocalPeer.h"
+#include <windowsx.h>
 #include <map>
 #include <atlconv.h>
 
@@ -64,6 +66,8 @@ BEGIN_MESSAGE_MAP(CClientMain, CDialog)
 	ON_WM_HSCROLL()
 	ON_WM_DESTROY()
 	ON_WM_GETMINMAXINFO()
+	ON_WM_ACTIVATEAPP()
+	ON_MESSAGE(WM_APP + 0x343, &CClientMain::OnInputLost)
 //	ON_MESSAGE(WM_ADDIP, OnAddIpMessage)
 END_MESSAGE_MAP()
 
@@ -106,6 +110,7 @@ void CClientMain::OnMove(int x, int y)
 void CClientMain::OnSize(UINT nType, int cx, int cy)
 {
 	CDialog::OnSize(nType, cx, cy);
+	if (nType == SIZE_MINIMIZED) ReleaseRemoteInput();
 	if (nType == SIZE_MINIMIZED || cx <= 0 || cy <= 0 || m_changingWindowMode) return;
 
 	if (!m_IsFullScreen && m_dlgServerList.GetSafeHwnd() != NULL)
@@ -311,6 +316,7 @@ void CClientMain::OnBtnScaleDown()
 void CClientMain::OnDestroy()
 {
 	if (m_nTimer) KillTimer(m_nTimer);
+	ReleaseRemoteInput();
 	m_bTcpConect = FALSE;
 	m_tcpClien.Close();
 	CDialog::OnDestroy();
@@ -318,14 +324,163 @@ void CClientMain::OnDestroy()
 
 void CClientMain::SendMouseMsg(int x, int y, int status)
 {
-    if (!m_bTcpConect || !m_bCtrlPermission || !m_tcpClien.IsConnected()) return;
+    if (!m_inputReady || !m_bTcpConect || !m_bCtrlPermission || !m_tcpClien.IsConnected()) return;
     HWND display = m_dlgDisplay.GetDisplayHwnd();
     if (!display) return;
     POINT point = {x, y}; ::ScreenToClient(display, &point);
     int remoteX = 0, remoteY = 0;
     if (!m_ScreenDisplayer.MapWindowPointToServer(point.x, point.y, remoteX, remoteY)) return;
-    MouseMsg message; message.PacketMsg(remoteX, remoteY, status);
+    DispatchMouse(remoteX, remoteY, status);
+}
+
+void CClientMain::DispatchMouse(int x, int y, int status)
+{
+    m_lastRemotePoint = {x, y};
+    if (m_localDesktop) {
+        const UINT kind = LOWORD(status);
+        // Some shell accessibility providers activate Explorer even for Select.
+        // Preserve only a gesture that began in our foreground canvas. Do not
+        // seize focus after Invoke launches an application, or after an unrelated
+        // application becomes foreground while a provider is running.
+        const bool protect = m_pressedMouse && ::GetForegroundWindow() == m_hWnd &&
+            (status == 0 || kind == WM_LBUTTONDOWN || kind == WM_LBUTTONDBLCLK);
+        m_protectLocalGesture = protect;
+        m_localGestureInterrupted = false;
+        const bool handled = m_localInput.Mouse(x, y, status);
+        if (protect && (m_localGestureInterrupted || ::GetForegroundWindow() != m_hWnd)) {
+            const HWND foreground = ::GetForegroundWindow();
+            const HWND target = m_localInput.TargetWindow();
+            const HWND owner = target ? ::GetAncestor(target, GA_ROOTOWNER) : NULL;
+            if (IsWindowVisible() && IsWindowEnabled() && !IsIconic() &&
+                (foreground == m_hWnd || (owner && ::GetAncestor(foreground, GA_ROOTOWNER) == owner))) {
+                SetForegroundWindow();
+                SetWindowPos((GetWindowLongPtr(m_hWnd, GWL_EXSTYLE) & WS_EX_TOPMOST) ? &wndTopMost : &wndTop,
+                    0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+                const HWND surface = m_dlgDisplay.GetDisplayHwnd();
+                if (::GetForegroundWindow() == m_hWnd && surface) {
+                    ::SetFocus(surface);
+                    if (m_pressedMouse) ::SetCapture(surface);
+                }
+            }
+            m_protectLocalGesture = false;
+            if (::GetForegroundWindow() != m_hWnd) ReleaseRemoteInput();
+        } else m_protectLocalGesture = false;
+        const bool down = kind == WM_LBUTTONDOWN || kind == WM_LBUTTONDBLCLK ||
+            kind == WM_RBUTTONDOWN || kind == WM_RBUTTONDBLCLK || kind == WM_MBUTTONDOWN || kind == WM_MBUTTONDBLCLK;
+        if ((!handled || down) && kind >= WM_LBUTTONDOWN && kind <= WM_MBUTTONDBLCLK)
+            SetWindowText(handled ? L"Remote Control Client" :
+                L"Remote Control Client - 此窗口不支持同机代理，请直接操作本机窗口或使用两台电脑");
+        return;
+    }
+    MouseMsg message; message.PacketMsg(x, y, status);
     m_tcpClien.send(message);
+}
+
+bool CClientMain::HandleRemoteInput(MSG* message)
+{
+    if (!m_inputReady || !m_bTcpConect || !m_bCtrlPermission || !m_tcpClien.IsConnected()) return false;
+    const UINT kind = message->message;
+    const bool wheel = kind == WM_MOUSEWHEEL || kind == WM_MOUSEHWHEEL;
+    const HWND surface = m_dlgDisplay.GetDisplayHwnd();
+    if (!surface) return false;
+    if (wheel) {
+        // Wheel messages can follow keyboard focus. Route by the actual point,
+        // never by a stale focus in the canvas when the user is over local UI.
+        POINT point = {GET_X_LPARAM(message->lParam), GET_Y_LPARAM(message->lParam)};
+        if (::WindowFromPoint(point) != surface) return false;
+    } else if (!IsRemoteInputTarget(message->hwnd)) return false;
+
+    if (kind == WM_KEYDOWN || kind == WM_SYSKEYDOWN || kind == WM_KEYUP || kind == WM_SYSKEYUP) {
+        SendKeyboardMsg(static_cast<int>(message->wParam),
+            kind == WM_KEYDOWN || kind == WM_SYSKEYDOWN ? RCS_KEY_DOWN : RCS_KEY_UP);
+        return true;
+    }
+    if (!(kind >= WM_MOUSEMOVE && kind <= WM_MBUTTONDBLCLK) && !wheel) return false;
+    POINT point = {GET_X_LPARAM(message->lParam), GET_Y_LPARAM(message->lParam)};
+    if (wheel) ::ScreenToClient(surface, &point);
+    int remoteX = 0, remoteY = 0;
+    bool mapped = m_ScreenDisplayer.MapWindowPointToServer(point.x, point.y, remoteX, remoteY);
+    // Keep a drag's last up even outside the image, without trapping a hovering
+    // pointer. Clamp captured drag coordinates to the visible image boundary.
+    if (!mapped && m_pressedMouse) {
+        RECT image = m_ScreenDisplayer.GetDisplayRect(), viewport = {};
+        ::GetClientRect(surface, &viewport);
+        image.left = max(image.left, viewport.left); image.top = max(image.top, viewport.top);
+        image.right = min(image.right, viewport.right); image.bottom = min(image.bottom, viewport.bottom);
+        if (image.right > image.left && image.bottom > image.top) {
+            point.x = max(image.left, min(point.x, image.right - 1));
+            point.y = max(image.top, min(point.y, image.bottom - 1));
+            mapped = m_ScreenDisplayer.MapWindowPointToServer(point.x, point.y, remoteX, remoteY);
+        }
+    }
+    if (!mapped) return false;
+    UINT button = 0; bool down = false, up = false;
+    switch (kind) {
+    case WM_LBUTTONDOWN: case WM_LBUTTONDBLCLK: down = true; button = MK_LBUTTON; break;
+    case WM_LBUTTONUP: up = true; button = MK_LBUTTON; break;
+    case WM_RBUTTONDOWN: case WM_RBUTTONDBLCLK: down = true; button = MK_RBUTTON; break;
+    case WM_RBUTTONUP: up = true; button = MK_RBUTTON; break;
+    case WM_MBUTTONDOWN: case WM_MBUTTONDBLCLK: down = true; button = MK_MBUTTON; break;
+    case WM_MBUTTONUP: up = true; button = MK_MBUTTON; break;
+    }
+    if (up && !(m_pressedMouse & button)) return true;
+    if (down) {
+        ::SetFocus(surface);
+        m_pressedMouse |= button;
+        ::SetCapture(surface);
+    }
+    const int status = wheel ? static_cast<int>(MAKELONG(kind, HIWORD(message->wParam))) :
+        (kind == WM_MOUSEMOVE ? 0 : static_cast<int>(kind));
+    if (up) {
+        m_pressedMouse &= ~button;
+        if (!m_pressedMouse && ::GetCapture() == surface) ::ReleaseCapture();
+    }
+    DispatchMouse(remoteX, remoteY, status);
+    if (kind == WM_MOUSEMOVE) {
+        TRACKMOUSEEVENT track = {sizeof(track), TME_LEAVE, surface, 0};
+        ::TrackMouseEvent(&track);
+    }
+    return true;
+}
+
+void CClientMain::ReleaseRemoteInput()
+{
+    const UINT buttons = m_pressedMouse;
+    m_pressedMouse = 0; // Clear before ReleaseCapture sends a reentrant notification.
+    if (!m_localDesktop) {
+        if (buttons & MK_LBUTTON) DispatchMouse(m_lastRemotePoint.x, m_lastRemotePoint.y, WM_LBUTTONUP);
+        if (buttons & MK_RBUTTON) DispatchMouse(m_lastRemotePoint.x, m_lastRemotePoint.y, WM_RBUTTONUP);
+        if (buttons & MK_MBUTTON) DispatchMouse(m_lastRemotePoint.x, m_lastRemotePoint.y, WM_MBUTTONUP);
+    }
+    for (int key = 0; key < 256; ++key) {
+        if (m_pressedKeys[key]) { m_pressedKeys[key] = false; if (!m_localDesktop) DispatchKeyboard(key, RCS_KEY_UP); }
+    }
+    m_localInput.Release();
+    m_AltCheck = m_WinCheck = m_CtrlCheck = FALSE;
+    if (m_MainToolBar.GetSafeHwnd()) {
+        for (int index = 3; index <= 5; ++index)
+            m_MainToolBar.GetToolBarCtrl().CheckButton(m_MainToolBar.GetItemID(index), FALSE);
+    }
+    const HWND surface = m_dlgDisplay.GetDisplayHwnd();
+    if (surface && ::GetCapture() == surface) ::ReleaseCapture();
+}
+
+LRESULT CClientMain::OnInputLost(WPARAM reason, LPARAM)
+{
+    if (m_protectLocalGesture) { m_localGestureInterrupted = true; return 0; }
+    // A drag deliberately keeps capture beyond the canvas; ordinary hover does not.
+    if (reason == WM_CAPTURECHANGED && !m_pressedMouse) return 0;
+    if (reason != WM_MOUSELEAVE || !m_pressedMouse) ReleaseRemoteInput();
+    return 0;
+}
+
+void CClientMain::OnActivateApp(BOOL active, DWORD thread)
+{
+    if (!active) {
+        if (m_protectLocalGesture) m_localGestureInterrupted = true;
+        else ReleaseRemoteInput();
+    }
+    CDialog::OnActivateApp(active, thread);
 }
 
 void CClientMain::SetTileNumber( int nHorz,int nVert )
@@ -420,19 +575,29 @@ LRESULT CClientMain::OnAddIpMessage( WPARAM wParam, LPARAM lParam )
 
 void CClientMain::SendKeyboardMsg( int key,int status )
 {
-	if (m_bTcpConect && m_bCtrlPermission)
-	{
-		KeyboardMsg* pKeyMsg = new KeyboardMsg;
-		pKeyMsg->PacketMsg(key,status);
-		m_tcpClien.send(*pKeyMsg);
-		delete pKeyMsg;
-	}
+    if (!m_inputReady || !m_bTcpConect || !m_bCtrlPermission || !m_tcpClien.IsConnected()) return;
+    if (key >= 0 && key < 256) {
+        if (status == RCS_KEY_UP && !m_pressedKeys[key]) return;
+        m_pressedKeys[key] = status == RCS_KEY_DOWN;
+    }
+    DispatchKeyboard(key, status);
+}
 
+void CClientMain::DispatchKeyboard(int key, int status)
+{
+    if (m_localDesktop) {
+        if (!m_localInput.Keyboard(key, status) && status == RCS_KEY_DOWN)
+            SetWindowText(L"Remote Control Client - 请先点击支持同机键盘操作的控件，或直接操作本机窗口");
+        return;
+    }
+    KeyboardMsg message; message.PacketMsg(key, status);
+    m_tcpClien.send(message);
 }
 
 void CClientMain::FullScreen()
 {
     if (m_IsFullScreen || !m_dlgDisplay.GetSafeHwnd() || IsIconic()) return;
+    ReleaseRemoteInput();
     m_savedPlacement.length = sizeof(m_savedPlacement);
     GetWindowPlacement(&m_savedPlacement);
     m_savedStyle = GetWindowLongPtr(m_hWnd,GWL_STYLE);
@@ -456,6 +621,7 @@ void CClientMain::FullScreen()
 bool CClientMain::EndFullScreen()
 {
     if (!m_IsFullScreen) return true;
+    ReleaseRemoteInput();
     m_changingWindowMode = true; m_IsFullScreen = false;
     SetWindowLongPtr(m_hWnd,GWL_STYLE,m_savedStyle);
     SetWindowLongPtr(m_hWnd,GWL_EXSTYLE,m_savedExStyle);
@@ -502,27 +668,40 @@ bool CClientMain::IsRemoteInputTarget(HWND target) const
 void CClientMain::DealMessage()
 {
     ByteArrayMsg* message = NULL;
-    // Bound per-tick work so a busy network cannot starve the UI.
+    const DWORD started = GetTickCount();
+    // Bound both message count and elapsed decode time. Hundreds of JPEG tiles
+    // in a full refresh must not delay clicks until the entire batch is decoded.
     for (int i = 0; i < 256 && m_tcpClien.PopReceived(message); ++i) {
         if (message->GetType() == RCS_MSG_IMAGE) {
             m_ScreenDisplayer.RecvImageMsg(message);
         } else if (message->GetType() == RCS_MSG_SETUP) {
             SetupMsg decoded; decoded.SetBuffer(message->GetBufferPtr(), message->GetSize());
             SetupMsg* setup = &decoded;
-            if (setup->GetStatusType() == RCS_SETUP_MSG_PIXEL)
+            if (setup->GetStatusType() == RCS_SETUP_MSG_PIXEL) {
                 m_ScreenDisplayer.SetServerSize(setup->GetValue1(),setup->GetValue2());
+                m_inputReady = true;
+            }
+            if (setup->GetStatusType() == RCS_SETUP_MSG_LOCAL_DESKTOP) {
+                ReleaseRemoteInput();
+                m_localDesktop = IsSameInputDesktop(m_tcpClien,
+                    static_cast<DWORD>(setup->GetValue1()), static_cast<DWORD>(setup->GetValue2()));
+                m_fullscreenBar.SetControlMode(m_bCtrlPermission != FALSE, m_tcpClien.IsConnected(), m_localDesktop);
+            }
             if (setup->GetStatusType() == RCS_SETUP_MSG_PERMISSION &&
                 setup->GetValue1() == RCS_PERMISSION_CONTROL) {
+                if (setup->GetValue2() != 1) ReleaseRemoteInput();
                 m_bCtrlPermission = setup->GetValue2() == 1;
-                m_fullscreenBar.SetControlMode(m_bCtrlPermission != FALSE, m_tcpClien.IsConnected());
+                m_fullscreenBar.SetControlMode(m_bCtrlPermission != FALSE, m_tcpClien.IsConnected(), m_localDesktop);
             }
             delete message;
         } else {
             delete message;
         }
+        if (GetTickCount() - started >= 8) break;
     }
     if (!IsIconic()) m_ScreenDisplayer.Display();
     if (m_bTcpConect && !m_tcpClien.IsConnected()) {
+        ReleaseRemoteInput();
         m_bTcpConect = FALSE;
         m_bCtrlPermission = FALSE;
         m_fullscreenBar.SetControlMode(false, false);

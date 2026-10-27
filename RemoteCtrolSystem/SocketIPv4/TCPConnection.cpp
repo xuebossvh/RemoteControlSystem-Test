@@ -6,6 +6,11 @@ TCPConnection::TCPConnection(TCPSocket::Descriptor descriptor)
     : m_socket(descriptor), m_iFlags(0), m_bConnected(true) {}
 TCPConnection::~TCPConnection() { disconnect(); }
 void TCPConnection::disconnect() { m_bConnected = false; m_socket.Close(); }
+void TCPConnection::ShutdownConnection() {
+    m_bConnected = false;
+    const TCPSocket::Descriptor socket = m_socket;
+    if (socket != INVALID_SOCKET) ::shutdown(socket, SD_BOTH);
+}
 bool TCPConnection::IsConnected() throw() { return m_bConnected.load(); }
 void TCPConnection::SetConnected(bool value) throw() { m_bConnected = value; }
 void TCPConnection::SetFlags(int flags) throw() { m_iFlags = flags; }
@@ -73,3 +78,4 @@ int TCPConnection::DealRecvbuffer(char* data, int size, std::queue<ByteArrayMsg*
 TCPConnection& TCPConnection::operator<<(const string& text) { TCPStringBuffer data = text; send(data); return *this; }
 void TCPConnection::operator>>(string& text) { TCPStringBuffer data; receive(data); text = data; }
 TCPSocketAddress TCPConnection::getConnectedAddress() { return m_socket.GetPeerName(); }
+TCPSocketAddress TCPConnection::getOwnAddress() { return m_socket.GetSockName(); }

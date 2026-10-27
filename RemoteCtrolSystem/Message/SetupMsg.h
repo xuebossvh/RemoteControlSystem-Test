@@ -33,6 +33,7 @@
   int		value1			(4bits)
    int		value2			(4bits)
 */
+#define RCS_SETUP_MSG_LOCAL_DESKTOP 0x5700 // Server PID and authenticated connection thread ID.
 #define	RCS_SETUP_MSG_PERMISSION	0x5100	//用户权限，观看还是控制或者是IP被禁用
 #define	RCS_SETUP_MSG_PIXEL			0x5200   //屏幕分辨率value1存宽度，value2存高度
 #define	RCS_SETUP_MSG_TILE			0x5300   //图像分块设置，value1存横向分割块数，value存纵向分割块数

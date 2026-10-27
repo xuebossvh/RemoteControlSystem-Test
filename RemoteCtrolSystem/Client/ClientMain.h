@@ -6,6 +6,7 @@
 #include "SetupDlg.h"
 #include "DisplayDlg.h"
 #include "FullscreenBar.h"
+#include "../Common/LocalDesktopInput.h"
 #include "..\\ClientConfig\HostListConfig.h"
 #include "..\\Graphic\ScreenDisplay.h"
 #include "..\\Graphic\ScreenShot.h"
@@ -55,6 +56,16 @@ protected:
 	BOOL			m_CtrlCheck;
 	BOOL			m_bTcpConect;
 	BOOL			m_bCtrlPermission;
+	bool m_localDesktop = false;
+	bool m_inputReady = false;
+	bool m_protectLocalGesture = false;
+	bool m_localGestureInterrupted = false;
+	LocalDesktopInput m_localInput;
+	UINT m_pressedMouse = 0;
+	bool m_pressedKeys[256] = {};
+	POINT m_lastRemotePoint = {};
+	void DispatchMouse(int x, int y, int status);
+	void DispatchKeyboard(int key, int status);
 	//TcpClient*		m_pTcpClient;
 	std::vector<Host>			m_vtHostList;
 	std::queue<ByteArrayMsg*>	m_SendQueue;
@@ -210,4 +221,8 @@ public:
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO* info);
 	bool HandleLocalShortcut(MSG* message);
 	bool IsRemoteInputTarget(HWND target) const;
+	bool HandleRemoteInput(MSG* message);
+	void ReleaseRemoteInput();
+	afx_msg void OnActivateApp(BOOL active, DWORD thread);
+	afx_msg LRESULT OnInputLost(WPARAM, LPARAM);
 };

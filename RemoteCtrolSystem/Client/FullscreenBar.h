@@ -11,8 +11,9 @@ public:
     BOOL CreateBar(CWnd* parent);
     void Layout(bool fullscreen, int normalTop, bool reveal = false);
     void TrackPointer();
-    void SetControlMode(bool control, bool connected = true) {
-        if (modeLabel_.GetSafeHwnd()) modeLabel_.SetWindowText(!connected ? L"已断开" : (control ? L"可控制" : L"仅观看"));
+    void SetControlMode(bool control, bool connected = true, bool local = false) {
+        if (modeLabel_.GetSafeHwnd()) modeLabel_.SetWindowText(!connected ? L"已断开" :
+            (control ? (local ? L"同机控制" : L"可控制") : L"仅观看"));
     }
 protected:
     afx_msg void OnPaint();

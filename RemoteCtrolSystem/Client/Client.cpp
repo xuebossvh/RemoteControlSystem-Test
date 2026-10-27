@@ -26,11 +26,8 @@ END_MESSAGE_MAP()
 
 CClientApp::CClientApp()
 {
-	m_lastTime = 0;
-	m_oldMousePos = CPoint(-1, -1);
 	// TODO: 在此处添加构造代码，
 	// 将所有重要的初始化放置在 InitInstance 中
-	m_lastTime = GetTickCount();
 }
 
 
@@ -115,22 +112,7 @@ BOOL CClientApp::PreTranslateMessage(MSG* message)
     CClientMain* main = DYNAMIC_DOWNCAST(CClientMain,m_pMainWnd);
     if (!main) return CWinApp::PreTranslateMessage(message);
     if (main->HandleLocalShortcut(message)) return TRUE;
-    if (!main->IsRemoteInputTarget(message->hwnd)) return CWinApp::PreTranslateMessage(message);
-    if (message->message == WM_MOUSEMOVE) {
-        DWORD now=GetTickCount();
-        if (now-m_lastTime > 1000/24) {
-            CPoint point; GetCursorPos(&point);
-            if (m_oldMousePos != point) main->SendMouseMsg(point.x,point.y,0);
-            m_oldMousePos=point; m_lastTime=now;
-        }
-    } else if (message->message >= WM_LBUTTONDOWN && message->message <= WM_MBUTTONDBLCLK) {
-        CPoint point; GetCursorPos(&point);
-        main->SendMouseMsg(point.x,point.y,message->message);
-    } else if (message->message == WM_KEYDOWN || message->message == WM_SYSKEYDOWN) {
-        main->SendKeyboardMsg(static_cast<int>(message->wParam),RCS_KEY_DOWN); return TRUE;
-    } else if (message->message == WM_KEYUP || message->message == WM_SYSKEYUP) {
-        main->SendKeyboardMsg(static_cast<int>(message->wParam),RCS_KEY_UP); return TRUE;
-    }
+    if (main->HandleRemoteInput(message)) return TRUE;
     return CWinApp::PreTranslateMessage(message);
 }
 

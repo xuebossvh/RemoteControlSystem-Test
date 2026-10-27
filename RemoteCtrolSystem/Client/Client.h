@@ -28,9 +28,6 @@ public:
 
 	DECLARE_MESSAGE_MAP()
 	virtual BOOL OnIdle(LONG lCount);
-protected:
-	CPoint m_oldMousePos;
-	DWORD  m_lastTime;
 public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

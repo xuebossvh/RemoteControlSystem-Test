@@ -5,6 +5,17 @@
 // Shared by the authenticated Server injector and the Client's message filter.
 // This identifies our own synthetic input; it is not an authorization token.
 namespace RemoteInput {
+inline int EncodeWheel(int delta, bool horizontal = false) {
+    return static_cast<int>((static_cast<unsigned>(static_cast<WORD>(delta)) << 16) | (horizontal ? 0x020E : WM_MOUSEWHEEL));
+}
+inline bool DecodeWheel(int status, int& delta, bool* horizontal = nullptr) {
+    const unsigned packed = static_cast<unsigned>(status);
+    const unsigned kind = packed & 0xffffu;
+    if (kind != WM_MOUSEWHEEL && kind != 0x020E) return false;
+    if (horizontal) *horizontal = kind == 0x020E;
+    delta = static_cast<SHORT>(packed >> 16);
+    return delta != 0;
+}
 constexpr ULONG_PTR kExtraInfoMarker = static_cast<ULONG_PTR>(0x52435331UL);
 inline bool IsInjectedExtraInfo(ULONG_PTR value) { return value == kExtraInfoMarker; }
 inline bool IsCurrentMessageInjected() {

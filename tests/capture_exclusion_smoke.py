@@ -25,7 +25,7 @@ import threading
 import time
 import uuid
 
-from runtime_smoke import ADMIN_PASSWORD, PASSWORD, IMAGE, PIXEL, SETUP, Peer, WinUI
+from runtime_smoke import ADMIN_PASSWORD, PASSWORD, IMAGE, PIXEL, SETUP, SERVER_IDENTITY, Peer, WinUI
 from runtime_smoke import create_fixtures, require, wait_until, wide_field
 
 
@@ -248,6 +248,9 @@ def capture_frame(port: int, username: str, timeout: float):
         while time.monotonic() < deadline:
             kind, payload = peer.message(timeout=max(0.01, deadline - time.monotonic()))
             if kind == SETUP:
+                if payload[0] == SERVER_IDENTITY:
+                    require(payload[1] > 0 and payload[2] > 0, "Invalid Server identity metadata")
+                    continue
                 require(payload[0] == PIXEL, "Unexpected observer setup")
                 width, height = payload[1:]
                 require(0 < width <= 8192 and 0 < height <= 8192, "Unexpected image dimensions")

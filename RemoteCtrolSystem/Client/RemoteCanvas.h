@@ -14,6 +14,9 @@ protected:
     afx_msg void OnLButtonDown(UINT flags, CPoint point);
     afx_msg UINT OnGetDlgCode();
     afx_msg void OnDestroy();
+    afx_msg void OnCaptureChanged(CWnd* window);
+    afx_msg void OnKillFocus(CWnd* window);
+    afx_msg LRESULT OnMouseLeave(WPARAM, LPARAM);
     afx_msg LRESULT OnProbeBegin(WPARAM, LPARAM);
     afx_msg LRESULT OnProbePixel(WPARAM, LPARAM);
     afx_msg LRESULT OnProbeEnd(WPARAM, LPARAM);

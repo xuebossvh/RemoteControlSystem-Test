@@ -65,6 +65,9 @@ class InputFixture(StaticFrameServer):
                 require(kind == 4 and name.rstrip(b"\0") == b"control" and
                         password.rstrip(b"\0") == PASSWORD.encode("ascii"), "Unexpected fixture login")
                 connection.sendall(struct.pack("<Biii", 5, 0x5100, 0x5110, 1))
+                # A claimed local identity must not enable direct local control
+                # unless it matches the TCP peer process/thread and desktop.
+                connection.sendall(struct.pack("<Biii", 5, 0x5700, 1, 1))
                 connection.sendall(struct.pack("<Biii", 5, 0x5200, self.width, self.height))
                 connection.sendall(struct.pack("<BiiiiI", 1, 0, 0, self.width, self.height, len(self.jpeg)) + self.jpeg)
                 self.images_sent = 1
@@ -230,6 +233,9 @@ def main():
                 "Own Client canvas/Fit button is missing")
         wait_until(lambda: fixture.images_sent == 1 and ui.paint_count(canvas) > 0, args.timeout,
                    "Synthetic frame was not painted")
+        require(ui.title(ui.api.GetDlgItem(bar, 4105)) != "\u540c\u673a\u63a7\u5236",
+                "Unverified local identity enabled direct desktop operations")
+        record("unverified_local_identity_rejected")
         ui.click(bar, FIT_ID)
         time.sleep(0.15)
         x0, y0, x1, y1 = ui.screen_client_rect(canvas)
@@ -269,6 +275,64 @@ def main():
         require(len(fixture.snapshot()) == before, "Server-tagged injected motion was echoed back by Client")
         record("marked_canvas_move_not_echoed", marker=MARKER, remote_mouse_packets=0)
         ordinary_move((marked[0] - 6, marked[1] - 4), "ordinary_move_still_works_after_marker")
+
+        # The last move in a burst must survive even when the pointer immediately
+        # stops; the old 24 Hz discard throttle lost precisely this event.
+        before = quiet_packets(fixture)
+        tail = (anchor[0] + 30, anchor[1] + 18)
+        for step in range(12):
+            ui.move(process, canvas, (tail[0] - 11 + step, tail[1]))
+            time.sleep(0.001)
+        expected = expected_position(ui, canvas, fixture, tail)
+        wait_until(lambda: any(p["status"] == 0 and abs(p["x"] - expected[0]) <= 2 and
+                             abs(p["y"] - expected[1]) <= 2 for p in fixture.snapshot()[before:]),
+                   3, "Final move was discarded when the pointer stopped")
+        record("fast_burst_keeps_final_position", expected_remote=list(expected))
+
+        before = quiet_packets(fixture)
+        ui.click_own_button(process, canvas)
+        time.sleep(0.05)
+        ui.click_own_button(process, canvas)
+        wait_until(lambda: len([p for p in fixture.snapshot()[before:] if p["status"]]) >= 4,
+                   3, "Double click did not deliver both down/up pairs")
+        clicks = [p["status"] for p in fixture.snapshot()[before:] if p["status"]]
+        require(clicks == [0x201, 0x202, 0x203, 0x202] or clicks == [0x201, 0x202, 0x201, 0x202],
+                "Double click duplicated/lost button events: " + str(clicks))
+        record("double_click_keeps_exact_two_pairs", statuses=clicks)
+
+        before = quiet_packets(fixture)
+        ui.require_target(process, canvas, ui.cursor())
+        down = Input(0, MouseInput(0, 0, 0, 0x0002, 0, 0))
+        require(ui.api.SendInput(1, ctypes.byref(down), ctypes.sizeof(Input)) == 1, "Drag down failed")
+        try:
+            wait_until(lambda: any(p["status"] == 0x201 for p in fixture.snapshot()[before:]),
+                       3, "Drag down was not forwarded")
+            bounds = ui.rect(button)
+            outside = ((bounds[0] + bounds[2]) // 2, (bounds[1] + bounds[3]) // 2)
+            ui.move(process, button, outside)
+            time.sleep(0.05)
+        finally:
+            up = Input(0, MouseInput(0, 0, 0, 0x0004, 0, 0))
+            require(ui.api.SendInput(1, ctypes.byref(up), ctypes.sizeof(Input)) == 1, "Drag release failed")
+        wait_until(lambda: any(p["status"] == 0x202 for p in fixture.snapshot()[before:]),
+                   3, "Mouse up was lost after leaving the canvas")
+        record("drag_release_outside_canvas_is_forwarded")
+
+        ui.move(process, canvas, anchor)
+        before = quiet_packets(fixture)
+        ui.require_target(process, canvas, ui.cursor())
+        for flags, delta in [(0x0800, 120), (0x1000, -120), (0x0020, 0), (0x0040, 0)]:
+            event = Input(0, MouseInput(0, 0, delta & 0xffffffff, flags, 0, 0))
+            require(ui.api.SendInput(1, ctypes.byref(event), ctypes.sizeof(Input)) == 1,
+                    "Wheel/middle input failed")
+            time.sleep(0.02)
+        wait_until(lambda: len([p for p in fixture.snapshot()[before:] if p["status"]]) >= 4,
+                   3, "Wheel or middle button events were lost")
+        statuses = [p["status"] for p in fixture.snapshot()[before:] if p["status"]]
+        expected_statuses = [(120 << 16) | 0x020a, ctypes.c_int(((-120 & 0xffff) << 16) | 0x020e).value,
+                             0x0207, 0x0208]
+        require(statuses == expected_statuses, "Wheel delta/middle sequence was changed: " + str(statuses))
+        record("wheel_deltas_and_middle_pair_forwarded", statuses=statuses)
 
         before = quiet_packets(fixture)
         bounds = ui.rect(button)

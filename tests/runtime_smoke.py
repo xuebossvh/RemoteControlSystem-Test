@@ -25,7 +25,7 @@ import time
 
 
 SETUP, IMAGE, USER, MOUSE = 5, 1, 4, 2
-PERMISSION, CONTROL, IP, PIXEL = 0x5100, 0x5110, 0x5130, 0x5200
+PERMISSION, CONTROL, IP, PIXEL, SERVER_IDENTITY = 0x5100, 0x5110, 0x5130, 0x5200, 0x5700
 ADMIN_PASSWORD = "111"
 PASSWORD = "SmokePass123"
 
@@ -310,6 +310,9 @@ def receive_tiles(peer: Peer, count: int = 3) -> dict:
         require(remaining > 0, "Timed out waiting for JPEG tiles")
         kind, payload = peer.message(timeout=remaining)
         if kind == SETUP:
+            if payload[0] == SERVER_IDENTITY:
+                require(payload[1] > 0 and payload[2] > 0, "Invalid Server identity metadata")
+                continue
             require(payload[0] == PIXEL, f"Unexpected setup while receiving images: {payload}")
             width, height = payload[1:]
             require(0 < width <= 32768 and 0 < height <= 32768, "Invalid desktop dimensions")

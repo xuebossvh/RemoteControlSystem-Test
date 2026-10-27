@@ -41,6 +41,9 @@ public:
 
 public:
     static bool Move(int x, int y);
+    static void MiddleClickDown(int x, int y);
+    static void MiddleClickUp(int x, int y);
+    static void ReleaseButtons(DWORD buttons);
 	//模拟键盘的一次按键，bExtended指定是否使用扩展方式
 	static void GenerateKey(int vk, BOOL bExtended);
 
@@ -69,7 +72,7 @@ public:
 	static void RightClickDown(const int x,const int y);
 
 	//模拟鼠标滚轮移动
-	static void MouseWheel(const int mouseData);
+	static void MouseWheel(const int mouseData, bool horizontal = false);
 
 	//模拟键盘按键弹起
 	static void KeyUp(int vk ,BOOL bExtended);
